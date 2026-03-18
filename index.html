@@ -12512,6 +12512,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
 }
 .mea-music-hidden{
   display:flex; align-items:center; justify-content:center; gap:0;
+  position: relative;
   background: linear-gradient(180deg, rgba(107,70,146,0.95), rgba(74,53,115,0.96));
   border: 1px solid rgba(255,255,255,0.18);
   box-shadow: 0 14px 30px rgba(34,18,53,0.30);
@@ -12523,6 +12524,8 @@ body.mea-compact-hero #view-showroom.app-view.active {
   padding: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 18px rgba(0,0,0,0.18);
 }
 .mea-music-hidden span{ display:none; }
+.mea-music-widget.is-collapsed .mea-music-shell{ display:none !important; }
+.mea-music-widget.is-expanded .mea-music-peek{ display:none !important; }
 @media (max-width: 980px){
   .mea-music-widget{ left: 88px; width: min(340px, calc(100vw - 170px)); }
 }
@@ -12643,7 +12646,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
     },
     build: function(){
       var wrap = document.createElement('div');
-      wrap.className = 'mea-music-widget';
+      wrap.className = 'mea-music-widget is-collapsed';
       wrap.id = 'mea-music-widget';
       wrap.innerHTML = '' +
         '<div class="mea-music-shell" id="mea-music-shell">' +
@@ -12684,6 +12687,8 @@ body.mea-compact-hero #view-showroom.app-view.active {
       this.playBtn = wrap.querySelector('#mea-play-toggle');
       this.listEl = wrap.querySelector('#mea-music-playlist');
       this.filesInput = wrap.querySelector('#mea-music-files');
+      this.shell.hidden = true;
+      this.peek.hidden = false;
       this.audio.loop = true;
       this.audio.autoplay = true;
       this.audio.volume = parseFloat(this.volume.value || '0.6');
@@ -12695,8 +12700,8 @@ body.mea-compact-hero #view-showroom.app-view.active {
       this.el.querySelector('#mea-track-next').addEventListener('click', function(){ self.nextTrack(); });
       this.el.querySelector('#mea-seek-back').addEventListener('click', function(){ self.jump(-10); });
       this.el.querySelector('#mea-seek-forward').addEventListener('click', function(){ self.jump(10); });
-      this.el.querySelector('#mea-music-hide').addEventListener('click', function(){ self.setExpanded(false); });
-      this.peek.addEventListener('click', function(){ self.setExpanded(true); });
+      this.el.querySelector('#mea-music-hide').addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); self.setExpanded(false); });
+      this.peek.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); self.setExpanded(true); });
       this.el.querySelector('#mea-playlist-toggle').addEventListener('click', function(){ self.playlistOpen = !self.playlistOpen; self.listEl.hidden = !self.playlistOpen; });
       this.seek.addEventListener('input', function(){ if (!self.audio.duration) return; self.audio.currentTime = (self.seek.value / 100) * self.audio.duration; });
       this.volume.addEventListener('input', function(){ self.audio.volume = parseFloat(self.volume.value || '0.6'); });
@@ -12794,8 +12799,13 @@ body.mea-compact-hero #view-showroom.app-view.active {
     },
     setExpanded: function(expanded){
       this.expanded = !!expanded;
+      if (!this.el || !this.shell || !this.peek) return;
+      this.el.classList.toggle('is-expanded', this.expanded);
+      this.el.classList.toggle('is-collapsed', !this.expanded);
       this.shell.hidden = !this.expanded;
       this.peek.hidden = this.expanded;
+      this.shell.setAttribute('aria-hidden', this.expanded ? 'false' : 'true');
+      this.peek.setAttribute('aria-hidden', this.expanded ? 'true' : 'false');
     }
   };
 
