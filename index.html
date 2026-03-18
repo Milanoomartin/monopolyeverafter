@@ -1493,6 +1493,93 @@ body::after {
   color: #fff6f0 !important;
 }
 
+
+
+/* Album set banners now carry account details too. */
+.set-account-meta {
+  position: relative;
+  z-index: 1;
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0.08));
+  border: 1px solid rgba(255,255,255,0.26);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  display: grid;
+  gap: 6px;
+}
+
+.set-acct-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  color: rgba(255,250,244,0.96);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.set-acct-label {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(72, 39, 78, 0.22);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,247,229,0.96);
+  letter-spacing: .03em;
+}
+
+.set-acct-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.set-acct-link {
+  color: #fff8e2 !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.album-header-spacer {
+  height: 12px;
+  flex: 0 0 auto;
+}
+
+.album-acct-header {
+  margin-bottom: 0 !important;
+}
+
+/* Keep the first set from feeling clipped by the sticky header. */
+.album-account-col > .album-set:first-of-type {
+  margin-top: 2px;
+}
+
+/* Import page text must stay readable against the lighter enchanted panel. */
+#view-import .import-area {
+  background: linear-gradient(180deg, rgba(255,252,247,0.96), rgba(247,239,229,0.94)) !important;
+  color: #4a3458 !important;
+  border: 1px solid rgba(191, 150, 62, 0.42) !important;
+  box-shadow: 0 16px 34px rgba(75, 32, 49, 0.16), inset 0 0 0 1px rgba(255,255,255,0.52) !important;
+}
+
+#view-import .import-area h3,
+#view-import .import-area p,
+#view-import .import-area strong,
+#view-import .import-area em,
+#view-import .import-area label,
+#view-import .import-area span,
+#view-import .import-area li,
+#view-import .import-area small {
+  color: #4a3458 !important;
+}
+
+#view-import .import-area hr {
+  border-top-color: rgba(116, 77, 140, 0.28) !important;
+}
+
 .sky-lanterns {
   position: fixed;
   inset: 0;
@@ -1754,10 +1841,10 @@ body::after {
     <div id="view-bulk" class="app-view">
         <div class="planner-container">
             <h3>Bulk Individual Sticker Update</h3>
-            <p style="margin-top:-5px; color:#666; font-weight:bold;">Pick a set and sticker, then update each account side-by-side.</p>
+            <p style="margin-top:-5px; color:#666; font-weight:bold;">Pick a set or the entire album, then update each account side-by-side.</p>
 
             <div class="bulk-controls">
-                <input id="bulk-search" class="bulk-input" type="text" placeholder="Search sticker name...">
+                <input id="bulk-search" class="bulk-input" type="text" placeholder="Search sticker name across set or whole album...">
                 <select id="bulk-set" class="bulk-select"></select>
                 <select id="bulk-sticker" class="bulk-select">
                     <option value="">Select Sticker</option>
@@ -4638,6 +4725,7 @@ if (pinBtn) {
                                 <span class="album-acct-chip">${codeHtml}</span>
                             </div>
                         </div>
+                        <div class="album-header-spacer" aria-hidden="true"></div>
                     `;
 // Add sets
                     sets.forEach(({ set, setNum }) => {
@@ -4653,6 +4741,11 @@ if (pinBtn) {
                                     <div class="set-num">Set ${setNum}</div>
                                     <div class="set-name">${esc(set.name)}</div>
                                     <div class="set-reward">Reward: ${esc(set.reward || "")}</div>
+                                    <div class="set-account-meta">
+                                        <div class="set-acct-row"><span class="set-acct-label">Account</span><span class="set-acct-value">${esc(acct.name || acctKey)}${acct.device ? ` • ${esc(acct.device)}` : ""}</span></div>
+                                        <div class="set-acct-row"><span class="set-acct-label">Link</span><span class="set-acct-value">${link ? `<a class="set-acct-link" href="${esc(link)}" target="_blank" rel="noopener">${esc(link)}</a>` : "—"}</span></div>
+                                        <div class="set-acct-row"><span class="set-acct-label">Code</span><span class="set-acct-value">${code ? esc(code) : "—"}</span></div>
+                                    </div>
                                     <div class="progress-bar-bg"><div class="progress-bar-fill" data-role="progress-fill"></div></div>
                                     <div class="progress-text" data-role="progress-text">0 / 9</div>
                                     <div class="prestige-lock-pill" data-role="prestige-lock">PRESTIGE LOCKED</div>
@@ -9568,6 +9661,12 @@ const Importer = {
                     return;
                 }
                 this.setEl.innerHTML = '';
+
+                const allOpt = document.createElement('option');
+                allOpt.value = '0';
+                allOpt.textContent = 'Entire Album — all 24 sets';
+                this.setEl.appendChild(allOpt);
+
                 SET_DATA.forEach((set, idx) => {
                     const num = idx + 1;
                     const opt = document.createElement('option');
@@ -9576,35 +9675,57 @@ const Importer = {
                     this.setEl.appendChild(opt);
                 });
 
-                // Preserve selection
-                if (!this.selectedSet || this.selectedSet < 1 || this.selectedSet > SET_DATA.length) this.selectedSet = 1;
+                if (typeof this.selectedSet !== 'number' || this.selectedSet < 0 || this.selectedSet > SET_DATA.length) {
+                    this.selectedSet = 0;
+                }
                 this.setEl.value = String(this.selectedSet);
             },
 
-            populateStickerOptions(resetSticker = false) {
-                const setNum = this.selectedSet || 1;
-                const set = SET_DATA[setNum - 1];
-                if (!set) return;
-
+            _getBulkChoices() {
                 const term = (this.searchEl ? this.searchEl.value.trim().toLowerCase() : '');
-                const names = set.cards.filter(n => !term || n.toLowerCase().includes(term));
+                const selectedSet = Number.isFinite(this.selectedSet) ? this.selectedSet : 0;
+                const choices = [];
 
+                SET_DATA.forEach((set, setIdx) => {
+                    const setNum = setIdx + 1;
+                    if (selectedSet !== 0 && setNum !== selectedSet) return;
+                    (set.cards || []).forEach((name, cIdx) => {
+                        const hay = `${set.name} ${name}`.toLowerCase();
+                        if (term && !hay.includes(term)) return;
+                        const id = `s${setNum}_${cIdx}`;
+                        choices.push({
+                            id,
+                            setNum,
+                            cIdx,
+                            setName: set.name,
+                            name,
+                            label: selectedSet === 0 ? `Set ${setNum} — ${set.name} — ${name}` : name
+                        });
+                    });
+                });
+
+                return choices;
+            },
+
+            populateStickerOptions(resetSticker = false) {
+                const choices = this._getBulkChoices();
                 const previous = this.selectedSticker;
 
                 this.stickerEl.innerHTML = '';
                 const ph = document.createElement('option');
                 ph.value = '';
-                ph.textContent = 'Select Sticker';
+                ph.textContent = this.selectedSet === 0 ? 'Select Sticker (Entire Album)' : 'Select Sticker';
                 this.stickerEl.appendChild(ph);
 
-                names.forEach(name => {
+                choices.forEach(choice => {
                     const opt = document.createElement('option');
-                    opt.value = name;
-                    opt.textContent = name;
+                    opt.value = choice.id;
+                    opt.textContent = choice.label;
                     this.stickerEl.appendChild(opt);
                 });
 
-                if (!resetSticker && previous && names.includes(previous)) {
+                const validIds = new Set(choices.map(c => c.id));
+                if (!resetSticker && previous && validIds.has(previous)) {
                     this.selectedSticker = previous;
                     this.stickerEl.value = previous;
                 } else {
@@ -9616,22 +9737,25 @@ const Importer = {
             },
 
             renderStage() {
-                const setNum = this.selectedSet || 1;
-                const set = SET_DATA[setNum - 1];
-                const stickerName = this.selectedSticker || '';
+                const stickerId = this.selectedSticker || '';
+                const choices = this._getBulkChoices();
+                const choice = choices.find(c => c.id === stickerId) || null;
 
-                if (!set || !stickerName) {
+                if (!choice) {
                     this.stageEl.innerHTML = `<div class="bulk-hint">Choose a set and sticker to begin.</div>`;
                     return;
                 }
 
-                const cIdx = set.cards.indexOf(stickerName);
-                if (cIdx < 0) {
-                    this.stageEl.innerHTML = `<div class="bulk-hint">That sticker isn't in the selected set.</div>`;
+                const setNum = choice.setNum;
+                const set = SET_DATA[setNum - 1];
+                if (!set) {
+                    this.stageEl.innerHTML = `<div class="bulk-hint">That sticker isn't available right now.</div>`;
                     return;
                 }
 
-                const id = `s${setNum}_${cIdx}`;
+                const cIdx = choice.cIdx;
+                const stickerName = choice.name;
+                const id = choice.id;
                 const meta = (Manager.cardDb && Manager.cardDb[id]) ? Manager.cardDb[id] : { stars: 1, gold: false, set: setNum, name: stickerName };
                 const stars = '★'.repeat(meta.stars || 1);
 
@@ -9652,7 +9776,7 @@ const Importer = {
                         <div class="stars">${stars}</div>
                         <div class="sticker-slot ${meta.gold ? 'gold-card' : ''}">
                             <div class="placeholder-text">GO!</div>
-                            <div class="banner"><span>${stickerName}</span></div>
+                            <div class="banner"><span>${this.esc(stickerName)}</span></div>
                             <div class="counter-badge">+1</div>
                         </div>
                         <div class="controls">
@@ -9660,13 +9784,12 @@ const Importer = {
                             <button class="ctrl-btn plus" ${locked ? 'disabled' : ''}>+</button>
                         </div>
                         <div class="bulk-account-label">${this.esc(acct && acct.name ? acct.name : acctKey)}${device ? `<span>${this.esc(device)}</span>` : `<span style="opacity:0.35;">&nbsp;</span>`}</div>
+                        <div class="bulk-account-label" style="margin-top:6px; font-size:12px; color:#6e5672;">Set ${setNum} — ${this.esc(choice.setName)}</div>
                         ${locked ? `<div class="bulk-lock-tag">🔒 Prestige Only</div>` : ``}
                     </div>`;
                 });
 
                 this.stageEl.innerHTML = html;
-
-                // Make sure the cards reflect the current saved counts right away
                 Manager.updateUI();
             },
 
@@ -12071,9 +12194,23 @@ body {
   gap: 12px !important;
 }
 
-/* In compare-heavy pages, keep the focus on the working area and pull the content upward. */
+/* Keep the animated logo banner visible, but compact, on working pages. */
 body.mea-compact-hero .header-container {
-  display: none !important;
+  display: block !important;
+  max-width: 1200px !important;
+  margin: 0 auto 10px auto !important;
+  padding: 0 8px !important;
+}
+
+body.mea-compact-hero .main-header-img {
+  max-height: 150px !important;
+  padding: 12px !important;
+  border-radius: 24px !important;
+}
+
+body.mea-compact-hero .header-subtitle {
+  font-size: 1rem !important;
+  margin-top: 8px !important;
 }
 
 body.mea-compact-hero .account-bar {

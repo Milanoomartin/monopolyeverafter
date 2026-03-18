@@ -1,8 +1,11 @@
-Monopoly Ever After tracker bundle
+# Monopoly Ever After Tracker
 
-Contents:
-- index.html
-- assets/MonopolyEverAfter-favicon.png
+Open `index.html` locally or upload this folder to GitHub Pages.
 
-This build fixes the parser bug that broke the main script on GitHub Pages.
-Replace your existing index.html with this one.
+Included in this build:
+- animated logo banner
+- sticky account headers
+- account details repeated inside each set banner
+- bulk sticker update with an Entire Album option
+- darker readable import text
+- local-storage-first behavior
