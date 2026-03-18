@@ -1,11 +1,18 @@
-# Monopoly Ever After Tracker
+# Monopoly Ever After tracker bundle
 
-Open `index.html` locally or upload this folder to GitHub Pages.
+Files:
+- `index.html`
+- `assets/MonopolyEverAfter-favicon.png`
+- `assets/MoGo-Ever-After-Logo.png`
 
-Included in this build:
-- animated logo banner
-- sticky account headers
-- account details repeated inside each set banner
-- bulk sticker update with an Entire Album option
-- darker readable import text
-- local-storage-first behavior
+Notes:
+- The top animated logo banner now loads from `assets/MoGo-Ever-After-Logo.png`
+  instead of being embedded directly in the HTML.
+- This bundle still works as a local-storage-first static site.
+
+
+Update in fixed6:
+- removed frozen album/account headers
+- hid the separate per-account album tile to stop the first-set overlap
+- kept account name/link/code inside each set banner
+- strengthened import text readability
