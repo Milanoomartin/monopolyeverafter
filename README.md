@@ -1,4 +1,8 @@
-Upload index.html and the assets folder together.
+Monopoly Ever After tracker bundle.
 
-This build removes the popup nested-script parser issue and defaults the music box to a hidden icon-only state.
-Autoplay is attempted automatically, but some browsers may wait for the first click before allowing audio playback.
+Keyboard shortcuts:
+- / or Ctrl/Cmd+K or Alt+S: focus album search
+- Alt+P: play/pause music
+- Alt+H: hide/show music box
+
+The music box now defaults to collapsed on first load and remembers that state per browser.
