@@ -1,24 +1,24 @@
-# Monopoly Ever After site bundle
+# Monopoly Ever After site bundle (local-file friendly)
 
 ## Included
 - `index.html`
 - `assets/MonopolyEverAfter-favicon.png`
-- `assets/set_colors_reference.csv`
 
-## What the CSV does now
-When the site is hosted over HTTP/HTTPS (for example GitHub Pages), the page will try to load `assets/set_colors_reference.csv` on startup.
+## What changed
+This bundle is fully self-contained for easy use with browser local storage.
 
-You can edit these columns to change the live album styling/data:
-- `Set` or `Set #`
-- `Set Name`
-- `Estimated Hex Code` or `Set Color Hex Code`
+- No CSV loading
+- No hosted-only set color override logic
+- Works cleanly when opened directly as a local `file://` page
+- Account data, sticker progress, and related tracker state still save in browser local storage
 
-That means the CSV is no longer just reference-only — it can override the set names and set rim/banner colors.
+## Editing set names or set colors later
+If you want to change the built-in set names or set colors later, edit the set data directly inside `index.html`.
 
-## Important note for local file opening
-If you double-click `index.html` and open it as a local `file://` page, some browsers block CSV loading for security reasons. In that case the built-in defaults will still work, but CSV edits may not auto-apply until you:
-- run a small local web server, or
-- upload to GitHub Pages / another host
+Look for the main set data array in the script section:
+- `window.SET_DATA = [...]`
+
+That is now the single source of truth for local and hosted use.
 
 ## GitHub Pages
-Upload the full folder contents and publish the repo/folder as a Pages site.
+You can still upload this folder to GitHub Pages as-is.

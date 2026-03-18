@@ -6284,50 +6284,8 @@ body.mea-compact-hero #view-showroom.app-view.active {
   }
 
   async function applySetOverridesFromCsv(){
-    if (window.__meaCsvApplied) return;
-    // This is intentionally a hosted-site enhancement. Browsers block fetch() from file:// pages.
-    if (location.protocol === 'file:') return;
-    try {
-      const res = await fetch('assets/set_colors_reference.csv', { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const text = await res.text();
-      const rows = parseCsv(text);
-      if (!rows.length || !window.SET_DATA) return;
-      let changed = false;
-      const pull = (row, keys) => {
-        for (const key of keys) {
-          const found = Object.keys(row).find(h => h.toLowerCase() === key.toLowerCase());
-          if (found && row[found]) return row[found];
-        }
-        return '';
-      };
-      rows.forEach((row) => {
-        const setNo = parseInt(pull(row, ['Set #', 'Set', 'Set Number', 'Set Num']), 10);
-        if (!Number.isFinite(setNo) || setNo < 1 || !SET_DATA[setNo - 1]) return;
-        const set = SET_DATA[setNo - 1];
-        const nextName = pull(row, ['Set Name', 'Name']);
-        const nextHex = pull(row, ['Set Color Hex Code', 'Estimated Hex Code', 'Hex Code', 'Hex']);
-        if (nextName) { set.name = nextName; changed = true; }
-        if (nextHex && /^#?[0-9a-fA-F]{6}$/.test(nextHex.trim())) {
-          set.color = nextHex.trim().startsWith('#') ? nextHex.trim() : ('#' + nextHex.trim());
-          changed = true;
-        }
-      });
-      if (changed) {
-        window.__meaCsvApplied = true;
-        if (window.Manager) {
-          try {
-            if (typeof Manager.buildNav === 'function') Manager.buildNav();
-            if (typeof Manager.buildAlbumUI === 'function') Manager.buildAlbumUI();
-            if (typeof Manager.updateUI === 'function') Manager.updateUI();
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('[MEA] Could not load assets/set_colors_reference.csv automatically.', err);
-    }
+    // Local-file friendly build: set data stays self-contained in this HTML.
+    return;
   }
 
   function init(){
@@ -12477,50 +12435,8 @@ body.mea-compact-hero #view-showroom.app-view.active {
   }
 
   async function applySetOverridesFromCsv(){
-    if (window.__meaCsvApplied) return;
-    // This is intentionally a hosted-site enhancement. Browsers block fetch() from file:// pages.
-    if (location.protocol === 'file:') return;
-    try {
-      const res = await fetch('assets/set_colors_reference.csv', { cache: 'no-store' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const text = await res.text();
-      const rows = parseCsv(text);
-      if (!rows.length || !window.SET_DATA) return;
-      let changed = false;
-      const pull = (row, keys) => {
-        for (const key of keys) {
-          const found = Object.keys(row).find(h => h.toLowerCase() === key.toLowerCase());
-          if (found && row[found]) return row[found];
-        }
-        return '';
-      };
-      rows.forEach((row) => {
-        const setNo = parseInt(pull(row, ['Set #', 'Set', 'Set Number', 'Set Num']), 10);
-        if (!Number.isFinite(setNo) || setNo < 1 || !SET_DATA[setNo - 1]) return;
-        const set = SET_DATA[setNo - 1];
-        const nextName = pull(row, ['Set Name', 'Name']);
-        const nextHex = pull(row, ['Set Color Hex Code', 'Estimated Hex Code', 'Hex Code', 'Hex']);
-        if (nextName) { set.name = nextName; changed = true; }
-        if (nextHex && /^#?[0-9a-fA-F]{6}$/.test(nextHex.trim())) {
-          set.color = nextHex.trim().startsWith('#') ? nextHex.trim() : ('#' + nextHex.trim());
-          changed = true;
-        }
-      });
-      if (changed) {
-        window.__meaCsvApplied = true;
-        if (window.Manager) {
-          try {
-            if (typeof Manager.buildNav === 'function') Manager.buildNav();
-            if (typeof Manager.buildAlbumUI === 'function') Manager.buildAlbumUI();
-            if (typeof Manager.updateUI === 'function') Manager.updateUI();
-          } catch (e) {
-            console.error(e);
-          }
-        }
-      }
-    } catch (err) {
-      console.warn('[MEA] Could not load assets/set_colors_reference.csv automatically.', err);
-    }
+    // Local-file friendly build: set data stays self-contained in this HTML.
+    return;
   }
 
   function init(){
