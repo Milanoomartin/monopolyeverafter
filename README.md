@@ -1,11 +1,10 @@
-# Monopoly Ever After tracker bundle
+# Monopoly Ever After Tracker
 
-Files:
-- index.html
-- assets/MoGo-Ever-After-Logo.png
-- assets/MonopolyEverAfter-favicon.png
+Open `index.html` locally or host the folder on GitHub Pages.
 
-Notes:
-- Works as a local file with localStorage.
-- Includes magical Web Audio sparkle sounds with a toggle in the top controls.
-- Banner and favicon load from the assets folder.
+Assets included:
+- `assets/MoGo-Ever-After-Logo.png`
+- `assets/MonopolyEverAfter-favicon.png`
+- `assets/Enchanted.mp3`
+
+The music box supports the bundled Enchanted track, volume/seek controls, playlist expansion, and local audio uploads for the current session.
