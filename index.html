@@ -6029,7 +6029,6 @@ if (pinBtn) {
             },
 
             // --- Popup (board-only view) ---
-
             openPopup() {
                 let w = null;
                 try {
@@ -6041,697 +6040,56 @@ if (pinBtn) {
                 }
                 this._popupWin = w;
 
-                const html = `
-<!doctype html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Account Board (Pop-out)</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-    body {
-        margin: 0;
-        padding: 18px;
-        font-family: Arial, sans-serif;
-        background: linear-gradient(180deg, #eef4ff 0%, #f9fbff 48%, #f7f3ff 100%);
-        color: #2f3558;
-    }
-    .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        flex-wrap: wrap;
-    }
-    h1 {
-        margin: 0;
-        font-size: 22px;
-    }
-    .btn {
-        border: none;
-        border-radius: 10px;
-        padding: 8px 12px;
-        cursor: pointer;
-        font-weight: 800;
-        background: #fff;
-        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-    }
-    .btn.primary {
-        background: #ff6f00;
-        color: #fff;
-    }
-    .accounts-board-shell {
-        position: relative;
-        margin-top: 14px;
-    }
-    .accounts-board {
-        display: flex;
-        gap: 16px;
-        overflow-x: auto;
-        padding: 14px 8px;
-        scroll-behavior: smooth;
-    }
-    .board-scroll-btn {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 38px;
-        height: 38px;
-        border: none;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.92);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-        cursor: pointer;
-        font-weight: 900;
-    }
-    .board-scroll-btn.left { left: -10px; }
-    .board-scroll-btn.right { right: -10px; }
-    .acct-board-card {
-        min-width: 340px;
-        background: #ffffff;
-        border-radius: 18px;
-        padding: 14px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.18);
-        border: 2px solid #eee;
-        flex: 0 0 auto;
-    }
-    .acct-board-title {
-        font-weight: 900;
-        font-size: 18px;
-        color: #333;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-    }
-    .acct-pill {
-        font-size: 10px;
-        font-weight: 900;
-        padding: 3px 8px;
-        border-radius: 999px;
-        background: #f0f0f0;
-        color: #333;
-        border: 1px solid #e2e2e2;
-    }
-    .acct-board-row {
-        margin-top: 8px;
-        font-size: 12px;
-        color: #333;
-    }
-    .acct-board-row a {
-        color: #1565c0;
-        text-decoration: underline;
-    }
-    .near-sets {
-        margin-top: 10px;
-        background: #fafafa;
-        border: 1px solid #eee;
-        border-radius: 14px;
-        padding: 10px;
-    }
-    .near-sets h4 {
-        margin: 0 0 8px 0;
-        font-size: 12px;
-        color: #333;
-    }
-    .near-set {
-        margin-bottom: 10px;
-    }
-    .near-set:last-child {
-        margin-bottom: 0;
-    }
-    .near-set-name {
-        font-weight: 900;
-        font-size: 12px;
-        color: #333;
-    }
-    .missing-list {
-        margin: 6px 0 0 16px;
-        padding: 0;
-        font-size: 12px;
-        color: #555;
-    }
-    .acct-qr-mini {
-        width: 64px;
-        height: 64px;
-        border-radius: 14px;
-        border: 1px solid #eee;
-        background: #fff;
-        padding: 4px;
-        object-fit: contain;
-    }
-</style>
-</head>
-<body>
-    <div class="top">
-        <h1>Account Board</h1>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button id="popup-close-btn" class="btn" type="button">Close</button>
-            <button id="popup-refresh-btn" class="btn primary" type="button">Refresh</button>
-        </div>
-    </div>
+                const html = [
+                  '<!doctype html>',
+                  '<html>',
+                  '<head>',
+                  '<meta charset="utf-8">',
+                  '<title>Account Board (Pop-out)</title>',
+                  '<meta name="viewport" content="width=device-width, initial-scale=1.0">',
+                  '<style>',
+                  'body{margin:0;padding:18px;font-family:Arial,sans-serif;background:linear-gradient(180deg,#eef4ff 0%,#f9fbff 48%,#f7f3ff 100%);color:#2f3558;}',
+                  '.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}',
+                  'h1{margin:0;font-size:22px;}',
+                  '.btn{border:none;border-radius:10px;padding:8px 12px;cursor:pointer;font-weight:800;background:#fff;box-shadow:0 8px 18px rgba(0,0,0,0.12);}',
+                  '.btn.primary{background:#ff6f00;color:#fff;}',
+                  '.accounts-board-shell{position:relative;margin-top:14px;}',
+                  '.accounts-board{display:flex;gap:16px;overflow-x:auto;padding:14px 8px;scroll-behavior:smooth;}',
+                  '.board-scroll-btn{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border:none;border-radius:999px;background:rgba(255,255,255,0.92);box-shadow:0 10px 25px rgba(0,0,0,0.25);cursor:pointer;font-weight:900;}',
+                  '.board-scroll-btn.left{left:-10px;}',
+                  '.board-scroll-btn.right{right:-10px;}',
+                  '.acct-board-card{min-width:340px;background:#ffffff;border-radius:18px;padding:14px;box-shadow:0 10px 25px rgba(0,0,0,0.18);border:2px solid #eee;flex:0 0 auto;}',
+                  '.acct-board-title{font-weight:900;font-size:18px;color:#333;display:flex;justify-content:space-between;align-items:center;gap:10px;}',
+                  '.acct-pill{font-size:10px;font-weight:900;padding:3px 8px;border-radius:999px;background:#f0f0f0;color:#333;border:1px solid #e2e2e2;}',
+                  '.acct-board-row{margin-top:8px;font-size:12px;color:#333;}',
+                  '.acct-board-row a{color:#1565c0;text-decoration:underline;}',
+                  '.near-sets{margin-top:10px;background:#fafafa;border:1px solid #eee;border-radius:14px;padding:10px;}',
+                  '.near-sets h4{margin:0 0 8px 0;font-size:12px;color:#333;}',
+                  '.near-set{margin-bottom:10px;}',
+                  '.near-set:last-child{margin-bottom:0;}',
+                  '.near-set-name{font-weight:900;font-size:12px;color:#333;}',
+                  '.missing-list{margin:6px 0 0 16px;padding:0;font-size:12px;color:#555;}',
+                  '.acct-qr-mini{width:64px;height:64px;border-radius:14px;border:1px solid #eee;background:#fff;padding:4px;object-fit:contain;}',
+                  '</style>',
+                  '</head>',
+                  '<body>',
+                  '<div class="top">',
+                  '<h1>Account Board</h1>',
+                  '<div style="display:flex; gap:8px; flex-wrap:wrap;">',
+                  '<button id="popup-close-btn" class="btn" type="button">Close</button>',
+                  '<button id="popup-refresh-btn" class="btn primary" type="button">Refresh</button>',
+                  '</div>',
+                  '</div>',
+                  '<div class="accounts-board-shell">',
+                  '<button id="popup-scroll-left" class="board-scroll-btn left" type="button">◀</button>',
+                  '<button id="popup-scroll-right" class="board-scroll-btn right" type="button">▶</button>',
+                  '<div id="popup-board" class="accounts-board"></div>',
+                  '</div>',
+                  '<div style="margin-top:10px; font-size:12px; color:#666; font-weight:800;">This is a pop-out view to make side-by-side comparison easier. Use the main app to change selections, thresholds, QR toggles, and ordering, then hit Refresh here.</div>',
+                  '</body>',
+                  '</html>'
+                ].join('');
 
-    <div class="accounts-board-shell">
-        <button id="popup-scroll-left" class="board-scroll-btn left" type="button">◀</button>
-        <button id="popup-scroll-right" class="board-scroll-btn right" type="button">▶</button>
-        <div id="popup-board" class="accounts-board"></div>
-    </div>
-
-    <div style="margin-top:10px; font-size:12px; color:#666; font-weight:800;">
-        This is a pop-out view to make side-by-side comparison easier. Use the main app to change selections, thresholds, QR toggles, and ordering, then hit Refresh here.
-    </div>
-
-<style id="mea-final-enhancement-style">
-:root{
-  --mea-active-set-color:#c79be7;
-  --mea-active-set-rgb:199,155,231;
-  --mea-active-set-dark:#7a4fa2;
-  --mea-active-set-soft:#efdffd;
-}
-body{
-  background:
-    radial-gradient(circle at 16% 16%, rgba(255,255,255,0.18), transparent 26%),
-    radial-gradient(circle at 82% 14%, rgba(255,255,255,0.12), transparent 24%),
-    radial-gradient(circle at 50% 100%, rgba(255,255,255,0.08), transparent 42%),
-    linear-gradient(135deg,
-      rgba(var(--mea-active-set-rgb),0.34) 0%,
-      rgba(146,173,221,0.82) 32%,
-      rgba(120,149,208,0.88) 62%,
-      rgba(var(--mea-active-set-rgb),0.22) 100%) !important;
-  transition: background 820ms ease, background-color 820ms ease;
-}
-.sidebar,
-.right-sidebar,
-.account-bar{
-  background: linear-gradient(180deg, rgba(var(--mea-active-set-rgb),0.94), rgba(86,62,126,0.94)) !important;
-  border: 1px solid rgba(255,255,255,0.18) !important;
-  box-shadow: 0 14px 34px rgba(43,25,71,0.24), inset 0 1px 0 rgba(255,255,255,0.18) !important;
-  transition: background 700ms ease, border-color 700ms ease, box-shadow 700ms ease;
-}
-.nav-item.active,
-.right-nav-item.active,
-.nav-item:hover,
-.right-nav-item:hover,
-.drawer-btn,
-.album-scroll-btn{
-  background: linear-gradient(135deg, var(--mea-active-set-soft), #fff4cf) !important;
-  color: #5d3e72 !important;
-}
-#view-album .album-account-col,
-#view-album .album-account-col.pinned{
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  z-index: auto !important;
-}
-#view-album .album-acct-header{
-  display:none !important;
-}
-#view-album .album-account-col > .album-set:first-of-type{
-  margin-top:0 !important;
-}
-.header-container,
-body.mea-compact-hero .header-container{
-  width:min(1560px, calc(100vw - 190px)) !important;
-  max-width:min(1560px, calc(100vw - 190px)) !important;
-  margin: 0 auto 24px auto !important;
-}
-.main-header-img,
-body.mea-compact-hero .main-header-img{
-  width:100% !important;
-  height: clamp(220px, 28vw, 360px) !important;
-  max-height:none !important;
-  object-fit: cover !important;
-  border-radius: 30px !important;
-  box-shadow: 0 18px 36px rgba(42,25,68,0.28), 0 0 0 1px rgba(255,255,255,0.28) inset !important;
-}
-.header-subtitle,
-body.mea-compact-hero .header-subtitle{
-  font-size: clamp(15px, 1.4vw, 22px) !important;
-  margin-top: 10px !important;
-}
-.set-account-meta{
-  margin-top: 12px;
-  padding: 10px 12px;
-  background: rgba(255,255,255,0.16);
-  border-radius: 14px;
-  backdrop-filter: blur(3px);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
-}
-.set-acct-row{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  justify-content:space-between;
-  font-size:12px;
-  margin-top:6px;
-}
-.set-acct-row:first-child{ margin-top:0; }
-.set-acct-label{
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  opacity:0.88;
-  min-width:62px;
-}
-.set-acct-value{
-  font-weight:800;
-  text-align:right;
-  word-break:break-word;
-}
-.set-stars-row .set-acct-value{
-  color:#fff4b5;
-  text-shadow:0 0 8px rgba(255,245,186,0.4);
-}
-.set-acct-link{
-  color: #fff8dd !important;
-  text-decoration: underline;
-}
-.mea-current-account-meta{
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(249,243,255,0.92));
-  border: 2px solid rgba(var(--mea-active-set-rgb),0.26);
-  border-radius: 22px;
-  box-shadow: 0 10px 24px rgba(48,27,77,0.14);
-  padding: 16px 18px;
-  margin: 0 0 18px 0;
-  color: #3e2f59;
-}
-.mea-current-account-meta .mea-meta-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
-}
-.mea-current-account-meta .mea-meta-name{
-  font-size:20px;
-  font-weight:900;
-}
-.mea-current-account-meta .mea-meta-device{
-  font-size:12px;
-  font-weight:800;
-  color:#7a5b99;
-  margin-left:6px;
-}
-.mea-current-account-meta .mea-meta-stars{
-  font-weight:900;
-  color:#7a5b12;
-  background: linear-gradient(135deg, #fff7cb, #f0d888);
-  padding:6px 12px;
-  border-radius:999px;
-  border:1px solid rgba(173,132,28,0.25);
-}
-.mea-current-account-meta .mea-meta-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap:10px;
-}
-.mea-current-account-meta .mea-meta-row{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  padding:10px 12px;
-  border-radius:14px;
-  background: rgba(var(--mea-active-set-rgb),0.10);
-}
-.mea-current-account-meta .mea-meta-label{
-  font-size:11px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  color:#75578d;
-}
-.mea-current-account-meta .mea-meta-value,
-.mea-current-account-meta .mea-meta-value a{
-  color:#3d3158;
-  font-weight:800;
-  text-decoration:none;
-  word-break:break-word;
-}
-.mea-current-account-meta .mea-meta-value a{
-  text-decoration: underline;
-}
-#view-import .planner-container,
-#view-import .planner-container h2,
-#view-import .planner-container h3,
-#view-import .planner-container p,
-#view-import .planner-container label,
-#view-import .planner-container div,
-#import-view .planner-container,
-#import-view .planner-container h2,
-#import-view .planner-container h3,
-#import-view .planner-container p,
-#import-view .planner-container label,
-#import-view .planner-container div{
-  color:#32274a !important;
-}
-#view-import textarea,
-#import-view textarea,
-.import-area textarea,
-textarea#import-text,
-textarea#backup-import{
-  background: rgba(255,255,255,0.92) !important;
-  color:#32274a !important;
-  border-color: rgba(73,48,104,0.22) !important;
-}
-#mea-sound-toggle{
-  min-width: 110px;
-}
-@media (max-width: 980px){
-  .header-container,
-  body.mea-compact-hero .header-container{
-    width: calc(100vw - 110px) !important;
-    max-width: calc(100vw - 110px) !important;
-  }
-  .main-header-img,
-  body.mea-compact-hero .main-header-img{
-    height: clamp(180px, 34vw, 260px) !important;
-  }
-}
-</style>
-<script id="mea-final-enhancement-script">
-(function(){
-  const SOUND_KEY = 'mea_magic_sound_enabled';
-
-  function safeEsc(v){
-    try { return (window.Manager && typeof Manager.esc === 'function') ? Manager.esc(v == null ? '' : String(v)) : String(v == null ? '' : v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-    catch(e){ return String(v == null ? '' : v); }
-  }
-
-  function hexToRgb(hex){
-    const raw = String(hex || '').trim().replace('#','');
-    const full = raw.length === 3 ? raw.split('').map(ch => ch + ch).join('') : raw;
-    const ok = /^[0-9a-fA-F]{6}$/.test(full) ? full : 'c79be7';
-    return { r: parseInt(ok.slice(0,2),16), g: parseInt(ok.slice(2,4),16), b: parseInt(ok.slice(4,6),16) };
-  }
-
-  function shiftHex(hex, amt){
-    const {r,g,b} = hexToRgb(hex);
-    const clamp = v => Math.max(0, Math.min(255, v));
-    const toHex = v => clamp(v).toString(16).padStart(2,'0');
-    return '#' + toHex(r + amt) + toHex(g + amt) + toHex(b + amt);
-  }
-
-  const ThemeSync = {
-    lastSetNum: 1,
-    raf: 0,
-    apply(setNum){
-      if (!window.SET_DATA || !SET_DATA.length) return;
-      const bounded = Math.max(1, Math.min(SET_DATA.length, parseInt(setNum, 10) || 1));
-      const set = SET_DATA[bounded - 1] || SET_DATA[0];
-      const base = set && set.color ? set.color : '#c79be7';
-      const rgb = hexToRgb(base);
-      document.documentElement.style.setProperty('--mea-active-set-color', base);
-      document.documentElement.style.setProperty('--mea-active-set-rgb', rgb.r + ', ' + rgb.g + ', ' + rgb.b);
-      document.documentElement.style.setProperty('--mea-active-set-dark', shiftHex(base, -42));
-      document.documentElement.style.setProperty('--mea-active-set-soft', shiftHex(base, 68));
-      this.lastSetNum = bounded;
-    },
-    detect(){
-      try {
-        if (window.Manager && typeof Manager._getAlbumCfg === 'function') {
-          const cfg = Manager._getAlbumCfg();
-          if (cfg && cfg.mode === 'single' && cfg.selectedSet) return cfg.selectedSet;
-        }
-      } catch(e) {}
-      const active = document.querySelector('.app-view.active');
-      if (!active || active.id !== 'view-album') return this.lastSetNum || 1;
-      const firstCol = document.querySelector('#album-container .album-account-col') || document.querySelector('#view-album .album-account-col');
-      const candidates = firstCol ? Array.from(firstCol.querySelectorAll('.album-set[data-set]')) : Array.from(document.querySelectorAll('#view-album .album-set[data-set]'));
-      if (!candidates.length) return this.lastSetNum || 1;
-      const anchor = Math.max(120, Math.min(window.innerHeight * 0.28, 220));
-      let best = null;
-      let bestDist = Infinity;
-      candidates.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        const dist = Math.abs(rect.top - anchor);
-        if (rect.bottom > 70 && dist < bestDist) {
-          best = el;
-          bestDist = dist;
-        }
-      });
-      return best ? (parseInt(best.getAttribute('data-set'), 10) || 1) : (this.lastSetNum || 1);
-    },
-    sync(){ this.apply(this.detect()); },
-    syncSoon(){
-      if (this.raf) cancelAnimationFrame(this.raf);
-      this.raf = requestAnimationFrame(() => this.sync());
-    }
-  };
-
-  const MagicSound = {
-    enabled: true,
-    ctx: null,
-    ensure(){
-      try { this.enabled = JSON.parse(localStorage.getItem(SOUND_KEY) || 'true'); }
-      catch(e) { this.enabled = true; }
-      return this.enabled;
-    },
-    init(){
-      if (!this.ensure()) return null;
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
-      if (!this.ctx) this.ctx = new AC();
-      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
-      return this.ctx;
-    },
-    tone(freq, when, dur, type, gain){
-      const ctx = this.init();
-      if (!ctx) return;
-      const osc = ctx.createOscillator();
-      const g = ctx.createGain();
-      osc.type = type || 'sine';
-      osc.frequency.value = freq;
-      g.gain.setValueAtTime(0.0001, when);
-      g.gain.exponentialRampToValueAtTime(gain || 0.025, when + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
-      osc.connect(g);
-      g.connect(ctx.destination);
-      osc.start(when);
-      osc.stop(when + dur + 0.02);
-    },
-    sparkle(strong){
-      if (!this.ensure()) return;
-      const ctx = this.init();
-      if (!ctx) return;
-      const t = ctx.currentTime + 0.01;
-      this.tone(720, t, 0.13, 'sine', strong ? 0.035 : 0.024);
-      this.tone(980, t + 0.045, 0.16, 'triangle', strong ? 0.03 : 0.022);
-      this.tone(1320, t + 0.085, 0.18, 'sine', strong ? 0.024 : 0.018);
-    },
-    dust(){
-      if (!this.ensure()) return;
-      const ctx = this.init();
-      if (!ctx) return;
-      const t = ctx.currentTime + 0.01;
-      this.tone(523.25, t, 0.16, 'triangle', 0.022);
-      this.tone(783.99, t + 0.07, 0.18, 'sine', 0.02);
-      this.tone(1046.5, t + 0.13, 0.22, 'sine', 0.018);
-    },
-    toggle(){
-      this.enabled = !this.ensure();
-      try { localStorage.setItem(SOUND_KEY, JSON.stringify(this.enabled)); } catch(e) {}
-      updateSoundButton();
-      if (this.enabled) this.dust();
-    }
-  };
-
-  function updateSoundButton(){
-    const btn = document.getElementById('mea-sound-toggle');
-    if (!btn) return;
-    const on = MagicSound.ensure();
-    btn.textContent = on ? '🔊 Magic' : '🔇 Magic';
-    btn.title = on ? 'Turn magical sounds off' : 'Turn magical sounds on';
-  }
-
-  function ensureSoundButton(){
-    const host = document.querySelector('.account-bar-controls');
-    if (!host || document.getElementById('mea-sound-toggle')) return;
-    const btn = document.createElement('button');
-    btn.id = 'mea-sound-toggle';
-    btn.type = 'button';
-    btn.className = 'btn-mini';
-    btn.addEventListener('click', () => MagicSound.toggle());
-    host.appendChild(btn);
-    updateSoundButton();
-  }
-
-  function updateAlbumSetHeaderMeta(){
-    if (!window.Manager || !Manager.state || !Manager.state.accounts) return;
-    document.querySelectorAll('#view-album .album-set[data-account]').forEach(setEl => {
-      const acctKey = setEl.getAttribute('data-account');
-      const acct = Manager.state.accounts[acctKey];
-      const meta = setEl.querySelector('.set-account-meta');
-      if (!acct || !meta) return;
-      let row = meta.querySelector('.set-stars-row');
-      if (!row) {
-        row = document.createElement('div');
-        row.className = 'set-acct-row set-stars-row';
-        row.innerHTML = '<span class="set-acct-label">Stars</span><span class="set-acct-value"></span>';
-        meta.appendChild(row);
-      }
-      const value = row.querySelector('.set-acct-value');
-      if (value) value.textContent = String((typeof Manager._computeVaultStarsForAccount === 'function') ? (Manager._computeVaultStarsForAccount(acctKey) || 0) : 0);
-    });
-  }
-
-  function buildCurrentAccountMeta(){
-    const acctKey = window.Manager && Manager.state ? Manager.state.currentAccount : '';
-    const acct = (acctKey && Manager.state.accounts && Manager.state.accounts[acctKey]) ? Manager.state.accounts[acctKey] : null;
-    if (!acct) {
-      return '<div class="mea-meta-head"><div class="mea-meta-name">No account selected</div></div>';
-    }
-    const stars = (typeof Manager._computeVaultStarsForAccount === 'function') ? (Manager._computeVaultStarsForAccount(acctKey) || 0) : 0;
-    const link = (acct.mogoLink || '').trim();
-    const code = (acct.mogoCode || '').trim();
-    return '' +
-      '<div class="mea-meta-head">' +
-        '<div class="mea-meta-name">' + safeEsc(acct.name || acctKey) + (acct.device ? '<span class="mea-meta-device">(' + safeEsc(acct.device) + ')</span>' : '') + '</div>' +
-        '<div class="mea-meta-stars">⭐ ' + safeEsc(stars) + ' total stars</div>' +
-      '</div>' +
-      '<div class="mea-meta-grid">' +
-        '<div class="mea-meta-row"><span class="mea-meta-label">Account Link</span><span class="mea-meta-value">' + (link ? '<a href="' + safeEsc((Manager.normalizeLink ? Manager.normalizeLink(link) : link)) + '" target="_blank" rel="noopener">' + safeEsc(link) + '</a>' : '—') + '</span></div>' +
-        '<div class="mea-meta-row"><span class="mea-meta-label">Account Code</span><span class="mea-meta-value">' + (code ? safeEsc(code) : '—') + '</span></div>' +
-        '<div class="mea-meta-row"><span class="mea-meta-label">Account Name</span><span class="mea-meta-value">' + safeEsc(acct.name || acctKey) + '</span></div>' +
-      '</div>';
-  }
-
-  function renderSingleViewMeta(){
-    ['stats-single', 'vault-single'].forEach(id => {
-      const host = document.getElementById(id);
-      if (!host) return;
-      let card = host.querySelector('.mea-current-account-meta');
-      if (!card) {
-        card = document.createElement('div');
-        card.className = 'mea-current-account-meta';
-        host.insertBefore(card, host.firstChild);
-      }
-      card.innerHTML = buildCurrentAccountMeta();
-    });
-  }
-
-  function postRenderRefresh(){
-    ensureSoundButton();
-    updateAlbumSetHeaderMeta();
-    renderSingleViewMeta();
-    ThemeSync.syncSoon();
-  }
-
-  function bindEnhancements(){
-    if (!window.Manager || Manager.__meaEnhancedFinal) return;
-    Manager.__meaEnhancedFinal = true;
-
-    if (typeof Manager.buildAlbumUI === 'function') {
-      const base = Manager.buildAlbumUI.bind(Manager);
-      Manager.buildAlbumUI = function(){
-        const out = base.apply(this, arguments);
-        setTimeout(postRenderRefresh, 0);
-        return out;
-      };
-    }
-
-    if (typeof Manager.updateUI === 'function') {
-      const base = Manager.updateUI.bind(Manager);
-      Manager.updateUI = function(){
-        const out = base.apply(this, arguments);
-        setTimeout(postRenderRefresh, 0);
-        return out;
-      };
-    }
-
-    if (typeof Manager.switchView === 'function') {
-      const base = Manager.switchView.bind(Manager);
-      Manager.switchView = function(){
-        const out = base.apply(this, arguments);
-        setTimeout(postRenderRefresh, 60);
-        return out;
-      };
-    }
-
-    if (typeof Manager.setAlbumSelectedSet === 'function') {
-      const base = Manager.setAlbumSelectedSet.bind(Manager);
-      Manager.setAlbumSelectedSet = function(){
-        const out = base.apply(this, arguments);
-        setTimeout(() => ThemeSync.syncSoon(), 30);
-        return out;
-      };
-    }
-
-    if (typeof Manager.updateCardForAccount === 'function') {
-      const base = Manager.updateCardForAccount.bind(Manager);
-      Manager.updateCardForAccount = function(acctKey, id, change){
-        const before = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
-        const out = base.apply(this, arguments);
-        const after = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
-        if (after !== before) {
-          if (change > 0 || after > before) MagicSound.sparkle(true); else MagicSound.sparkle(false);
-          setTimeout(updateAlbumSetHeaderMeta, 40);
-          ThemeSync.syncSoon();
-        }
-        return out;
-      };
-    }
-
-    if (typeof Manager.setCardDupesForAccount === 'function') {
-      const base = Manager.setCardDupesForAccount.bind(Manager);
-      Manager.setCardDupesForAccount = function(acctKey, id, dupes){
-        const before = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
-        const out = base.apply(this, arguments);
-        const after = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
-        if (after !== before) {
-          MagicSound.sparkle(after > before);
-          setTimeout(updateAlbumSetHeaderMeta, 40);
-        }
-        return out;
-      };
-    }
-
-    if (window.Notify && typeof Notify.show === 'function' && !Notify.__meaSoundWrapped) {
-      const base = Notify.show.bind(Notify);
-      Notify.__meaSoundWrapped = true;
-      Notify.show = function(msg, type){
-        if (type === 'success') MagicSound.dust();
-        else if (type !== 'warning') MagicSound.sparkle(false);
-        return base.apply(this, arguments);
-      };
-    }
-  }
-
-  function bindScrollSync(){
-    window.addEventListener('scroll', () => ThemeSync.syncSoon(), { passive: true });
-    const albumContainer = document.getElementById('album-container');
-    if (albumContainer && !albumContainer.__meaThemeBound) {
-      albumContainer.__meaThemeBound = true;
-      albumContainer.addEventListener('scroll', () => ThemeSync.syncSoon(), { passive: true });
-    }
-    document.addEventListener('click', evt => {
-      if (evt.target.closest('.nav-item, .right-nav-item, #album-mode-scroll-btn, #album-mode-single-btn, #left-nav-content')) {
-        setTimeout(() => ThemeSync.syncSoon(), 60);
-      }
-    }, { passive: true });
-  }
-
-  function init(){
-    document.addEventListener('pointerdown', () => MagicSound.init(), { once: true, passive: true });
-    ensureSoundButton();
-    bindEnhancements();
-    bindScrollSync();
-    postRenderRefresh();
-    setTimeout(postRenderRefresh, 120);
-    setTimeout(postRenderRefresh, 600);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
-  } else {
-    init();
-  }
-})();
-<\/script>
-
-</body>
-</html>`;
                 try {
                     w.document.open();
                     w.document.write(html);
@@ -6756,6 +6114,7 @@ textarea#backup-import{
             },
 
             renderPopup() {
+
                 const w = this._popupWin;
                 if (!w || w.closed) { this._popupWin = null; return; }
                 try {
@@ -13152,7 +12511,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
   background: rgba(255,255,255,0.12); color:#fff8ef; font-weight:800;
 }
 .mea-music-hidden{
-  display:flex; align-items:center; gap:10px;
+  display:flex; align-items:center; justify-content:center; gap:0;
   background: linear-gradient(180deg, rgba(107,70,146,0.95), rgba(74,53,115,0.96));
   border: 1px solid rgba(255,255,255,0.18);
   box-shadow: 0 14px 30px rgba(34,18,53,0.30);
@@ -13163,7 +12522,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
   background: linear-gradient(180deg, rgba(255,248,225,0.96), rgba(255,238,198,0.9));
   padding: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 18px rgba(0,0,0,0.18);
 }
-.mea-music-hidden span{ font-family:'Cormorant Garamond', serif; font-size:20px; font-weight:700; color:#fff8ef; }
+.mea-music-hidden span{ display:none; }
 @media (max-width: 980px){
   .mea-music-widget{ left: 88px; width: min(340px, calc(100vw - 170px)); }
 }
@@ -13224,6 +12583,36 @@ body.mea-compact-hero #view-showroom.app-view.active {
     });
   }
 
+
+  function augmentCompareHeaders(){
+    if (!window.Manager || !Manager.state || !Manager.state.accounts) return;
+    ['stats-container','vault-container','showroom-container'].forEach(function(id){
+      var host = document.getElementById(id);
+      if (!host) return;
+      host.querySelectorAll('.album-acct-header[data-account]').forEach(function(header){
+        var acctKey = header.getAttribute('data-account');
+        var acct = Manager.state.accounts[acctKey];
+        if (!acct) return;
+        var stars = 0;
+        try { if (typeof Manager._computeVaultStarsForAccount === 'function') stars = Manager._computeVaultStarsForAccount(acctKey) || 0; } catch(e) {}
+        var meta = header.querySelector('.album-acct-meta');
+        if (!meta) {
+          meta = document.createElement('div');
+          meta.className = 'album-acct-meta';
+          header.appendChild(meta);
+        }
+        var link = (acct.mogoLink || '').trim();
+        var code = (acct.mogoCode || '').trim();
+        var href = link ? (Manager.normalizeLink ? Manager.normalizeLink(link) : link) : '';
+        meta.innerHTML = '' +
+          '<span class="album-acct-chip"><strong>Account:</strong> ' + esc(acct.name || acctKey) + '</span>' +
+          '<span class="album-acct-chip"><strong>Code:</strong> ' + (code ? esc(code) : '—') + '</span>' +
+          '<span class="album-acct-chip"><strong>Link:</strong> ' + (link ? '<a href="' + esc(href) + '" target="_blank" rel="noopener">' + esc(link) + '</a>' : '—') + '</span>' +
+          '<span class="album-acct-chip"><strong>Stars:</strong> ' + esc(stars) + '</span>';
+      });
+    });
+  }
+
   function enhanceStaticLabels(){
     var view = document.getElementById('view-import');
     if (!view) return;
@@ -13235,7 +12624,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
 
   var MusicBox = {
     initialized: false,
-    expanded: true,
+    expanded: false,
     playlistOpen: false,
     currentIndex: 0,
     objectUrls: [],
@@ -13248,7 +12637,9 @@ body.mea-compact-hero #view-showroom.app-view.active {
       this.build();
       this.bind();
       this.renderPlaylist();
-      this.loadTrack(0, false);
+      this.loadTrack(0, true);
+      this.setExpanded(false);
+      this.tryAutoplay();
     },
     build: function(){
       var wrap = document.createElement('div');
@@ -13278,7 +12669,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
             '<input id="mea-music-files" type="file" accept="audio/*" multiple style="display:none">' +
           '</div>' +
         '</div>' +
-        '<button class="mea-music-hidden" id="mea-music-peek" type="button" hidden><img src="assets/MonopolyEverAfter-favicon.png" alt="Open music box"><span>Music Box</span></button>' +
+        '<button class="mea-music-hidden" id="mea-music-peek" type="button" aria-label="Open music box"><img src="assets/MonopolyEverAfter-favicon.png" alt="Open music box"><span>Music Box</span></button>' +
         '<audio id="mea-music-audio" preload="metadata"></audio>';
       document.body.appendChild(wrap);
       this.el = wrap;
@@ -13294,6 +12685,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
       this.listEl = wrap.querySelector('#mea-music-playlist');
       this.filesInput = wrap.querySelector('#mea-music-files');
       this.audio.loop = true;
+      this.audio.autoplay = true;
       this.audio.volume = parseFloat(this.volume.value || '0.6');
     },
     bind: function(){
@@ -13314,11 +12706,23 @@ body.mea-compact-hero #view-showroom.app-view.active {
       this.audio.addEventListener('pause', function(){ self.playBtn.textContent = '▶'; });
       this.audio.addEventListener('ended', function(){ self.nextTrack(true); });
       this.filesInput.addEventListener('change', function(){ self.addSongs(this.files || []); this.value = ''; });
-      document.addEventListener('pointerdown', function(){
-        if (!self._autoplayPrimed) {
-          self._autoplayPrimed = true;
+      ['pointerdown','keydown','touchstart'].forEach(function(evtName){
+        document.addEventListener(evtName, function(){
+          self.tryAutoplay();
+        }, { once: true, passive: true });
+      });
+    },
+    tryAutoplay: function(){
+      var self = this;
+      if (!this.audio || !this.audio.src) return;
+      try {
+        var p = this.audio.play();
+        if (p && typeof p.catch === 'function') {
+          p.catch(function(){ self._autoplayBlocked = true; });
         }
-      }, { once: true, passive: true });
+      } catch(e) {
+        self._autoplayBlocked = true;
+      }
     },
     renderPlaylist: function(){
       var self = this;
@@ -13397,6 +12801,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
 
   function refreshEverything(){
     ensureCompareHeadersVisible();
+    augmentCompareHeaders();
     syncSingleViewMeta();
     enhanceStaticLabels();
     if (!MusicBox.initialized) MusicBox.init();

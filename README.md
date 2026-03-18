@@ -1,10 +1,4 @@
-# Monopoly Ever After Tracker
+Upload index.html and the assets folder together.
 
-Open `index.html` locally or host the folder on GitHub Pages.
-
-Assets included:
-- `assets/MoGo-Ever-After-Logo.png`
-- `assets/MonopolyEverAfter-favicon.png`
-- `assets/Enchanted.mp3`
-
-The music box supports the bundled Enchanted track, volume/seek controls, playlist expansion, and local audio uploads for the current session.
+This build removes the popup nested-script parser issue and defaults the music box to a hidden icon-only state.
+Autoplay is attempted automatically, but some browsers may wait for the first click before allowing audio playback.
