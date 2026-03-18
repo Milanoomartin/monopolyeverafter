@@ -5968,7 +5968,6 @@ if (pinBtn) {
                 }
                 this._popupWin = w;
 
-                // Basic shell (no sidebars)
                 const html = `
 <!doctype html>
 <html>
@@ -5977,336 +5976,157 @@ if (pinBtn) {
 <title>Account Board (Pop-out)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-    body { margin:0; padding:18px; font-family: Arial, sans-serif; background:#f4f4f4; }
-    .top { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; }
-    h1 { margin:0; font-size:22px; }
-    .btn { border:none; border-radius:10px; padding:8px 12px; cursor:pointer; font-weight:800; background:#fff; box-shadow: 0 8px 18px rgba(0,0,0,0.12); }
-    .btn.primary { background:#ff6f00; color:#fff; }
-    .accounts-board-shell { position:relative; margin-top:14px; }
-    .accounts-board { display:flex; gap:16px; overflow-x:auto; padding: 14px 8px; }
-    .board-scroll-btn { position:absolute; top: 50%; transform: translateY(-50%); width:38px; height:38px; border:none; border-radius:999px; background: rgba(255,255,255,0.92); box-shadow: 0 10px 25px rgba(0,0,0,0.25); cursor:pointer; font-weight:900; }
+    body {
+        margin: 0;
+        padding: 18px;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(180deg, #eef4ff 0%, #f9fbff 48%, #f7f3ff 100%);
+        color: #2f3558;
+    }
+    .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    h1 {
+        margin: 0;
+        font-size: 22px;
+    }
+    .btn {
+        border: none;
+        border-radius: 10px;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-weight: 800;
+        background: #fff;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+    .btn.primary {
+        background: #ff6f00;
+        color: #fff;
+    }
+    .accounts-board-shell {
+        position: relative;
+        margin-top: 14px;
+    }
+    .accounts-board {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        padding: 14px 8px;
+        scroll-behavior: smooth;
+    }
+    .board-scroll-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 38px;
+        height: 38px;
+        border: none;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.92);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+        cursor: pointer;
+        font-weight: 900;
+    }
     .board-scroll-btn.left { left: -10px; }
     .board-scroll-btn.right { right: -10px; }
-    .acct-board-card { min-width: 340px; background:#ffffff; border-radius:18px; padding:14px; box-shadow: 0 10px 25px rgba(0,0,0,0.18); border:2px solid #eee; flex: 0 0 auto; }
-    .acct-board-title { font-weight: 900; font-size:18px; color:#333; display:flex; justify-content:space-between; align-items:center; gap:10px; }
-    .acct-pill { font-size:10px; font-weight:900; padding:3px 8px; border-radius:999px; background:#f0f0f0; color:#333; border:1px solid #e2e2e2; }
-    .acct-board-row { margin-top:8px; font-size:12px; color:#333; }
-    .acct-board-row a { color:#1565c0; text-decoration: underline; }
-    .near-sets { margin-top:10px; background:#fafafa; border:1px solid #eee; border-radius:14px; padding:10px; }
-    .near-sets h4 { margin:0 0 8px 0; font-size:12px; color:#333; }
-    .near-set { margin-bottom:10px; }
-    .near-set:last-child { margin-bottom:0; }
-    .near-set-name { font-weight:900; font-size:12px; color:#333; }
-    .missing-list { margin:6px 0 0 16px; padding:0; font-size:12px; color:#555; }
-    .acct-qr-mini { width:64px; height:64px; border-radius:14px; border:1px solid #eee; background:#fff; padding:4px; object-fit: contain; }
+    .acct-board-card {
+        min-width: 340px;
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 14px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.18);
+        border: 2px solid #eee;
+        flex: 0 0 auto;
+    }
+    .acct-board-title {
+        font-weight: 900;
+        font-size: 18px;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+    .acct-pill {
+        font-size: 10px;
+        font-weight: 900;
+        padding: 3px 8px;
+        border-radius: 999px;
+        background: #f0f0f0;
+        color: #333;
+        border: 1px solid #e2e2e2;
+    }
+    .acct-board-row {
+        margin-top: 8px;
+        font-size: 12px;
+        color: #333;
+    }
+    .acct-board-row a {
+        color: #1565c0;
+        text-decoration: underline;
+    }
+    .near-sets {
+        margin-top: 10px;
+        background: #fafafa;
+        border: 1px solid #eee;
+        border-radius: 14px;
+        padding: 10px;
+    }
+    .near-sets h4 {
+        margin: 0 0 8px 0;
+        font-size: 12px;
+        color: #333;
+    }
+    .near-set {
+        margin-bottom: 10px;
+    }
+    .near-set:last-child {
+        margin-bottom: 0;
+    }
+    .near-set-name {
+        font-weight: 900;
+        font-size: 12px;
+        color: #333;
+    }
+    .missing-list {
+        margin: 6px 0 0 16px;
+        padding: 0;
+        font-size: 12px;
+        color: #555;
+    }
+    .acct-qr-mini {
+        width: 64px;
+        height: 64px;
+        border-radius: 14px;
+        border: 1px solid #eee;
+        background: #fff;
+        padding: 4px;
+        object-fit: contain;
+    }
 </style>
 </head>
 <body>
     <div class="top">
         <h1>Account Board</h1>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button class="btn" onclick="window.close()">Close</button>
-            <button class="btn primary" onclick="opener && opener.AccountsBoard && opener.AccountsBoard.renderPopup()">Refresh</button>
+            <button id="popup-close-btn" class="btn" type="button">Close</button>
+            <button id="popup-refresh-btn" class="btn primary" type="button">Refresh</button>
         </div>
     </div>
 
     <div class="accounts-board-shell">
-        <button class="board-scroll-btn left" onclick="document.getElementById('popup-board').scrollBy({left:-420,behavior:'smooth'})">◀</button>
-        <button class="board-scroll-btn right" onclick="document.getElementById('popup-board').scrollBy({left:420,behavior:'smooth'})">▶</button>
+        <button id="popup-scroll-left" class="board-scroll-btn left" type="button">◀</button>
+        <button id="popup-scroll-right" class="board-scroll-btn right" type="button">▶</button>
         <div id="popup-board" class="accounts-board"></div>
     </div>
 
     <div style="margin-top:10px; font-size:12px; color:#666; font-weight:800;">
         This is a pop-out view to make side-by-side comparison easier. Use the main app to change selections, thresholds, QR toggles, and ordering, then hit Refresh here.
     </div>
-
-<script>
-(function(){
-  const patchStyle = document.createElement('style');
-  patchStyle.id = 'mea-layout-fix-patch';
-  patchStyle.textContent = `
-:root{
-  --mea-side-offset: 14px;
-  --mea-accountbar-top: 12px;
-  --mea-accountbar-bottom: 92px;
-}
-
-/* Restore the sidebars and floating UI to fixed positioning. An earlier style pass made
-   them relative, which pushed the album content down the page. */
-.sidebar,
-.right-sidebar,
-#notification-area,
-.drawer-btn,
-.album-scroll-btn {
-  position: fixed !important;
-}
-
-body {
-  padding-top: 14px !important;
-  padding-left: 94px !important;
-  padding-right: 94px !important;
-}
-
-.sidebar {
-  left: var(--mea-side-offset) !important;
-  right: auto !important;
-  top: 16px !important;
-  bottom: 16px !important;
-  width: 64px !important;
-  z-index: 910 !important;
-}
-.sidebar:hover { width: 250px !important; }
-
-.right-sidebar {
-  right: var(--mea-side-offset) !important;
-  left: auto !important;
-  top: 16px !important;
-  bottom: 16px !important;
-  width: 64px !important;
-  z-index: 910 !important;
-}
-.right-sidebar:hover { width: 290px !important; }
-
-#notification-area {
-  top: 22px !important;
-  right: 96px !important;
-  z-index: 1200 !important;
-}
-
-.drawer-btn.left { left: 18px !important; }
-.drawer-btn.right { right: 18px !important; }
-
-.account-bar {
-  position: sticky !important;
-  top: var(--mea-accountbar-top) !important;
-  z-index: 880 !important;
-  margin-bottom: 10px !important;
-}
-
-.app-view.active {
-  gap: 12px !important;
-}
-
-/* In compare-heavy pages, keep the focus on the working area and pull the content upward. */
-body.mea-compact-hero .header-container {
-  display: none !important;
-}
-
-body.mea-compact-hero .account-bar {
-  margin-top: 0 !important;
-}
-
-body.mea-compact-hero #view-album.app-view.active,
-body.mea-compact-hero #view-stats.app-view.active,
-body.mea-compact-hero #view-accounts.app-view.active,
-body.mea-compact-hero #view-vault.app-view.active,
-body.mea-compact-hero #view-showroom.app-view.active {
-  margin-top: 0 !important;
-}
-
-.album-shell,
-.compare-shell,
-.accounts-board-wrap {
-  margin-top: 0 !important;
-}
-
-.album-accounts,
-.accounts-board {
-  padding-top: 6px !important;
-}
-
-.album-account-col {
-  gap: 12px !important;
-}
-
-.album-acct-header {
-  position: sticky !important;
-  top: calc(var(--mea-accountbar-bottom) + 4px) !important;
-  z-index: 870 !important;
-  margin-top: 0 !important;
-}
-
-.album-set,
-.acct-board-card,
-.stat-card,
-.vault-container,
-.planner-container,
-.import-area,
-.smart-card,
-.smart-mdp {
-  scroll-margin-top: calc(var(--mea-accountbar-bottom) + 60px) !important;
-}
-
-.album-scroll-btn.left { left: 72px !important; }
-.album-scroll-btn.right { right: 72px !important; }
-
-/* Make the set nav clearly left and page nav clearly right. */
-.sidebar .nav-icon,
-.right-sidebar .r-icon {
-  text-shadow: 0 0 12px rgba(255, 235, 163, 0.55);
-}
-
-.left-nav-label,
-.right-nav-label {
-  display:block;
-  padding: 0 16px 8px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: rgba(255,245,224,0.76);
-}
-
-/* Toasts stay readable and enchanted. */
-.toast {
-  max-width: min(420px, calc(100vw - 120px));
-}
-
-@media (max-width: 1100px){
-  body {
-    padding-left: 78px !important;
-    padding-right: 78px !important;
-  }
-  .sidebar,
-  .right-sidebar {
-    width: 58px !important;
-  }
-  .album-scroll-btn.left { left: 60px !important; }
-  .album-scroll-btn.right { right: 60px !important; }
-}
-`;
-  document.head.appendChild(patchStyle);
-
-  function ensureNavLabels(){
-    const left = document.querySelector('.sidebar');
-    if (left && !left.querySelector('.left-nav-label')) {
-      const label = document.createElement('div');
-      label.className = 'left-nav-label';
-      label.textContent = 'Sets';
-      const anchor = left.querySelector('#left-nav-content') || left.firstChild;
-      left.insertBefore(label, anchor);
-    }
-    const right = document.querySelector('.right-sidebar');
-    if (right && !right.querySelector('.right-nav-label')) {
-      const label = document.createElement('div');
-      label.className = 'right-nav-label';
-      label.textContent = 'Pages';
-      right.insertBefore(label, right.firstChild);
-    }
-  }
-
-  function updateStickyMetrics(){
-    const bar = document.querySelector('.account-bar');
-    let top = 12;
-    let bottom = 92;
-    if (bar) {
-      const rect = bar.getBoundingClientRect();
-      top = Math.max(8, Math.round(rect.top || 12));
-      bottom = Math.max(76, Math.round(rect.top + rect.height + 10));
-    }
-    document.documentElement.style.setProperty('--mea-accountbar-top', top + 'px');
-    document.documentElement.style.setProperty('--mea-accountbar-bottom', bottom + 'px');
-  }
-
-  function syncCompactHero(){
-    const active = document.querySelector('.app-view.active');
-    const compactIds = ['view-album','view-stats','view-accounts','view-vault','view-showroom'];
-    document.body.classList.toggle('mea-compact-hero', !!(active && compactIds.includes(active.id)));
-    updateStickyMetrics();
-  }
-
-  function bindManagerHooks(){
-    if (!window.Manager || window.__meaLayoutHooksBound) return;
-    window.__meaLayoutHooksBound = true;
-
-    const wrap = (name, after) => {
-      const original = Manager[name];
-      if (typeof original !== 'function') return;
-      Manager[name] = function(...args){
-        const out = original.apply(this, args);
-        try {
-          requestAnimationFrame(() => {
-            after && after();
-            ensureNavLabels();
-            syncCompactHero();
-          });
-        } catch (e) {
-          console.error(e);
-        }
-        return out;
-      };
-    };
-
-    wrap('switchView');
-    wrap('updateUI');
-    wrap('buildAlbumUI');
-    wrap('buildNav', ensureNavLabels);
-    wrap('handleAccountSelect');
-  }
-
-  function parseCsv(text){
-    const rows = [];
-    let row = [];
-    let field = '';
-    let inQuotes = false;
-    for (let i = 0; i < text.length; i++) {
-      const ch = text[i];
-      const next = text[i + 1];
-      if (ch === '"') {
-        if (inQuotes && next === '"') {
-          field += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (ch === ',' && !inQuotes) {
-        row.push(field);
-        field = '';
-      } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
-        if (ch === '\r' && next === '\n') i++;
-        row.push(field);
-        field = '';
-        if (row.some(v => String(v).trim() !== '')) rows.push(row);
-        row = [];
-      } else {
-        field += ch;
-      }
-    }
-    row.push(field);
-    if (row.some(v => String(v).trim() !== '')) rows.push(row);
-    if (!rows.length) return [];
-    const headers = rows[0].map(h => String(h).trim());
-    return rows.slice(1).map(r => {
-      const obj = {};
-      headers.forEach((h, idx) => obj[h] = (r[idx] ?? '').trim());
-      return obj;
-    });
-  }
-
-  async function applySetOverridesFromCsv(){
-    // Local-file friendly build: set data stays self-contained in this HTML.
-    return;
-  }
-
-  function init(){
-    ensureNavLabels();
-    bindManagerHooks();
-    syncCompactHero();
-    applySetOverridesFromCsv();
-    window.addEventListener('resize', updateStickyMetrics, { passive: true });
-    window.addEventListener('scroll', updateStickyMetrics, { passive: true });
-    setTimeout(() => { ensureNavLabels(); syncCompactHero(); applySetOverridesFromCsv(); }, 120);
-    setTimeout(() => { ensureNavLabels(); syncCompactHero(); }, 900);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init, { once: true });
-  } else {
-    init();
-  }
-})();
-</script>
-
 </body>
 </html>`;
                 try {
@@ -6315,7 +6135,20 @@ body.mea-compact-hero #view-showroom.app-view.active {
                     w.document.close();
                 } catch(e) {}
 
-                // Fill content
+                try {
+                    const d = w.document;
+                    const board = d.getElementById('popup-board');
+                    const leftBtn = d.getElementById('popup-scroll-left');
+                    const rightBtn = d.getElementById('popup-scroll-right');
+                    const closeBtn = d.getElementById('popup-close-btn');
+                    const refreshBtn = d.getElementById('popup-refresh-btn');
+
+                    if (leftBtn && board) leftBtn.addEventListener('click', () => board.scrollBy({ left: -420, behavior: 'smooth' }));
+                    if (rightBtn && board) rightBtn.addEventListener('click', () => board.scrollBy({ left: 420, behavior: 'smooth' }));
+                    if (closeBtn) closeBtn.addEventListener('click', () => w.close());
+                    if (refreshBtn) refreshBtn.addEventListener('click', () => this.renderPopup());
+                } catch(e) {}
+
                 this.renderPopup();
             },
 
