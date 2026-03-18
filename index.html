@@ -12635,6 +12635,12 @@ body.mea-compact-hero #view-showroom.app-view.active {
   padding: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 18px rgba(0,0,0,0.18);
 }
 .mea-music-hidden span{ font-family:'Cormorant Garamond', serif; font-size:20px; font-weight:700; color:#fff8ef; }
+#mea-music-launcher{
+  position: fixed;
+  left: 102px;
+  bottom: 18px;
+  z-index: 1400;
+}
 @media (max-width: 980px){
   .mea-music-widget{ left: 88px; width: min(340px, calc(100vw - 170px)); }
 }
@@ -12706,7 +12712,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
 
   var MusicBox = {
     initialized: false,
-    expanded: true,
+    expanded: false,
     playlistOpen: false,
     currentIndex: 0,
     objectUrls: [],
@@ -12750,7 +12756,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
           '</div>' +
         '</div>' +
         '<button class="mea-music-hidden" id="mea-music-peek" type="button" hidden><img src="assets/MonopolyEverAfter-favicon.png" alt="Open music box"><span>Music Box</span></button>' +
-        '<audio id="mea-music-audio" preload="metadata"></audio>';
+        '<audio id="mea-music-audio" preload="none"></audio>';
       document.body.appendChild(wrap);
       this.el = wrap;
       this.audio = wrap.querySelector('#mea-music-audio');
@@ -12766,6 +12772,7 @@ body.mea-compact-hero #view-showroom.app-view.active {
       this.filesInput = wrap.querySelector('#mea-music-files');
       this.audio.loop = true;
       this.audio.volume = parseFloat(this.volume.value || '0.6');
+      this.setExpanded(false);
     },
     bind: function(){
       var self = this;
@@ -12861,8 +12868,10 @@ body.mea-compact-hero #view-showroom.app-view.active {
     },
     setExpanded: function(expanded){
       this.expanded = !!expanded;
-      this.shell.hidden = !this.expanded;
-      this.peek.hidden = this.expanded;
+      if (this.shell) this.shell.hidden = !this.expanded;
+      if (this.peek) this.peek.hidden = true;
+      var launcher = document.getElementById('mea-music-launcher');
+      if (launcher) launcher.hidden = this.expanded;
     }
   };
 
@@ -12870,7 +12879,23 @@ body.mea-compact-hero #view-showroom.app-view.active {
     ensureCompareHeadersVisible();
     syncSingleViewMeta();
     enhanceStaticLabels();
-    if (!MusicBox.initialized) MusicBox.init();
+    ensureMusicLauncher();
+  }
+
+  function ensureMusicLauncher(){
+    if (document.getElementById('mea-music-launcher')) return;
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'mea-music-launcher';
+    btn.className = 'mea-music-hidden';
+    btn.setAttribute('aria-label', 'Open music box');
+    btn.innerHTML = '<img src="assets/MonopolyEverAfter-favicon.png" alt="Open music box"><span>Music Box</span>';
+    btn.addEventListener('click', function(){
+      if (!MusicBox.initialized) MusicBox.init();
+      MusicBox.setExpanded(true);
+      btn.hidden = true;
+    });
+    document.body.appendChild(btn);
   }
 
   function bindHooks(){
