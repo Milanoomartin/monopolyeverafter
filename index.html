@@ -12540,113 +12540,6 @@ body.mea-compact-hero #view-showroom.app-view.active {
   background: rgba(255,255,255,0.92) !important;
 }
 
-.mea-music-widget{
-  position: fixed;
-  left: 102px;
-  bottom: 18px;
-  width: min(390px, calc(100vw - 220px));
-  z-index: 1400;
-  color: #fff8ef;
-  font-family: 'Nunito', sans-serif;
-}
-.mea-music-shell{
-  display:flex;
-  gap:12px;
-  align-items:stretch;
-  padding: 14px;
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(107,70,146,0.95), rgba(74,53,115,0.96));
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow: 0 18px 34px rgba(34,18,53,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-  position: relative;
-  overflow: hidden;
-}
-.mea-music-shell::before{
-  content:'';
-  position:absolute; inset:0;
-  background: radial-gradient(circle at 16% 18%, rgba(255,247,191,0.18), transparent 28%), radial-gradient(circle at 84% 20%, rgba(157,255,227,0.13), transparent 22%);
-  pointer-events:none;
-}
-.mea-music-cover{
-  width: 76px; min-width:76px; border-radius: 20px;
-  background: linear-gradient(180deg, rgba(255,248,225,0.96), rgba(255,238,198,0.9));
-  border: 1px solid rgba(255,255,255,0.24);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 20px rgba(0,0,0,0.18);
-}
-.mea-music-cover img{ width: 52px; height:52px; object-fit:contain; filter: drop-shadow(0 5px 10px rgba(92,58,18,0.24)); }
-.mea-music-main{ flex:1; min-width:0; position:relative; z-index:1; }
-.mea-music-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
-.mea-music-title{
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 28px; font-weight:700; line-height:1; color:#fff8ef;
-}
-.mea-music-sub{ font-size:12px; opacity:0.82; margin-top:2px; }
-.mea-music-actions-top{ display:flex; gap:6px; align-items:center; }
-.mea-music-mini-btn{
-  border:none; border-radius:999px; padding:7px 10px; cursor:pointer;
-  background: rgba(255,255,255,0.12); color:#fff7e7; font-weight:900;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
-}
-.mea-music-mini-btn:hover{ filter: brightness(1.09); }
-.mea-music-seek-row{ display:flex; align-items:center; gap:10px; margin-top:10px; }
-.mea-music-time{ font-size:11px; font-weight:800; width:42px; text-align:center; opacity:0.88; }
-.mea-music-range{ -webkit-appearance:none; appearance:none; width:100%; height:8px; border-radius:999px; background: rgba(255,255,255,0.16); outline:none; }
-.mea-music-range::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:18px; height:18px; border-radius:50%; background: linear-gradient(180deg,#fff6cb,#ffd66b); border:1px solid rgba(116,82,19,0.35); box-shadow: 0 4px 8px rgba(0,0,0,0.2); cursor:pointer; }
-.mea-music-range::-moz-range-thumb{ width:18px; height:18px; border:none; border-radius:50%; background:#ffe08a; cursor:pointer; }
-.mea-music-controls{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:12px; flex-wrap:wrap; }
-.mea-music-cluster{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-.mea-music-btn{
-  min-width:40px; height:40px; border:none; border-radius:14px; cursor:pointer;
-  background: linear-gradient(180deg, rgba(255,248,226,0.98), rgba(248,228,174,0.92));
-  color:#68407d; font-weight:900; box-shadow: 0 8px 16px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.6);
-}
-.mea-music-btn.play{ min-width:54px; font-size:18px; }
-.mea-music-volume{ display:flex; align-items:center; gap:8px; min-width:130px; }
-.mea-music-volume span{ font-size:12px; font-weight:800; color:#fff3cb; }
-.mea-music-playlist-toggle{ margin-top: 10px; display:flex; gap:10px; align-items:center; justify-content:space-between; }
-.mea-music-playlist{
-  margin-top: 10px; padding: 10px; border-radius: 16px;
-  background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1);
-  max-height: 176px; overflow:auto;
-}
-.mea-music-track{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding: 8px 10px; border-radius: 12px; color:#fffaf0; cursor:pointer;
-}
-.mea-music-track.active{ background: rgba(255,247,191,0.16); }
-.mea-music-track small{ opacity:0.7; }
-.mea-music-add{
-  display:inline-flex; align-items:center; gap:6px; cursor:pointer;
-  padding: 8px 12px; border-radius: 999px;
-  background: rgba(255,255,255,0.12); color:#fff8ef; font-weight:800;
-}
-.mea-music-hidden{
-  display:flex; align-items:center; gap:10px;
-  background: linear-gradient(180deg, rgba(107,70,146,0.95), rgba(74,53,115,0.96));
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow: 0 14px 30px rgba(34,18,53,0.30);
-  border-radius: 999px; padding: 10px 14px 10px 10px; cursor:pointer;
-}
-.mea-music-hidden img{
-  width: 52px; height:52px; border-radius:50%;
-  background: linear-gradient(180deg, rgba(255,248,225,0.96), rgba(255,238,198,0.9));
-  padding: 8px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 8px 18px rgba(0,0,0,0.18);
-}
-.mea-music-hidden span{ font-family:'Cormorant Garamond', serif; font-size:20px; font-weight:700; color:#fff8ef; }
-#mea-music-launcher{
-  position: fixed;
-  left: 102px;
-  bottom: 18px;
-  z-index: 1400;
-}
-@media (max-width: 980px){
-  .mea-music-widget{ left: 88px; width: min(340px, calc(100vw - 170px)); }
-}
-@media (max-width: 760px){
-  .mea-music-widget{ left: 12px; right: 12px; width: auto; }
-}
 </style>
 <script id="mea-extra-pass-v9-script">
 (function(){
@@ -12710,193 +12603,13 @@ body.mea-compact-hero #view-showroom.app-view.active {
     });
   }
 
-  var MusicBox = {
-    initialized: false,
-    expanded: false,
-    playlistOpen: false,
-    currentIndex: 0,
-    objectUrls: [],
-    playlist: [
-      { title: 'Enchanted', artist: 'Storybook Loop', src: 'assets/Enchanted.mp3' }
-    ],
-    init: function(){
-      if (this.initialized) return;
-      this.initialized = true;
-      this.build();
-      this.bind();
-      this.renderPlaylist();
-      this.loadTrack(0, false);
-    },
-    build: function(){
-      var wrap = document.createElement('div');
-      wrap.className = 'mea-music-widget';
-      wrap.id = 'mea-music-widget';
-      wrap.innerHTML = '' +
-        '<div class="mea-music-shell" id="mea-music-shell">' +
-          '<div class="mea-music-cover"><img src="assets/MonopolyEverAfter-favicon.png" alt="Music"></div>' +
-          '<div class="mea-music-main">' +
-            '<div class="mea-music-top">' +
-              '<div><div class="mea-music-title">Enchanted Music Box</div><div class="mea-music-sub" id="mea-music-trackline">Enchanted • Storybook Loop</div></div>' +
-              '<div class="mea-music-actions-top"><button class="mea-music-mini-btn" id="mea-playlist-toggle" type="button">Playlist</button><button class="mea-music-mini-btn" id="mea-music-hide" type="button">Hide</button></div>' +
-            '</div>' +
-            '<div class="mea-music-seek-row"><span class="mea-music-time" id="mea-music-current">0:00</span><input id="mea-music-seek" class="mea-music-range" type="range" min="0" max="100" value="0"><span class="mea-music-time" id="mea-music-total">0:00</span></div>' +
-            '<div class="mea-music-controls">' +
-              '<div class="mea-music-cluster">' +
-                '<button class="mea-music-btn" id="mea-track-prev" type="button">⏮</button>' +
-                '<button class="mea-music-btn" id="mea-seek-back" type="button">↺10</button>' +
-                '<button class="mea-music-btn play" id="mea-play-toggle" type="button">▶</button>' +
-                '<button class="mea-music-btn" id="mea-seek-forward" type="button">10↻</button>' +
-                '<button class="mea-music-btn" id="mea-track-next" type="button">⏭</button>' +
-              '</div>' +
-              '<div class="mea-music-volume"><span>Volume</span><input id="mea-music-volume" class="mea-music-range" type="range" min="0" max="1" step="0.01" value="0.6"></div>' +
-            '</div>' +
-            '<div class="mea-music-playlist-toggle"><div style="font-size:12px; font-weight:800; opacity:0.82;">Looping soundtrack ✨</div><label class="mea-music-add" for="mea-music-files">＋ Add songs</label></div>' +
-            '<div class="mea-music-playlist" id="mea-music-playlist" hidden></div>' +
-            '<input id="mea-music-files" type="file" accept="audio/*" multiple style="display:none">' +
-          '</div>' +
-        '</div>' +
-        '<button class="mea-music-hidden" id="mea-music-peek" type="button" hidden><img src="assets/MonopolyEverAfter-favicon.png" alt="Open music box"><span>Music Box</span></button>' +
-        '<audio id="mea-music-audio" preload="none"></audio>';
-      document.body.appendChild(wrap);
-      this.el = wrap;
-      this.audio = wrap.querySelector('#mea-music-audio');
-      this.shell = wrap.querySelector('#mea-music-shell');
-      this.peek = wrap.querySelector('#mea-music-peek');
-      this.seek = wrap.querySelector('#mea-music-seek');
-      this.volume = wrap.querySelector('#mea-music-volume');
-      this.trackline = wrap.querySelector('#mea-music-trackline');
-      this.currentTime = wrap.querySelector('#mea-music-current');
-      this.totalTime = wrap.querySelector('#mea-music-total');
-      this.playBtn = wrap.querySelector('#mea-play-toggle');
-      this.listEl = wrap.querySelector('#mea-music-playlist');
-      this.filesInput = wrap.querySelector('#mea-music-files');
-      this.audio.loop = true;
-      this.audio.volume = parseFloat(this.volume.value || '0.6');
-      this.setExpanded(false);
-    },
-    bind: function(){
-      var self = this;
-      this.playBtn.addEventListener('click', function(){ self.togglePlay(); });
-      this.el.querySelector('#mea-track-prev').addEventListener('click', function(){ self.prevTrack(); });
-      this.el.querySelector('#mea-track-next').addEventListener('click', function(){ self.nextTrack(); });
-      this.el.querySelector('#mea-seek-back').addEventListener('click', function(){ self.jump(-10); });
-      this.el.querySelector('#mea-seek-forward').addEventListener('click', function(){ self.jump(10); });
-      this.el.querySelector('#mea-music-hide').addEventListener('click', function(){ self.setExpanded(false); });
-      this.peek.addEventListener('click', function(){ self.setExpanded(true); });
-      this.el.querySelector('#mea-playlist-toggle').addEventListener('click', function(){ self.playlistOpen = !self.playlistOpen; self.listEl.hidden = !self.playlistOpen; });
-      this.seek.addEventListener('input', function(){ if (!self.audio.duration) return; self.audio.currentTime = (self.seek.value / 100) * self.audio.duration; });
-      this.volume.addEventListener('input', function(){ self.audio.volume = parseFloat(self.volume.value || '0.6'); });
-      this.audio.addEventListener('loadedmetadata', function(){ self.refreshTime(); });
-      this.audio.addEventListener('timeupdate', function(){ self.refreshTime(); });
-      this.audio.addEventListener('play', function(){ self.playBtn.textContent = '❚❚'; });
-      this.audio.addEventListener('pause', function(){ self.playBtn.textContent = '▶'; });
-      this.audio.addEventListener('ended', function(){ self.nextTrack(true); });
-      this.filesInput.addEventListener('change', function(){ self.addSongs(this.files || []); this.value = ''; });
-      document.addEventListener('pointerdown', function(){
-        if (!self._autoplayPrimed) {
-          self._autoplayPrimed = true;
-        }
-      }, { once: true, passive: true });
-    },
-    renderPlaylist: function(){
-      var self = this;
-      if (!this.listEl) return;
-      this.listEl.innerHTML = this.playlist.map(function(track, idx){
-        return '<div class="mea-music-track' + (idx === self.currentIndex ? ' active' : '') + '" data-index="' + idx + '"><div><div>' + esc(track.title) + '</div><small>' + esc(track.artist || 'Storybook soundtrack') + '</small></div><button class="mea-music-mini-btn" type="button">Play</button></div>';
-      }).join('');
-      this.listEl.querySelectorAll('.mea-music-track').forEach(function(row){
-        row.addEventListener('click', function(){ self.loadTrack(parseInt(row.getAttribute('data-index'), 10) || 0, true); });
-      });
-    },
-    loadTrack: function(index, autoplay){
-      if (!this.playlist.length) return;
-      this.currentIndex = (index + this.playlist.length) % this.playlist.length;
-      var track = this.playlist[this.currentIndex];
-      this.audio.src = track.src;
-      this.audio.loop = this.playlist.length <= 1;
-      this.trackline.textContent = (track.title || 'Untitled') + ' • ' + (track.artist || 'Storybook soundtrack');
-      this.renderPlaylist();
-      if (autoplay) {
-        var p = this.audio.play();
-        if (p && typeof p.catch === 'function') p.catch(function(){});
-      } else {
-        this.audio.load();
-      }
-    },
-    togglePlay: function(){
-      if (this.audio.paused) {
-        var p = this.audio.play();
-        if (p && typeof p.catch === 'function') p.catch(function(){});
-      } else {
-        this.audio.pause();
-      }
-    },
-    prevTrack: function(){
-      if (this.audio.currentTime > 3) { this.audio.currentTime = 0; return; }
-      this.loadTrack(this.currentIndex - 1, true);
-    },
-    nextTrack: function(){ this.loadTrack(this.currentIndex + 1, true); },
-    jump: function(delta){
-      if (!this.audio.duration) return;
-      this.audio.currentTime = Math.max(0, Math.min(this.audio.duration, this.audio.currentTime + delta));
-      this.refreshTime();
-    },
-    refreshTime: function(){
-      if (!this.audio) return;
-      var dur = isFinite(this.audio.duration) ? this.audio.duration : 0;
-      var cur = isFinite(this.audio.currentTime) ? this.audio.currentTime : 0;
-      this.currentTime.textContent = this.format(cur);
-      this.totalTime.textContent = this.format(dur);
-      this.seek.value = dur ? String((cur / dur) * 100) : '0';
-    },
-    format: function(sec){
-      sec = Math.max(0, Math.floor(sec || 0));
-      var m = Math.floor(sec / 60); var s = sec % 60;
-      return m + ':' + String(s).padStart(2, '0');
-    },
-    addSongs: function(fileList){
-      var self = this;
-      Array.from(fileList).forEach(function(file){
-        if (!file || !file.type || !file.type.startsWith('audio/')) return;
-        var url = URL.createObjectURL(file);
-        self.objectUrls.push(url);
-        self.playlist.push({ title: file.name.replace(/\.[^.]+$/, ''), artist: 'Local upload', src: url });
-      });
-      this.renderPlaylist();
-      this.playlistOpen = true;
-      this.listEl.hidden = false;
-    },
-    setExpanded: function(expanded){
-      this.expanded = !!expanded;
-      if (this.shell) this.shell.hidden = !this.expanded;
-      if (this.peek) this.peek.hidden = true;
-      var launcher = document.getElementById('mea-music-launcher');
-      if (launcher) launcher.hidden = this.expanded;
-    }
-  };
 
   function refreshEverything(){
     ensureCompareHeadersVisible();
     syncSingleViewMeta();
     enhanceStaticLabels();
-    ensureMusicLauncher();
   }
 
-  function ensureMusicLauncher(){
-    if (document.getElementById('mea-music-launcher')) return;
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.id = 'mea-music-launcher';
-    btn.className = 'mea-music-hidden';
-    btn.setAttribute('aria-label', 'Open music box');
-    btn.innerHTML = '<img src="assets/MonopolyEverAfter-favicon.png" alt="Open music box"><span>Music Box</span>';
-    btn.addEventListener('click', function(){
-      if (!MusicBox.initialized) MusicBox.init();
-      MusicBox.setExpanded(true);
-      btn.hidden = true;
-    });
-    document.body.appendChild(btn);
-  }
 
   function bindHooks(){
     if (!window.Manager || window.__meaV9Bound) return;
@@ -12996,7 +12709,6 @@ body.mea-compact-hero #view-showroom.app-view.active {
 </style>
 <script id="mea-final-pass-v11-script">
 (function(){
-  var MUSIC_COLLAPSED_KEY = 'mea_music_collapsed_v11';
   var searchState = { matches: [], index: 0 };
 
   function cssEscape(v){
@@ -13193,61 +12905,15 @@ body.mea-compact-hero #view-showroom.app-view.active {
     searchState.index = (searchState.index + delta + searchState.matches.length) % searchState.matches.length;
     performAlbumSearch(true);
   }
-  function setMusicCollapsed(collapsed){
-    var shell = document.getElementById('mea-music-shell');
-    var peek = document.getElementById('mea-music-peek');
-    if (!shell || !peek) return;
-    shell.hidden = !!collapsed;
-    peek.hidden = !collapsed;
-    try { localStorage.setItem(MUSIC_COLLAPSED_KEY, collapsed ? '1' : '0'); } catch(e) {}
-  }
-  function applyMusicCollapsedPref(){
-    var shell = document.getElementById('mea-music-shell');
-    var peek = document.getElementById('mea-music-peek');
-    if (!shell || !peek) return;
-    var raw = null;
-    try { raw = localStorage.getItem(MUSIC_COLLAPSED_KEY); } catch(e) {}
-    var collapsed = raw === null ? true : raw === '1';
-    shell.hidden = collapsed;
-    peek.hidden = !collapsed;
-  }
-  function toggleMusicPlayback(){
-    var audio = document.getElementById('mea-music-audio');
-    if (!audio) return;
-    if (audio.paused) {
-      var p = audio.play();
-      if (p && typeof p.catch === 'function') p.catch(function(){});
-    } else {
-      audio.pause();
-    }
-  }
-  function toggleMusicHidden(){
-    var shell = document.getElementById('mea-music-shell');
-    if (!shell) return;
-    setMusicCollapsed(!shell.hidden);
-  }
   function bindGlobalListeners(){
     if (window.__meaFinal11Bound) return;
     window.__meaFinal11Bound = true;
-    document.addEventListener('click', function(e){
-      if (e.target.closest('#mea-music-hide')) {
-        setMusicCollapsed(true);
-      } else if (e.target.closest('#mea-music-peek')) {
-        setMusicCollapsed(false);
-      }
-    }, true);
     document.addEventListener('keydown', function(e){
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault(); focusAlbumSearch(); return;
       }
       if (e.altKey && e.key.toLowerCase() === 's') {
         e.preventDefault(); focusAlbumSearch(); return;
-      }
-      if (e.altKey && e.key.toLowerCase() === 'p') {
-        e.preventDefault(); toggleMusicPlayback(); return;
-      }
-      if (e.altKey && e.key.toLowerCase() === 'h') {
-        e.preventDefault(); toggleMusicHidden(); return;
       }
       if (e.key === '/' && !e.ctrlKey && !e.metaKey && !e.altKey && !isTextInput(document.activeElement)) {
         e.preventDefault(); focusAlbumSearch(); return;
@@ -13258,7 +12924,6 @@ body.mea-compact-hero #view-showroom.app-view.active {
       }
     }, true);
     var mo = new MutationObserver(function(){
-      applyMusicCollapsedPref();
       ensureAlbumSearchBar();
     });
     mo.observe(document.documentElement || document.body, { childList:true, subtree:true });
@@ -13266,7 +12931,6 @@ body.mea-compact-hero #view-showroom.app-view.active {
   function refreshPass(){
     ensureAlbumSearchBar();
     syncSearchBarVisibility();
-    applyMusicCollapsedPref();
   }
   function wrapManagerHooks(){
     if (!window.Manager || Manager.__meaFinal11Wrapped) return;
