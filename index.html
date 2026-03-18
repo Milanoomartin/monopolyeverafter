@@ -4706,27 +4706,7 @@ if (pinBtn) {
                            <button class="btn-mini" data-action="copy" data-text="${esc(code)}" title="Copy MoGo code">⧉</button>`
                         : `<span>🧾</span><span style="opacity:0.8;">—</span>`;
 
-                    col.innerHTML = `
-                        <div class="album-acct-header" data-account="${esc(acctKey)}">
-                            <div class="album-acct-top">
-                                <div class="album-acct-title">
-                                    <span class="album-acct-name">${esc(acct.name || acctKey)}</span>
-                                    ${acct.device ? `<span class="album-acct-device">(${esc(acct.device)})</span>` : ''}
-                                    ${acct.prestige ? `<span class="acct-pill" style="background:#9c27b0; color:white; border:none; padding:2px 6px; font-size:10px;">PRESTIGE</span>` : ''}
-                                    ${pinned ? `<span class="acct-pill" style="background:#ff4081; color:white; border:none; padding:2px 6px; font-size:10px;">PINNED</span>` : ''}
-                                </div>
-                                <div class="album-acct-actions">
-                                    <div class="album-acct-stars">⭐ <span data-role="acct-stars">0</span></div>
-                                    <button class="album-pin-btn ${pinned ? 'pinned' : ''}" data-action="pin" data-account="${esc(acctKey)}" title="${pinned ? 'Unpin account' : 'Pin this account'}">📌</button>
-                                </div>
-                            </div>
-                            <div class="album-acct-meta">
-                                <span class="album-acct-chip">${linkHtml}</span>
-                                <span class="album-acct-chip">${codeHtml}</span>
-                            </div>
-                        </div>
-                        <div class="album-header-spacer" aria-hidden="true"></div>
-                    `;
+                    col.innerHTML = '';
 // Add sets
                     sets.forEach(({ set, setNum }) => {
                         if (!set) return;
@@ -6220,6 +6200,536 @@ if (pinBtn) {
     <div style="margin-top:10px; font-size:12px; color:#666; font-weight:800;">
         This is a pop-out view to make side-by-side comparison easier. Use the main app to change selections, thresholds, QR toggles, and ordering, then hit Refresh here.
     </div>
+
+<style id="mea-final-enhancement-style">
+:root{
+  --mea-active-set-color:#c79be7;
+  --mea-active-set-rgb:199,155,231;
+  --mea-active-set-dark:#7a4fa2;
+  --mea-active-set-soft:#efdffd;
+}
+body{
+  background:
+    radial-gradient(circle at 16% 16%, rgba(255,255,255,0.18), transparent 26%),
+    radial-gradient(circle at 82% 14%, rgba(255,255,255,0.12), transparent 24%),
+    radial-gradient(circle at 50% 100%, rgba(255,255,255,0.08), transparent 42%),
+    linear-gradient(135deg,
+      rgba(var(--mea-active-set-rgb),0.34) 0%,
+      rgba(146,173,221,0.82) 32%,
+      rgba(120,149,208,0.88) 62%,
+      rgba(var(--mea-active-set-rgb),0.22) 100%) !important;
+  transition: background 820ms ease, background-color 820ms ease;
+}
+.sidebar,
+.right-sidebar,
+.account-bar{
+  background: linear-gradient(180deg, rgba(var(--mea-active-set-rgb),0.94), rgba(86,62,126,0.94)) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  box-shadow: 0 14px 34px rgba(43,25,71,0.24), inset 0 1px 0 rgba(255,255,255,0.18) !important;
+  transition: background 700ms ease, border-color 700ms ease, box-shadow 700ms ease;
+}
+.nav-item.active,
+.right-nav-item.active,
+.nav-item:hover,
+.right-nav-item:hover,
+.drawer-btn,
+.album-scroll-btn{
+  background: linear-gradient(135deg, var(--mea-active-set-soft), #fff4cf) !important;
+  color: #5d3e72 !important;
+}
+#view-album .album-account-col,
+#view-album .album-account-col.pinned{
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  z-index: auto !important;
+}
+#view-album .album-acct-header{
+  display:none !important;
+}
+#view-album .album-account-col > .album-set:first-of-type{
+  margin-top:0 !important;
+}
+.header-container,
+body.mea-compact-hero .header-container{
+  width:min(1560px, calc(100vw - 190px)) !important;
+  max-width:min(1560px, calc(100vw - 190px)) !important;
+  margin: 0 auto 24px auto !important;
+}
+.main-header-img,
+body.mea-compact-hero .main-header-img{
+  width:100% !important;
+  height: clamp(220px, 28vw, 360px) !important;
+  max-height:none !important;
+  object-fit: cover !important;
+  border-radius: 30px !important;
+  box-shadow: 0 18px 36px rgba(42,25,68,0.28), 0 0 0 1px rgba(255,255,255,0.28) inset !important;
+}
+.header-subtitle,
+body.mea-compact-hero .header-subtitle{
+  font-size: clamp(15px, 1.4vw, 22px) !important;
+  margin-top: 10px !important;
+}
+.set-account-meta{
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.16);
+  border-radius: 14px;
+  backdrop-filter: blur(3px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+}
+.set-acct-row{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  justify-content:space-between;
+  font-size:12px;
+  margin-top:6px;
+}
+.set-acct-row:first-child{ margin-top:0; }
+.set-acct-label{
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  opacity:0.88;
+  min-width:62px;
+}
+.set-acct-value{
+  font-weight:800;
+  text-align:right;
+  word-break:break-word;
+}
+.set-stars-row .set-acct-value{
+  color:#fff4b5;
+  text-shadow:0 0 8px rgba(255,245,186,0.4);
+}
+.set-acct-link{
+  color: #fff8dd !important;
+  text-decoration: underline;
+}
+.mea-current-account-meta{
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(249,243,255,0.92));
+  border: 2px solid rgba(var(--mea-active-set-rgb),0.26);
+  border-radius: 22px;
+  box-shadow: 0 10px 24px rgba(48,27,77,0.14);
+  padding: 16px 18px;
+  margin: 0 0 18px 0;
+  color: #3e2f59;
+}
+.mea-current-account-meta .mea-meta-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.mea-current-account-meta .mea-meta-name{
+  font-size:20px;
+  font-weight:900;
+}
+.mea-current-account-meta .mea-meta-device{
+  font-size:12px;
+  font-weight:800;
+  color:#7a5b99;
+  margin-left:6px;
+}
+.mea-current-account-meta .mea-meta-stars{
+  font-weight:900;
+  color:#7a5b12;
+  background: linear-gradient(135deg, #fff7cb, #f0d888);
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid rgba(173,132,28,0.25);
+}
+.mea-current-account-meta .mea-meta-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap:10px;
+}
+.mea-current-account-meta .mea-meta-row{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:10px 12px;
+  border-radius:14px;
+  background: rgba(var(--mea-active-set-rgb),0.10);
+}
+.mea-current-account-meta .mea-meta-label{
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:#75578d;
+}
+.mea-current-account-meta .mea-meta-value,
+.mea-current-account-meta .mea-meta-value a{
+  color:#3d3158;
+  font-weight:800;
+  text-decoration:none;
+  word-break:break-word;
+}
+.mea-current-account-meta .mea-meta-value a{
+  text-decoration: underline;
+}
+#view-import .planner-container,
+#view-import .planner-container h2,
+#view-import .planner-container h3,
+#view-import .planner-container p,
+#view-import .planner-container label,
+#view-import .planner-container div,
+#import-view .planner-container,
+#import-view .planner-container h2,
+#import-view .planner-container h3,
+#import-view .planner-container p,
+#import-view .planner-container label,
+#import-view .planner-container div{
+  color:#32274a !important;
+}
+#view-import textarea,
+#import-view textarea,
+.import-area textarea,
+textarea#import-text,
+textarea#backup-import{
+  background: rgba(255,255,255,0.92) !important;
+  color:#32274a !important;
+  border-color: rgba(73,48,104,0.22) !important;
+}
+#mea-sound-toggle{
+  min-width: 110px;
+}
+@media (max-width: 980px){
+  .header-container,
+  body.mea-compact-hero .header-container{
+    width: calc(100vw - 110px) !important;
+    max-width: calc(100vw - 110px) !important;
+  }
+  .main-header-img,
+  body.mea-compact-hero .main-header-img{
+    height: clamp(180px, 34vw, 260px) !important;
+  }
+}
+</style>
+<script id="mea-final-enhancement-script">
+(function(){
+  const SOUND_KEY = 'mea_magic_sound_enabled';
+
+  function safeEsc(v){
+    try { return (window.Manager && typeof Manager.esc === 'function') ? Manager.esc(v == null ? '' : String(v)) : String(v == null ? '' : v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    catch(e){ return String(v == null ? '' : v); }
+  }
+
+  function hexToRgb(hex){
+    const raw = String(hex || '').trim().replace('#','');
+    const full = raw.length === 3 ? raw.split('').map(ch => ch + ch).join('') : raw;
+    const ok = /^[0-9a-fA-F]{6}$/.test(full) ? full : 'c79be7';
+    return { r: parseInt(ok.slice(0,2),16), g: parseInt(ok.slice(2,4),16), b: parseInt(ok.slice(4,6),16) };
+  }
+
+  function shiftHex(hex, amt){
+    const {r,g,b} = hexToRgb(hex);
+    const clamp = v => Math.max(0, Math.min(255, v));
+    const toHex = v => clamp(v).toString(16).padStart(2,'0');
+    return '#' + toHex(r + amt) + toHex(g + amt) + toHex(b + amt);
+  }
+
+  const ThemeSync = {
+    lastSetNum: 1,
+    raf: 0,
+    apply(setNum){
+      if (!window.SET_DATA || !SET_DATA.length) return;
+      const bounded = Math.max(1, Math.min(SET_DATA.length, parseInt(setNum, 10) || 1));
+      const set = SET_DATA[bounded - 1] || SET_DATA[0];
+      const base = set && set.color ? set.color : '#c79be7';
+      const rgb = hexToRgb(base);
+      document.documentElement.style.setProperty('--mea-active-set-color', base);
+      document.documentElement.style.setProperty('--mea-active-set-rgb', rgb.r + ', ' + rgb.g + ', ' + rgb.b);
+      document.documentElement.style.setProperty('--mea-active-set-dark', shiftHex(base, -42));
+      document.documentElement.style.setProperty('--mea-active-set-soft', shiftHex(base, 68));
+      this.lastSetNum = bounded;
+    },
+    detect(){
+      try {
+        if (window.Manager && typeof Manager._getAlbumCfg === 'function') {
+          const cfg = Manager._getAlbumCfg();
+          if (cfg && cfg.mode === 'single' && cfg.selectedSet) return cfg.selectedSet;
+        }
+      } catch(e) {}
+      const active = document.querySelector('.app-view.active');
+      if (!active || active.id !== 'view-album') return this.lastSetNum || 1;
+      const firstCol = document.querySelector('#album-container .album-account-col') || document.querySelector('#view-album .album-account-col');
+      const candidates = firstCol ? Array.from(firstCol.querySelectorAll('.album-set[data-set]')) : Array.from(document.querySelectorAll('#view-album .album-set[data-set]'));
+      if (!candidates.length) return this.lastSetNum || 1;
+      const anchor = Math.max(120, Math.min(window.innerHeight * 0.28, 220));
+      let best = null;
+      let bestDist = Infinity;
+      candidates.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const dist = Math.abs(rect.top - anchor);
+        if (rect.bottom > 70 && dist < bestDist) {
+          best = el;
+          bestDist = dist;
+        }
+      });
+      return best ? (parseInt(best.getAttribute('data-set'), 10) || 1) : (this.lastSetNum || 1);
+    },
+    sync(){ this.apply(this.detect()); },
+    syncSoon(){
+      if (this.raf) cancelAnimationFrame(this.raf);
+      this.raf = requestAnimationFrame(() => this.sync());
+    }
+  };
+
+  const MagicSound = {
+    enabled: true,
+    ctx: null,
+    ensure(){
+      try { this.enabled = JSON.parse(localStorage.getItem(SOUND_KEY) || 'true'); }
+      catch(e) { this.enabled = true; }
+      return this.enabled;
+    },
+    init(){
+      if (!this.ensure()) return null;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      if (!this.ctx) this.ctx = new AC();
+      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+      return this.ctx;
+    },
+    tone(freq, when, dur, type, gain){
+      const ctx = this.init();
+      if (!ctx) return;
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = type || 'sine';
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.exponentialRampToValueAtTime(gain || 0.025, when + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+      osc.connect(g);
+      g.connect(ctx.destination);
+      osc.start(when);
+      osc.stop(when + dur + 0.02);
+    },
+    sparkle(strong){
+      if (!this.ensure()) return;
+      const ctx = this.init();
+      if (!ctx) return;
+      const t = ctx.currentTime + 0.01;
+      this.tone(720, t, 0.13, 'sine', strong ? 0.035 : 0.024);
+      this.tone(980, t + 0.045, 0.16, 'triangle', strong ? 0.03 : 0.022);
+      this.tone(1320, t + 0.085, 0.18, 'sine', strong ? 0.024 : 0.018);
+    },
+    dust(){
+      if (!this.ensure()) return;
+      const ctx = this.init();
+      if (!ctx) return;
+      const t = ctx.currentTime + 0.01;
+      this.tone(523.25, t, 0.16, 'triangle', 0.022);
+      this.tone(783.99, t + 0.07, 0.18, 'sine', 0.02);
+      this.tone(1046.5, t + 0.13, 0.22, 'sine', 0.018);
+    },
+    toggle(){
+      this.enabled = !this.ensure();
+      try { localStorage.setItem(SOUND_KEY, JSON.stringify(this.enabled)); } catch(e) {}
+      updateSoundButton();
+      if (this.enabled) this.dust();
+    }
+  };
+
+  function updateSoundButton(){
+    const btn = document.getElementById('mea-sound-toggle');
+    if (!btn) return;
+    const on = MagicSound.ensure();
+    btn.textContent = on ? '🔊 Magic' : '🔇 Magic';
+    btn.title = on ? 'Turn magical sounds off' : 'Turn magical sounds on';
+  }
+
+  function ensureSoundButton(){
+    const host = document.querySelector('.account-bar-controls');
+    if (!host || document.getElementById('mea-sound-toggle')) return;
+    const btn = document.createElement('button');
+    btn.id = 'mea-sound-toggle';
+    btn.type = 'button';
+    btn.className = 'btn-mini';
+    btn.addEventListener('click', () => MagicSound.toggle());
+    host.appendChild(btn);
+    updateSoundButton();
+  }
+
+  function updateAlbumSetHeaderMeta(){
+    if (!window.Manager || !Manager.state || !Manager.state.accounts) return;
+    document.querySelectorAll('#view-album .album-set[data-account]').forEach(setEl => {
+      const acctKey = setEl.getAttribute('data-account');
+      const acct = Manager.state.accounts[acctKey];
+      const meta = setEl.querySelector('.set-account-meta');
+      if (!acct || !meta) return;
+      let row = meta.querySelector('.set-stars-row');
+      if (!row) {
+        row = document.createElement('div');
+        row.className = 'set-acct-row set-stars-row';
+        row.innerHTML = '<span class="set-acct-label">Stars</span><span class="set-acct-value"></span>';
+        meta.appendChild(row);
+      }
+      const value = row.querySelector('.set-acct-value');
+      if (value) value.textContent = String((typeof Manager._computeVaultStarsForAccount === 'function') ? (Manager._computeVaultStarsForAccount(acctKey) || 0) : 0);
+    });
+  }
+
+  function buildCurrentAccountMeta(){
+    const acctKey = window.Manager && Manager.state ? Manager.state.currentAccount : '';
+    const acct = (acctKey && Manager.state.accounts && Manager.state.accounts[acctKey]) ? Manager.state.accounts[acctKey] : null;
+    if (!acct) {
+      return '<div class="mea-meta-head"><div class="mea-meta-name">No account selected</div></div>';
+    }
+    const stars = (typeof Manager._computeVaultStarsForAccount === 'function') ? (Manager._computeVaultStarsForAccount(acctKey) || 0) : 0;
+    const link = (acct.mogoLink || '').trim();
+    const code = (acct.mogoCode || '').trim();
+    return '' +
+      '<div class="mea-meta-head">' +
+        '<div class="mea-meta-name">' + safeEsc(acct.name || acctKey) + (acct.device ? '<span class="mea-meta-device">(' + safeEsc(acct.device) + ')</span>' : '') + '</div>' +
+        '<div class="mea-meta-stars">⭐ ' + safeEsc(stars) + ' total stars</div>' +
+      '</div>' +
+      '<div class="mea-meta-grid">' +
+        '<div class="mea-meta-row"><span class="mea-meta-label">Account Link</span><span class="mea-meta-value">' + (link ? '<a href="' + safeEsc((Manager.normalizeLink ? Manager.normalizeLink(link) : link)) + '" target="_blank" rel="noopener">' + safeEsc(link) + '</a>' : '—') + '</span></div>' +
+        '<div class="mea-meta-row"><span class="mea-meta-label">Account Code</span><span class="mea-meta-value">' + (code ? safeEsc(code) : '—') + '</span></div>' +
+        '<div class="mea-meta-row"><span class="mea-meta-label">Account Name</span><span class="mea-meta-value">' + safeEsc(acct.name || acctKey) + '</span></div>' +
+      '</div>';
+  }
+
+  function renderSingleViewMeta(){
+    ['stats-single', 'vault-single'].forEach(id => {
+      const host = document.getElementById(id);
+      if (!host) return;
+      let card = host.querySelector('.mea-current-account-meta');
+      if (!card) {
+        card = document.createElement('div');
+        card.className = 'mea-current-account-meta';
+        host.insertBefore(card, host.firstChild);
+      }
+      card.innerHTML = buildCurrentAccountMeta();
+    });
+  }
+
+  function postRenderRefresh(){
+    ensureSoundButton();
+    updateAlbumSetHeaderMeta();
+    renderSingleViewMeta();
+    ThemeSync.syncSoon();
+  }
+
+  function bindEnhancements(){
+    if (!window.Manager || Manager.__meaEnhancedFinal) return;
+    Manager.__meaEnhancedFinal = true;
+
+    if (typeof Manager.buildAlbumUI === 'function') {
+      const base = Manager.buildAlbumUI.bind(Manager);
+      Manager.buildAlbumUI = function(){
+        const out = base.apply(this, arguments);
+        setTimeout(postRenderRefresh, 0);
+        return out;
+      };
+    }
+
+    if (typeof Manager.updateUI === 'function') {
+      const base = Manager.updateUI.bind(Manager);
+      Manager.updateUI = function(){
+        const out = base.apply(this, arguments);
+        setTimeout(postRenderRefresh, 0);
+        return out;
+      };
+    }
+
+    if (typeof Manager.switchView === 'function') {
+      const base = Manager.switchView.bind(Manager);
+      Manager.switchView = function(){
+        const out = base.apply(this, arguments);
+        setTimeout(postRenderRefresh, 60);
+        return out;
+      };
+    }
+
+    if (typeof Manager.setAlbumSelectedSet === 'function') {
+      const base = Manager.setAlbumSelectedSet.bind(Manager);
+      Manager.setAlbumSelectedSet = function(){
+        const out = base.apply(this, arguments);
+        setTimeout(() => ThemeSync.syncSoon(), 30);
+        return out;
+      };
+    }
+
+    if (typeof Manager.updateCardForAccount === 'function') {
+      const base = Manager.updateCardForAccount.bind(Manager);
+      Manager.updateCardForAccount = function(acctKey, id, change){
+        const before = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
+        const out = base.apply(this, arguments);
+        const after = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
+        if (after !== before) {
+          if (change > 0 || after > before) MagicSound.sparkle(true); else MagicSound.sparkle(false);
+          setTimeout(updateAlbumSetHeaderMeta, 40);
+          ThemeSync.syncSoon();
+        }
+        return out;
+      };
+    }
+
+    if (typeof Manager.setCardDupesForAccount === 'function') {
+      const base = Manager.setCardDupesForAccount.bind(Manager);
+      Manager.setCardDupesForAccount = function(acctKey, id, dupes){
+        const before = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
+        const out = base.apply(this, arguments);
+        const after = (((this.state || {}).accounts || {})[acctKey] || {}).data ? ((((this.state || {}).accounts || {})[acctKey]).data[id] || 0) : 0;
+        if (after !== before) {
+          MagicSound.sparkle(after > before);
+          setTimeout(updateAlbumSetHeaderMeta, 40);
+        }
+        return out;
+      };
+    }
+
+    if (window.Notify && typeof Notify.show === 'function' && !Notify.__meaSoundWrapped) {
+      const base = Notify.show.bind(Notify);
+      Notify.__meaSoundWrapped = true;
+      Notify.show = function(msg, type){
+        if (type === 'success') MagicSound.dust();
+        else if (type !== 'warning') MagicSound.sparkle(false);
+        return base.apply(this, arguments);
+      };
+    }
+  }
+
+  function bindScrollSync(){
+    window.addEventListener('scroll', () => ThemeSync.syncSoon(), { passive: true });
+    const albumContainer = document.getElementById('album-container');
+    if (albumContainer && !albumContainer.__meaThemeBound) {
+      albumContainer.__meaThemeBound = true;
+      albumContainer.addEventListener('scroll', () => ThemeSync.syncSoon(), { passive: true });
+    }
+    document.addEventListener('click', evt => {
+      if (evt.target.closest('.nav-item, .right-nav-item, #album-mode-scroll-btn, #album-mode-single-btn, #left-nav-content')) {
+        setTimeout(() => ThemeSync.syncSoon(), 60);
+      }
+    }, { passive: true });
+  }
+
+  function init(){
+    document.addEventListener('pointerdown', () => MagicSound.init(), { once: true, passive: true });
+    ensureSoundButton();
+    bindEnhancements();
+    bindScrollSync();
+    postRenderRefresh();
+    setTimeout(postRenderRefresh, 120);
+    setTimeout(postRenderRefresh, 600);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+})();
+</script>
+
 </body>
 </html>`;
                 try {
@@ -12179,6 +12689,38 @@ body {
 
 .drawer-btn.left { left: 18px !important; }
 .drawer-btn.right { right: 18px !important; }
+
+/* Album view should never pin or float account headers over Set 1. */
+#view-album .album-account-col,
+#view-album .album-account-col.pinned {
+  position: relative !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+}
+
+#view-album .album-acct-header,
+#view-album .album-header-spacer {
+  display: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  position: static !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#view-album .album-account-col > .album-set:first-of-type {
+  margin-top: 0 !important;
+}
+
+#view-import .import-area,
+#view-import .import-area *:not(button):not(textarea):not(input) {
+  color: #4a3458 !important;
+  opacity: 1 !important;
+}
 
 /* The floating toolbar can stay at the top of the page, but it should no longer freeze. */
 .account-bar {
