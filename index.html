@@ -15535,11 +15535,7 @@ body.mea-story-open {
   var DEFAULT_HEADER_SRC = 'https://milanoomartin.github.io/monopolyeverafter/assets/MoGo-Ever-After-Logo.png';
 
   var LOGO_PRESETS = [
-    { key: 'main', label: 'Main storybook header', src: 'MoGo-Ever-After-Logo.png' },
-    { key: 'logo2', label: 'MoGo-Ever-After-Logo2.png', src: 'MoGo-Ever-After-Logo2.png' },
-    { key: 'logo3', label: 'MoGo-Ever-After-Logo3.png', src: 'MoGo-Ever-After-Logo3.png' },
-    { key: 'logo4', label: 'MoGo-Ever-After-Logo4.png', src: 'MoGo-Ever-After-Logo4.png' },
-    { key: 'logo5', label: 'MoGo-Ever-After-Logo5.png', src: 'MoGo-Ever-After-Logo5.png' }
+    { key: 'main', label: 'Main storybook header', src: DEFAULT_HEADER_SRC }
   ];
 
   function loadPrefs(){
@@ -15555,9 +15551,9 @@ body.mea-story-open {
       var parsed = JSON.parse(raw);
       if (!parsed || typeof parsed !== 'object') throw new Error('bad prefs');
       if (!parsed.cursorTheme || !CURSOR_THEMES[parsed.cursorTheme]) parsed.cursorTheme = 'wand';
-      if (!parsed.customLogoMode) parsed.customLogoMode = 'preset';
-      if (!parsed.logoPreset) parsed.logoPreset = 'main';
-      if (typeof parsed.customLogoUrl !== 'string') parsed.customLogoUrl = '';
+      parsed.customLogoMode = 'preset';
+      parsed.logoPreset = 'main';
+      parsed.customLogoUrl = '';
       if (typeof parsed.pixieDust !== 'boolean') parsed.pixieDust = true;
       return parsed;
     } catch (e) {
@@ -15569,9 +15565,7 @@ body.mea-story-open {
         pixieDust: true
       };
     }
-  }
-
-  function savePrefs(){
+  }  function savePrefs(){
     try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {}
   }
 
@@ -15584,17 +15578,11 @@ body.mea-story-open {
   function setDefaultHeader(){
     var img = document.querySelector('.main-header-img');
     if (!img) return;
-    var current = img.getAttribute('src') || '';
-    var looksBrokenAsset = /^assets\//i.test(current) || /\/assets\//i.test(current) || /file:\/\/.*\/assets\//i.test(current);
-    if (!defaultHeaderSrc || looksBrokenAsset) {
-      defaultHeaderSrc = (!current || looksBrokenAsset) ? DEFAULT_HEADER_SRC : current;
-    }
-    if (!img.getAttribute('src') || looksBrokenAsset) img.setAttribute('src', defaultHeaderSrc || DEFAULT_HEADER_SRC);
-    img.setAttribute('data-mea-default-src', defaultHeaderSrc || DEFAULT_HEADER_SRC);
-    LOGO_PRESETS[0].src = defaultHeaderSrc || DEFAULT_HEADER_SRC;
-  }
-
-  function hexToRgb(hex){
+    defaultHeaderSrc = DEFAULT_HEADER_SRC;
+    img.setAttribute('src', DEFAULT_HEADER_SRC);
+    img.setAttribute('data-mea-default-src', DEFAULT_HEADER_SRC);
+    LOGO_PRESETS[0].src = DEFAULT_HEADER_SRC;
+  }  function hexToRgb(hex){
     var clean = String(hex || '').trim().replace('#', '');
     if (!clean) return null;
     if (clean.length === 3) clean = clean.split('').map(function(ch){ return ch + ch; }).join('');
@@ -15715,7 +15703,7 @@ body.mea-story-open {
       var heading = document.createElement('div');
       heading.id = 'mea-atelier-heading';
       heading.className = 'mea-atelier-heading';
-      heading.innerHTML = '<h2>Enchanted Elixir</h2><p>Your fairy-tale settings room for banner art, cursor charms, sticker decor, and imports.</p>';
+      heading.innerHTML = '<h2>Enchanted Elixir</h2><p>Your fairy-tale settings room for cursor charms, sticker decor, and imports.</p>';
       view.insertBefore(heading, area);
     }
 
@@ -15724,12 +15712,9 @@ body.mea-story-open {
       card.id = 'mea-atelier-card-logo';
       card.className = 'mea-atelier-card';
       card.innerHTML = ''
-        + '<h3>Castle Banner & Cursor Charms</h3>'
-        + '<p>Swap the storybook header, paste a custom banner link, upload your own art, or pick a gentler fairy-tale cursor companion that keeps the normal pointer visible.</p>'
+        + '<h3>Cursor Charms</h3>'
+        + '<p>The storybook banner now stays fixed. Choose the cursor companion that feels best while keeping the normal pointer easy to use.</p>'
         + '<div class="mea-atelier-grid">'
-        +   '<div class="mea-atelier-field"><label for="mea-logo-preset">Header logo preset</label><select id="mea-logo-preset"></select></div>'
-        +   '<div class="mea-atelier-field"><label for="mea-logo-url">Custom header image link</label><input id="mea-logo-url" type="url" placeholder="https://example.com/logo.png"></div>'
-        +   '<div class="mea-atelier-field"><label for="mea-logo-file">Upload header art</label><input id="mea-logo-file" type="file" accept="image/*"></div>'
         +   '<div class="mea-atelier-field"><label for="mea-cursor-theme">Cursor companion theme</label><select id="mea-cursor-theme"></select></div>'
         + '</div>'
         + '<label class="mea-atelier-check"><input id="mea-pixie-dust-toggle" type="checkbox"> Keep pixie dust beside the cursor companion</label>'
@@ -15737,30 +15722,10 @@ body.mea-story-open {
         +   '<button type="button" class="btn btn-primary" id="mea-atelier-save">Save enchanted elixir</button>'
         +   '<button type="button" class="btn" id="mea-atelier-reset">Reset to storybook default</button>'
         + '</div>'
-        + '<div class="mea-atelier-preview" id="mea-atelier-preview">The default storybook banner is ready, and the cursor keeps its normal pointer with a wand companion beside it.</div>';
+        + '<div class="mea-atelier-preview" id="mea-atelier-preview">The storybook banner is fixed in place, and the cursor keeps its normal pointer with a wand companion beside it.</div>';
       area.appendChild(card);
 
       populateAtelierFields();
-      document.getElementById('mea-logo-file').addEventListener('change', function(){
-        var file = this.files && this.files[0];
-        if (!file) return;
-        var reader = new FileReader();
-        reader.onload = function(){
-          var input = document.getElementById('mea-logo-url');
-          if (input) input.value = reader.result || '';
-          prefs.customLogoMode = 'custom';
-          syncAtelierPreview();
-        };
-        reader.readAsDataURL(file);
-      });
-      document.getElementById('mea-logo-preset').addEventListener('change', function(){
-        prefs.customLogoMode = 'preset';
-        syncAtelierPreview();
-      });
-      document.getElementById('mea-logo-url').addEventListener('input', function(){
-        prefs.customLogoMode = this.value.trim() ? 'custom' : 'preset';
-        syncAtelierPreview();
-      });
       document.getElementById('mea-cursor-theme').addEventListener('change', syncAtelierPreview);
       document.getElementById('mea-pixie-dust-toggle').addEventListener('change', syncAtelierPreview);
       document.getElementById('mea-atelier-save').addEventListener('click', saveAtelierSettings);
@@ -15768,64 +15733,41 @@ body.mea-story-open {
     } else {
       populateAtelierFields();
     }
-  }
-
-  function populateAtelierFields(){
+  }  function populateAtelierFields(){
     setDefaultHeader();
-    var preset = document.getElementById('mea-logo-preset');
     var cursor = document.getElementById('mea-cursor-theme');
-    var url = document.getElementById('mea-logo-url');
     var dust = document.getElementById('mea-pixie-dust-toggle');
-    if (preset) {
-      preset.innerHTML = LOGO_PRESETS.map(function(opt){
-        return '<option value="' + esc(opt.key) + '">' + esc(opt.label) + '</option>';
-      }).join('');
-      preset.value = prefs.logoPreset || 'main';
-    }
     if (cursor) {
       cursor.innerHTML = Object.keys(CURSOR_THEMES).map(function(key){
         return '<option value="' + esc(key) + '">' + esc(CURSOR_THEMES[key].label) + '</option>';
       }).join('');
       cursor.value = prefs.cursorTheme || 'wand';
     }
-    if (url) url.value = prefs.customLogoUrl || '';
     if (dust) dust.checked = !!prefs.pixieDust;
     syncAtelierPreview();
-  }
-
-  function syncAtelierPreview(){
-    var preset = document.getElementById('mea-logo-preset');
+  }  function syncAtelierPreview(){
     var cursor = document.getElementById('mea-cursor-theme');
-    var url = document.getElementById('mea-logo-url');
     var dust = document.getElementById('mea-pixie-dust-toggle');
     var preview = document.getElementById('mea-atelier-preview');
     if (!preview) return;
     var cursorKey = cursor ? cursor.value : (prefs.cursorTheme || 'wand');
-    var presetKey = preset ? preset.value : (prefs.logoPreset || 'main');
-    var usingCustom = !!(url && url.value.trim());
-    preview.innerHTML = '<strong>Header:</strong> ' + esc(usingCustom ? 'Custom uploaded / linked art' : (findLogoPreset(presetKey).label || 'Main storybook header'))
+    preview.innerHTML = '<strong>Header:</strong> Fixed storybook banner'
       + '<br><strong>Cursor:</strong> ' + esc((CURSOR_THEMES[cursorKey] || CURSOR_THEMES.wand).label)
       + '<br><strong>Pixie dust:</strong> ' + ((dust && dust.checked) ? 'On ✨' : 'Off');
-  }
-
-  function saveAtelierSettings(){
-    var preset = document.getElementById('mea-logo-preset');
+  }  function saveAtelierSettings(){
     var cursor = document.getElementById('mea-cursor-theme');
-    var url = document.getElementById('mea-logo-url');
     var dust = document.getElementById('mea-pixie-dust-toggle');
-    prefs.logoPreset = preset ? preset.value : 'main';
+    prefs.logoPreset = 'main';
+    prefs.customLogoUrl = '';
+    prefs.customLogoMode = 'preset';
     prefs.cursorTheme = (cursor && CURSOR_THEMES[cursor.value]) ? cursor.value : 'wand';
-    prefs.customLogoUrl = url ? String(url.value || '').trim() : '';
-    prefs.customLogoMode = prefs.customLogoUrl ? 'custom' : 'preset';
     prefs.pixieDust = !!(dust && dust.checked);
     savePrefs();
     applyHeaderLogo();
     ensureCursorCompanion();
     updateCursorTheme();
     safeNotify('Enchanted elixir saved ✨', 'success');
-  }
-
-  function resetAtelierSettings(){
+  }  function resetAtelierSettings(){
     prefs = {
       cursorTheme: 'wand',
       customLogoMode: 'preset',
@@ -15839,34 +15781,19 @@ body.mea-story-open {
     ensureCursorCompanion();
     updateCursorTheme();
     safeNotify('Enchanted elixir reset to the storybook default.', 'success');
-  }
-
-  function findLogoPreset(key){
-    return LOGO_PRESETS.filter(function(opt){ return opt.key === key; })[0] || LOGO_PRESETS[0];
-  }
-
-  function applyHeaderLogo(){
+  }  function findLogoPreset(key){
+    return LOGO_PRESETS[0];
+  }  function applyHeaderLogo(){
     setDefaultHeader();
     var img = document.querySelector('.main-header-img');
     if (!img) return;
-    var fallback = defaultHeaderSrc || img.getAttribute('data-mea-default-src') || DEFAULT_HEADER_SRC;
-    var chosen = prefs.customLogoMode === 'custom' && prefs.customLogoUrl ? prefs.customLogoUrl : findLogoPreset(prefs.logoPreset).src;
-    var badSrc = img.getAttribute('data-mea-bad-src') || '';
-    if (!chosen || chosen === badSrc) chosen = fallback;
-    img.setAttribute('data-mea-default-src', fallback);
+    img.setAttribute('data-mea-default-src', DEFAULT_HEADER_SRC);
     img.onerror = function(){
-      var failed = this.getAttribute('src') || '';
-      if (failed) this.setAttribute('data-mea-bad-src', failed);
-      var safe = this.getAttribute('data-mea-default-src') || defaultHeaderSrc || DEFAULT_HEADER_SRC;
-      if (safe && failed !== safe) {
-        this.onerror = null;
-        this.setAttribute('src', safe);
-      }
+      this.onerror = null;
+      this.setAttribute('src', DEFAULT_HEADER_SRC);
     };
-    if ((img.getAttribute('src') || '') !== chosen) img.setAttribute('src', chosen);
-  }
-
-  function ensureCursorCompanion(){
+    if ((img.getAttribute('src') || '') !== DEFAULT_HEADER_SRC) img.setAttribute('src', DEFAULT_HEADER_SRC);
+  }  function ensureCursorCompanion(){
     disableLegacyCursor();
     if (!window.matchMedia || !window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
     if (!companionEl) {
