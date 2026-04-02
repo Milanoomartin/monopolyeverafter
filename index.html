@@ -1,0 +1,3594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Monopoly Ever After — Enchanted Album Tracker ✨</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&family=MedievalSharp&display=swap" rel="stylesheet">
+<style>
+/* ========== ROOT & RESET ========== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --parchment:#f9f1df;--parchment-mid:#f0e0b8;--parchment-dark:#dfc994;
+  --ink:#2a1508;--ink-mid:#6b3a1f;--ink-light:#a0622a;
+  --gold:#d4af37;--gold-light:#f5d76e;--gold-dark:#9a7c1a;--gold-rim:#f0c040;
+  --magic:#7b2fbf;--magic-light:#b57bee;--magic-dark:#3d0d6b;
+  --bg:#0b0618;--bg-mid:#160c2c;--bg-light:#221040;
+  --nav-bg-start:#100820;--nav-bg-end:#0d0518;--nav-border:rgba(212,175,55,.25);
+  --nav-hover:rgba(255,255,255,.05);--nav-item-active:rgba(212,175,55,.1);
+  --search-bg:rgba(255,255,255,.04);--input-bg:rgba(212,175,55,.06);--input-border:rgba(212,175,55,.3);
+  --surface-0:rgba(255,255,255,.02);--surface-1:rgba(255,255,255,.03);--surface-2:rgba(255,255,255,.04);
+  --surface-3:rgba(255,255,255,.06);--surface-4:rgba(212,175,55,.08);--surface-strong:rgba(255,255,255,.1);
+  --line-soft:rgba(255,255,255,.08);--line-mid:rgba(255,255,255,.12);--line-strong:rgba(212,175,55,.2);--line-contrast:rgba(255,255,255,.3);
+  --overlay:rgba(0,0,0,.8);--modal-bg-start:#160c2c;--modal-bg-end:#0d0618;
+  --notif-bg-start:rgba(13,6,24,.95);--notif-bg-end:rgba(30,15,60,.95);
+  --set-row-bg:rgba(0,0,0,.15);--card-bg:rgba(249,241,223,.07);--missing-bg:rgba(0,0,0,.3);--input-solid-bg:rgba(0,0,0,.3);
+  --page-header-bg-1:rgba(123,47,191,.2);--page-header-bg-2:rgba(212,175,55,.1);--page-bg-opacity:.02;
+  --set-header-text:#fff;--set-header-meta:rgba(255,255,255,.82);--set-progress-track:rgba(0,0,0,.3);--set-progress-fill:rgba(255,255,255,.6);
+  --account-divider:rgba(212,175,55,.24);--set-divider:rgba(255,255,255,.18);
+  --nav-w:60px;--nav-w-open:220px;
+  --shadow:0 4px 20px rgba(0,0,0,.6);
+  --card-radius:12px;--set-radius:16px;
+  --transition:.25s ease;
+}
+body[data-theme="enchanted"]{
+  --parchment:#2f2442;--parchment-mid:#5e537f;--parchment-dark:#8e84aa;
+  --ink:#24183a;--ink-mid:#56467b;--ink-light:#7d70ac;
+  --gold:#7c63ff;--gold-light:#a798ff;--gold-dark:#5e49cb;--gold-rim:#7fdfff;
+  --magic:#58cfff;--magic-light:#adf0ff;--magic-dark:#5f68dd;
+  --bg:#fbfcff;--bg-mid:#eef4ff;--bg-light:#e6edff;
+  --nav-bg-start:#ffffff;--nav-bg-end:#edf5ff;--nav-border:rgba(124,99,255,.18);
+  --nav-hover:rgba(88,207,255,.12);--nav-item-active:rgba(124,99,255,.14);
+  --search-bg:rgba(255,255,255,.86);--input-bg:rgba(255,255,255,.94);--input-border:rgba(124,99,255,.22);
+  --surface-0:rgba(255,255,255,.74);--surface-1:rgba(255,255,255,.82);--surface-2:rgba(255,255,255,.9);
+  --surface-3:rgba(255,255,255,.96);--surface-4:rgba(124,99,255,.08);--surface-strong:rgba(88,207,255,.16);
+  --line-soft:rgba(94,83,127,.12);--line-mid:rgba(94,83,127,.18);--line-strong:rgba(124,99,255,.24);--line-contrast:rgba(124,99,255,.3);
+  --overlay:rgba(37,25,67,.18);--modal-bg-start:#ffffff;--modal-bg-end:#eef5ff;
+  --notif-bg-start:rgba(255,255,255,.96);--notif-bg-end:rgba(238,245,255,.96);
+  --set-row-bg:rgba(255,255,255,.54);--card-bg:rgba(255,255,255,.78);--missing-bg:rgba(215,224,245,.6);--input-solid-bg:rgba(255,255,255,.95);
+  --page-header-bg-1:rgba(167,144,255,.2);--page-header-bg-2:rgba(88,207,255,.14);--page-bg-opacity:.055;
+  --set-header-text:#241c3f;--set-header-meta:rgba(36,28,63,.72);--set-progress-track:rgba(255,255,255,.78);--set-progress-fill:rgba(255,255,255,.96);
+  --account-divider:rgba(124,99,255,.34);--set-divider:rgba(124,99,255,.26);
+  --shadow:0 10px 28px rgba(112,118,190,.14);
+}
+html{scroll-behavior:smooth;height:100%}
+body{
+  font-family:'IM Fell English',Georgia,serif;
+  background:var(--bg);color:var(--parchment);
+  min-height:100vh;overflow-x:hidden;
+  cursor:none;
+}
+h1,h2,h3,.title-font{font-family:'Cinzel Decorative',serif}
+h4,h5,.heading-font{font-family:'Cinzel',serif}
+button{cursor:none;font-family:inherit}
+input,select,textarea{font-family:'IM Fell English',serif;cursor:none}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track{background:var(--bg-mid)}
+::-webkit-scrollbar-thumb{background:var(--magic);border-radius:4px}
+
+/* ========== CUSTOM CURSOR ========== */
+#cursor-wand{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:99999;
+  width:32px;height:32px;transform:translate(-4px,-28px);
+  transition:none;
+}
+#cursor-wand svg{filter:drop-shadow(0 0 4px #d4af37)}
+.sparkle-particle{
+  position:fixed;pointer-events:none;z-index:99998;
+  width:6px;height:6px;border-radius:50%;
+  animation:sparkle-fade .8s forwards;
+}
+@keyframes sparkle-fade{
+  0%{opacity:1;transform:scale(1) translateY(0)}
+  100%{opacity:0;transform:scale(0) translateY(-20px)}
+}
+
+/* ========== LAYOUT ========== */
+#app-layout{display:flex;min-height:100vh;position:relative}
+#main-content{
+  flex:1;
+  margin-left:var(--nav-w);
+  margin-right:var(--nav-w);
+  min-height:100vh;
+  transition:margin var(--transition);
+  position:relative;
+  z-index:1;
+}
+.page{display:none;padding:20px 24px 60px}
+.page.active{display:block}
+
+/* ========== LEFT NAV ========== */
+#left-nav{
+  position:fixed;top:0;left:0;height:100vh;
+  width:var(--nav-w);z-index:1000;
+  background:linear-gradient(180deg,var(--nav-bg-start) 0%,var(--nav-bg-end) 100%);
+  border-right:1px solid var(--nav-border);
+  overflow:hidden;transition:width var(--transition);
+  display:flex;flex-direction:column;
+}
+#left-nav:hover{width:var(--nav-w-open)}
+#left-nav-header{
+  padding:16px 8px;text-align:center;
+  font-family:'Cinzel Decorative',serif;font-size:9px;
+  color:var(--gold);letter-spacing:1px;
+  border-bottom:1px solid var(--line-strong);
+  white-space:nowrap;overflow:hidden;
+  min-height:60px;display:flex;align-items:center;justify-content:center;
+}
+#left-nav-header .icon{font-size:22px;flex-shrink:0}
+#left-nav-header .label{margin-left:8px;opacity:0;transition:opacity var(--transition);white-space:nowrap}
+#left-nav:hover #left-nav-header .label{opacity:1}
+#left-nav-search{
+  padding:8px 6px;border-bottom:1px solid var(--line-soft);
+}
+#left-nav-search input{
+  width:100%;padding:6px 8px;border-radius:8px;
+  border:1px solid var(--input-border);
+  background:var(--surface-4);
+  color:var(--parchment);font-size:11px;
+  outline:none;opacity:0;transition:opacity var(--transition);
+}
+#left-nav:hover #left-nav-search input{opacity:1}
+#left-nav-sets{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 0}
+.nav-set-item{
+  display:flex;align-items:center;padding:8px 8px;
+  cursor:none;transition:background .2s;
+  white-space:nowrap;overflow:hidden;
+}
+.nav-set-item:hover{background:var(--nav-hover)}
+.nav-set-dot{
+  width:16px;height:16px;border-radius:50%;flex-shrink:0;
+  border:2px solid var(--line-contrast);
+}
+.nav-set-label{
+  margin-left:10px;font-family:'Cinzel',serif;font-size:10px;
+  opacity:0;transition:opacity var(--transition);
+  overflow:hidden;text-overflow:ellipsis;
+}
+#left-nav:hover .nav-set-label{opacity:1}
+
+/* ========== RIGHT NAV ========== */
+#right-nav{
+  position:fixed;top:0;right:0;height:100vh;
+  width:var(--nav-w);z-index:1000;
+  background:linear-gradient(180deg,var(--nav-bg-start) 0%,var(--nav-bg-end) 100%);
+  border-left:1px solid var(--nav-border);
+  overflow:hidden;transition:width var(--transition);
+  display:flex;flex-direction:column;
+}
+#right-nav:hover{width:var(--nav-w-open)}
+.nav-page-item{
+  display:flex;align-items:center;padding:14px 12px;
+  cursor:none;transition:background .2s;
+  white-space:nowrap;overflow:hidden;
+  border-bottom:1px solid var(--line-soft);
+}
+.nav-page-item:hover,.nav-page-item.active{background:var(--nav-item-active)}
+.nav-page-icon{font-size:22px;flex-shrink:0;width:36px;text-align:center}
+.nav-page-label{
+  margin-left:8px;font-family:'Cinzel',serif;font-size:11px;
+  color:var(--gold);letter-spacing:.5px;
+  opacity:0;transition:opacity var(--transition);
+}
+#right-nav:hover .nav-page-label{opacity:1}
+#right-nav-header{
+  padding:0;text-align:center;min-height:60px;
+  border-bottom:1px solid var(--line-strong);
+  display:flex;align-items:center;justify-content:center;
+}
+#right-nav-header .icon{font-size:22px}
+
+/* ========== PAGE HEADER ========== */
+.page-header{
+  text-align:center;padding:30px 0 20px;
+  background:linear-gradient(135deg,var(--page-header-bg-1),var(--page-header-bg-2));
+  border-radius:var(--set-radius);border:1px solid var(--line-strong);
+  margin-bottom:28px;position:relative;overflow:hidden;
+}
+.page-header::before{
+  content:'✦ ✦ ✦';position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  color:var(--gold);font-size:10px;opacity:.5;letter-spacing:8px;
+}
+.page-header h1{
+  font-size:clamp(1.4rem,3vw,2.4rem);
+  color:var(--gold);text-shadow:0 0 20px rgba(212,175,55,.5);
+  margin-bottom:6px;
+}
+.page-header p{color:var(--parchment-mid);font-style:italic;font-size:.9rem}
+
+/* ========== GLOBAL COUNTDOWN ========== */
+.page-header.has-countdown{padding-bottom:24px}
+.countdown-banner{
+  margin:18px auto 0;max-width:680px;position:relative;overflow:hidden;
+  padding:14px 18px 16px;border-radius:18px;
+  border:1px solid var(--line-strong);
+  background:linear-gradient(135deg,var(--surface-3),var(--surface-1));
+  box-shadow:0 10px 30px rgba(0,0,0,.14),inset 0 0 0 1px rgba(255,255,255,.08);
+  animation:countdown-float 4.4s ease-in-out infinite;
+}
+.countdown-banner::before,.countdown-banner::after{
+  content:'✦ ✧ ✦ ✧ ✦';position:absolute;left:0;right:0;pointer-events:none;
+  font-size:11px;letter-spacing:10px;text-align:center;color:var(--gold-light);opacity:.5;
+}
+.countdown-banner::before{top:7px;animation:countdown-shimmer 3.8s linear infinite}
+.countdown-banner::after{bottom:6px;animation:countdown-shimmer 4.6s linear infinite reverse}
+.countdown-kicker{
+  display:block;margin-bottom:6px;font-family:'Cinzel',serif;font-size:10px;
+  letter-spacing:2px;text-transform:uppercase;color:var(--gold);opacity:.9;
+}
+.countdown-line{
+  margin:0 auto 10px;max-width:600px;padding:0 6px;line-height:1.45;
+  color:var(--parchment);font-size:.93rem;text-shadow:0 0 10px rgba(255,255,255,.08);
+}
+.countdown-time{
+  display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+}
+.countdown-unit{
+  min-width:116px;padding:10px 12px;border-radius:14px;
+  background:linear-gradient(135deg,var(--surface-2),var(--surface-0));
+  border:1px solid var(--line-mid);
+  box-shadow:inset 0 0 18px rgba(255,255,255,.05),0 0 18px rgba(123,47,191,.08);
+  position:relative;
+}
+.countdown-unit::before{
+  content:'✦';position:absolute;top:6px;right:10px;font-size:10px;color:var(--gold-light);
+  opacity:.6;animation:countdown-twinkle 1.8s ease-in-out infinite;
+}
+.countdown-value{
+  display:block;font-family:'Cinzel Decorative',serif;font-size:clamp(1.25rem,2.4vw,1.9rem);
+  color:var(--gold);line-height:1.1;text-shadow:0 0 14px rgba(212,175,55,.28);
+}
+.countdown-unit-label{
+  display:block;margin-top:3px;font-family:'Cinzel',serif;font-size:10px;
+  letter-spacing:1.2px;text-transform:uppercase;color:var(--parchment-mid);
+}
+.countdown-sep{
+  font-family:'Cinzel Decorative',serif;font-size:1.4rem;color:var(--gold-light);
+  opacity:.85;transform:translateY(-2px);animation:countdown-twinkle 1.6s ease-in-out infinite;
+}
+.countdown-deadline{
+  margin-top:9px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:1.1px;
+  color:var(--parchment-mid);opacity:.82;
+}
+.countdown-banner.ended .countdown-line{color:var(--gold)}
+@keyframes countdown-float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-4px)}
+}
+@keyframes countdown-shimmer{
+  0%{transform:translateX(-10px);opacity:.25}
+  50%{transform:translateX(10px);opacity:.65}
+  100%{transform:translateX(-10px);opacity:.25}
+}
+@keyframes countdown-twinkle{
+  0%,100%{opacity:.38;transform:scale(.92)}
+  50%{opacity:1;transform:scale(1.08)}
+}
+@media (max-width:700px){
+  .countdown-banner{padding:14px 12px 16px}
+  .countdown-time{gap:6px}
+  .countdown-unit{min-width:92px;padding:9px 8px}
+  .countdown-sep{font-size:1.1rem}
+  .countdown-line{font-size:.86rem}
+}
+
+/* ========== ALBUM PAGE ========== */
+#album-search-bar{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 16px;margin-bottom:24px;
+  background:var(--search-bg);
+  border:1px solid var(--line-strong);border-radius:12px;
+}
+#album-search-bar label{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);white-space:nowrap}
+#album-search-input{
+  flex:1;padding:8px 14px;border-radius:8px;
+  border:1px solid var(--input-border);
+  background:var(--input-bg);
+  color:var(--parchment);font-size:13px;outline:none;
+  transition:border .2s;
+}
+#album-search-input:focus{border-color:var(--gold)}
+#album-search-input::placeholder{color:var(--parchment-mid);opacity:.6}
+
+/* ========== ACCOUNT TABS ON ALBUM ========== */
+.album-account-tabs{
+  display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;
+}
+.acct-tab{
+  padding:6px 14px;border-radius:20px;border:1px solid var(--input-border);
+  background:var(--surface-2);color:var(--parchment-mid);
+  font-family:'Cinzel',serif;font-size:10px;cursor:none;
+  transition:.2s;
+}
+.acct-tab.active,.acct-tab:hover{background:var(--nav-item-active);color:var(--gold);border-color:var(--gold)}
+
+/* ========== ACCOUNT COLUMNS ========== */
+.album-accounts-row{
+  display:flex;gap:0;
+  align-items:flex-start;
+  width:100%;
+}
+.album-account-col{
+  flex:1;min-width:0;
+  border-right:2px solid var(--account-divider);
+  padding:0 10px;
+}
+.album-account-col:last-child{border-right:none}
+.account-col-header{
+  text-align:center;padding:10px 6px;
+  font-family:'Cinzel',serif;font-size:11px;
+  color:var(--gold-light);letter-spacing:.5px;
+  border-bottom:1px solid var(--line-mid);
+  margin-bottom:8px;
+}
+.account-col-header .acct-name{font-size:13px;font-weight:700;margin-bottom:2px}
+.account-col-header .acct-meta{font-size:9px;color:var(--parchment-mid);opacity:.7}
+
+/* ========== SET BLOCK ========== */
+.set-block{
+  border-radius:var(--set-radius);
+  border:2px solid;
+  margin-bottom:32px;overflow:hidden;
+  box-shadow:var(--shadow);
+  position:relative;
+  scroll-margin-top:80px;
+}
+.set-header{
+  padding:14px 18px;
+  display:grid;grid-template-columns:1fr auto;
+  align-items:center;gap:8px;
+}
+.set-header-left .set-number{
+  font-family:'Cinzel',serif;font-size:9px;letter-spacing:2px;opacity:.7;
+  text-transform:uppercase;margin-bottom:2px;
+}
+.set-header-left .set-name{
+  font-family:'Cinzel Decorative',serif;
+  font-size:clamp(10px,1.5vw,15px);
+  text-shadow:0 1px 4px rgba(0,0,0,.5);
+}
+.set-progress-bar-wrap{
+  width:80px;text-align:right;
+}
+.set-progress-bar{
+  height:5px;border-radius:3px;background:var(--set-progress-track);overflow:hidden;
+  margin-top:4px;
+}
+.set-progress-fill{height:100%;border-radius:3px;transition:width .5s ease;background:var(--set-progress-fill)}
+.set-progress-text{font-family:'Cinzel',serif;font-size:9px;opacity:.8}
+
+/* PER-ACCOUNT SET BODY */
+.set-accounts-row{
+  display:flex;
+  background:var(--set-row-bg);
+}
+.set-account-col{
+  flex:1;min-width:0;
+  padding:8px 10px 12px;
+  border-right:2px solid var(--set-divider);
+}
+.set-account-col:last-child{border-right:none}
+.set-acct-mini-header{
+  text-align:center;font-family:'Cinzel',serif;font-size:9px;
+  padding:4px;margin-bottom:6px;opacity:.6;
+}
+.set-acct-mini-info{font-size:8px;opacity:.5;margin-bottom:6px;text-align:center}
+.sticker-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:5px;
+}
+
+/* ========== STICKER CARD ========== */
+.sticker-card{
+  border-radius:var(--card-radius);
+  border:2px solid var(--line-soft);
+  padding:6px 4px 5px;
+  position:relative;overflow:hidden;
+  cursor:none;
+  transition:filter .2s, transform .1s;
+  min-height:110px;
+  display:flex;flex-direction:column;align-items:center;
+  background:var(--card-bg);
+  user-select:none;
+}
+.sticker-card.missing{
+  filter:grayscale(.9) brightness(.55);
+  background:var(--missing-bg);
+}
+.sticker-card.have{filter:none}
+.sticker-card:hover{animation:shake .4s ease}
+.sticker-card.gold-border{
+  border:2px solid var(--gold-rim);
+  box-shadow:0 0 8px rgba(240,192,64,.4),inset 0 0 6px rgba(240,192,64,.1);
+}
+.sticker-card.gold-border.have{
+  box-shadow:0 0 14px rgba(240,192,64,.6),inset 0 0 8px rgba(240,192,64,.15);
+}
+
+@keyframes shake{
+  0%,100%{transform:rotate(0deg)}
+  20%{transform:rotate(-2deg) scale(1.03)}
+  40%{transform:rotate(2deg) scale(1.05)}
+  60%{transform:rotate(-1.5deg) scale(1.04)}
+  80%{transform:rotate(1.5deg) scale(1.03)}
+}
+
+/* Stars */
+.sticker-stars{
+  display:flex;justify-content:center;gap:1px;
+  margin-bottom:3px;flex-wrap:wrap;
+}
+.star{font-size:8px;line-height:1}
+.star.gold-star{color:#ffd700;text-shadow:0 0 3px rgba(255,215,0,.8)}
+.star.regular-star{color:var(--parchment-mid);opacity:.7}
+
+/* Sticker image area */
+.sticker-icon-area{
+  width:100%;flex:1;
+  display:flex;align-items:center;justify-content:center;
+  padding:4px;
+  font-size:22px;
+  min-height:32px;
+}
+
+/* Name banner */
+.sticker-banner{
+  width:calc(100% + 8px);margin-left:-4px;
+  padding:3px 4px;
+  text-align:center;
+  font-family:'Cinzel',serif;font-size:7px;
+  font-weight:700;line-height:1.2;
+  letter-spacing:.22px;
+  margin-top:auto;
+  word-break:break-word;
+  position:relative;
+  z-index:2;
+  text-shadow:0 1px 2px rgba(0,0,0,.55);
+}
+
+.sticker-banner.gold-banner{
+  border-top:1px solid rgba(255,244,199,.4);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.2);
+}
+.sticker-banner.gold-banner.gold-banner-missing{
+  filter:none;
+}
+.sticker-banner.gold-banner.gold-banner-have{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 0 10px rgba(240,192,64,.18);
+}
+
+.sticker-card.gold-border.have::before{
+  content:'';
+  position:absolute;
+  inset:-20% auto -20% -55%;
+  width:42%;
+  background:linear-gradient(115deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.08) 35%,rgba(255,249,214,.62) 50%,rgba(255,255,255,.1) 65%,rgba(255,255,255,0) 100%);
+  transform:skewX(-25deg);
+  animation:gold-glare-sweep 2.8s ease-in-out infinite;
+  pointer-events:none;
+  z-index:1;
+}
+.sticker-card.gold-border.have::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:radial-gradient(circle at 18% 15%,rgba(255,244,196,.18),transparent 26%);
+  pointer-events:none;
+  z-index:0;
+}
+@keyframes gold-glare-sweep{
+  0%{left:-55%;opacity:0}
+  15%{opacity:.18}
+  45%{opacity:.92}
+  65%{opacity:.28}
+  100%{left:125%;opacity:0}
+}
+
+/* Duplicate controls */
+.dup-controls{
+  display:flex;align-items:center;justify-content:center;gap:2px;
+  margin-top:4px;width:100%;
+}
+.dup-btn{
+  width:16px;height:16px;border-radius:50%;
+  border:1px solid var(--line-contrast);
+  background:var(--surface-strong);
+  color:var(--parchment);font-size:12px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  transition:.15s;padding:0;
+}
+.dup-btn:hover{background:var(--nav-item-active);border-color:var(--gold)}
+.dup-input{
+  width:26px;height:16px;text-align:center;
+  border:1px solid var(--line-mid);
+  border-radius:4px;background:var(--input-solid-bg);
+  color:var(--parchment);font-size:9px;font-family:'Cinzel',serif;
+  padding:0;
+}
+
+/* ========== PIXIE DUST BURST ========== */
+.pixie-burst{
+  position:fixed;pointer-events:none;z-index:9999;
+}
+.pixie-particle{
+  position:absolute;width:5px;height:5px;border-radius:50%;
+  animation:pixie-fly .9s forwards;
+}
+@keyframes pixie-fly{
+  0%{opacity:1;transform:translate(0,0) scale(1)}
+  100%{opacity:0;transform:var(--tx,0) var(--ty,0) scale(0)}
+}
+
+/* Wand animation on card */
+.wand-overlay{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:10;
+  display:flex;align-items:center;justify-content:center;
+  animation:wand-magic .8s forwards;
+}
+@keyframes wand-magic{
+  0%{opacity:0;transform:rotate(-30deg) scale(.5)}
+  30%{opacity:1;transform:rotate(10deg) scale(1.1)}
+  70%{opacity:1;transform:rotate(-5deg) scale(1)}
+  100%{opacity:0;transform:rotate(20deg) scale(.8) translate(30px,-20px)}
+}
+
+/* ========== CELEBRATION ========== */
+#celebration-overlay{
+  position:fixed;top:0;left:0;width:100vw;height:100vh;
+  pointer-events:none;z-index:9990;display:none;
+}
+#celebration-overlay.active{display:block}
+.celeb-wand{
+  position:absolute;font-size:50px;
+  animation:celeb-wand-fly 2.5s forwards;
+  pointer-events:none;
+}
+@keyframes celeb-wand-fly{
+  0%{transform:translate(-100px,50vh) rotate(-30deg) scale(.5);opacity:0}
+  20%{opacity:1;transform:translate(30vw,20vh) rotate(15deg) scale(1.2)}
+  60%{transform:translate(70vw,35vh) rotate(-10deg) scale(1)}
+  100%{transform:translate(110vw,60vh) rotate(30deg) scale(.8);opacity:0}
+}
+.celeb-particle{
+  position:absolute;
+  animation:celeb-rain var(--dur,2s) var(--delay,0s) forwards;
+}
+@keyframes celeb-rain{
+  0%{opacity:1;transform:translate(0,-20px) scale(1)}
+  100%{opacity:0;transform:translate(var(--tx,0),100vh) scale(.3) rotate(var(--rot,360deg))}
+}
+
+/* ========== NOTIFICATIONS ========== */
+#notif-container{
+  position:fixed;top:20px;right:80px;
+  z-index:9995;display:flex;flex-direction:column;gap:10px;
+  max-width:300px;pointer-events:none;
+}
+.notif-banner{
+  padding:12px 18px;border-radius:12px;
+  border:1px solid rgba(212,175,55,.4);
+  background:linear-gradient(135deg,var(--notif-bg-start),var(--notif-bg-end));
+  backdrop-filter:blur(10px);
+  font-family:'Cinzel',serif;font-size:11px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5),0 0 20px rgba(212,175,55,.2);
+  animation:notif-slide .4s ease, notif-fade 4s 2s forwards;
+  pointer-events:none;line-height:1.5;
+}
+.notif-banner.success{border-color:rgba(80,200,80,.4);color:#90ee90}
+.notif-banner.gold{border-color:var(--gold);color:var(--gold-light)}
+.notif-banner.info{border-color:rgba(100,150,255,.4);color:#aabbff}
+@keyframes notif-slide{from{transform:translateX(120%);opacity:0}to{transform:none;opacity:1}}
+@keyframes notif-fade{to{opacity:0;transform:translateX(120%)}}
+
+/* Left notification for trades */
+#left-notif-container{
+  position:fixed;top:20px;left:80px;
+  z-index:9995;display:flex;flex-direction:column;gap:10px;
+  max-width:280px;pointer-events:none;
+}
+
+/* ========== MODAL ========== */
+#modal-overlay{
+  position:fixed;inset:0;background:var(--overlay);
+  z-index:5000;display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+#modal-overlay.open{display:flex}
+#modal-box{
+  background:linear-gradient(135deg,var(--modal-bg-start),var(--modal-bg-end));
+  border:2px solid var(--gold);border-radius:20px;
+  padding:30px;max-width:560px;width:90%;
+  max-height:85vh;overflow-y:auto;
+  box-shadow:0 0 40px rgba(212,175,55,.3);
+}
+.modal-title{
+  font-family:'Cinzel Decorative',serif;font-size:1.3rem;
+  color:var(--gold);margin-bottom:20px;text-align:center;
+}
+.form-group{margin-bottom:16px}
+.form-group label{
+  display:block;font-family:'Cinzel',serif;font-size:11px;
+  color:var(--gold);letter-spacing:.5px;margin-bottom:6px;
+}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:10px 14px;border-radius:8px;
+  border:1px solid rgba(212,175,55,.35);
+  background:rgba(212,175,55,.07);color:var(--parchment);
+  font-size:13px;outline:none;transition:border .2s;
+}
+.form-group input:focus,.form-group select:focus{border-color:var(--gold)}
+.modal-actions{display:flex;gap:12px;justify-content:center;margin-top:24px;flex-wrap:wrap}
+.btn{
+  padding:10px 22px;border-radius:10px;border:1px solid;
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.5px;
+  cursor:none;transition:.2s;
+}
+.btn-gold{
+  border-color:var(--gold);background:linear-gradient(135deg,rgba(212,175,55,.25),rgba(212,175,55,.1));
+  color:var(--gold-light);
+}
+.btn-gold:hover{background:linear-gradient(135deg,rgba(212,175,55,.4),rgba(212,175,55,.2));box-shadow:0 0 12px rgba(212,175,55,.3)}
+.btn-ghost{
+  border-color:rgba(255,255,255,.2);background:transparent;color:var(--parchment-mid);
+}
+.btn-ghost:hover{background:rgba(255,255,255,.06)}
+.btn-danger{
+  border-color:rgba(220,50,50,.5);background:rgba(220,50,50,.1);color:#ff8080;
+}
+.btn-danger:hover{background:rgba(220,50,50,.2)}
+
+/* ========== ACCOUNTS PAGE ========== */
+.accounts-grid{display:flex;flex-direction:column;gap:16px}
+.account-card{
+  border:1px solid var(--line-strong);border-radius:14px;
+  padding:18px 22px;
+  background:linear-gradient(135deg,var(--surface-2),var(--surface-4));
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.account-card-info{flex:1;min-width:200px}
+.account-card-info h3{
+  font-family:'Cinzel',serif;font-size:1rem;color:var(--gold);margin-bottom:6px;
+}
+.account-card-info .meta{font-size:.8rem;color:var(--parchment-mid);opacity:.7;margin-bottom:2px}
+.account-card-actions{display:flex;gap:8px;flex-wrap:wrap}
+.account-card.hidden-account{opacity:.5}
+.drag-handle{cursor:none;color:var(--gold);opacity:.4;font-size:18px;margin-right:4px}
+
+/* Order controls */
+.order-btns{display:flex;flex-direction:column;gap:2px}
+.order-btn{
+  padding:3px 8px;border-radius:5px;border:1px solid rgba(212,175,55,.25);
+  background:var(--surface-4);color:var(--gold);font-size:10px;cursor:none;
+}
+.order-btn:hover{background:rgba(212,175,55,.2)}
+
+/* ========== PROGRESS PAGE ========== */
+.progress-account-block{
+  border:1px solid var(--line-strong);border-radius:14px;
+  padding:20px;margin-bottom:20px;
+  background:var(--surface-0);
+}
+.progress-account-block h3{
+  font-family:'Cinzel Decorative',serif;font-size:1rem;
+  color:var(--gold);margin-bottom:14px;
+  padding-bottom:10px;border-bottom:1px solid var(--line-mid);
+}
+.progress-stat-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+.progress-stat{
+  flex:1;min-width:110px;text-align:center;
+  padding:12px;border-radius:10px;
+  background:var(--surface-2);border:1px solid var(--line-soft);
+}
+.progress-stat .stat-val{
+  font-family:'Cinzel Decorative',serif;font-size:1.5rem;
+  color:var(--gold);margin-bottom:4px;
+}
+.progress-stat .stat-label{font-size:.7rem;color:var(--parchment-mid);opacity:.7;font-family:'Cinzel',serif}
+.progress-bar-row{margin-bottom:10px}
+.progress-bar-label{
+  display:flex;justify-content:space-between;
+  font-family:'Cinzel',serif;font-size:10px;color:var(--parchment-mid);
+  margin-bottom:4px;
+}
+.progress-bar-track{
+  height:8px;border-radius:4px;background:var(--surface-strong);overflow:hidden;
+}
+.progress-bar-fill{
+  height:100%;border-radius:4px;
+  background:linear-gradient(90deg,var(--magic),var(--gold));
+  transition:width .6s ease;
+}
+.progress-sets-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:8px;margin-top:12px;
+}
+.progress-set-pill{
+  padding:6px 10px;border-radius:8px;
+  font-family:'Cinzel',serif;font-size:9px;
+  text-align:center;border:1px solid var(--line-soft);
+  background:var(--surface-2);
+}
+.progress-set-pill.complete{background:rgba(80,200,80,.15);border-color:rgba(80,200,80,.3);color:#90ee90}
+.progress-set-pill .set-pct{font-size:11px;font-weight:700;display:block;margin-bottom:2px}
+
+/* ========== TRADE PLANNER ========== */
+.trade-tabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.trade-tab{
+  padding:8px 18px;border-radius:10px;
+  border:1px solid var(--line-strong);background:transparent;
+  color:var(--parchment-mid);font-family:'Cinzel',serif;font-size:10px;
+  cursor:none;transition:.2s;
+}
+.trade-tab.active,.trade-tab:hover{
+  background:var(--nav-item-active);color:var(--gold);border-color:var(--gold);
+}
+.trade-section{display:none}
+.trade-section.active{display:block}
+
+/* Event modes */
+.event-modes{
+  display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;
+}
+.event-mode-card{
+  flex:1;min-width:220px;padding:16px;border-radius:12px;
+  border:1px solid var(--line-strong);background:var(--surface-1);
+}
+.event-mode-card h4{
+  font-family:'Cinzel',serif;color:var(--gold);font-size:.85rem;margin-bottom:10px;
+}
+.mode-toggle{
+  display:flex;align-items:center;gap:10px;margin-bottom:10px;
+}
+.toggle-switch{
+  position:relative;width:44px;height:24px;cursor:none;
+}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{
+  position:absolute;inset:0;border-radius:12px;
+  background:rgba(255,255,255,.15);transition:.3s;
+}
+.toggle-slider::before{
+  content:'';position:absolute;width:18px;height:18px;
+  left:3px;bottom:3px;border-radius:50%;
+  background:var(--parchment-mid);transition:.3s;
+}
+input:checked+.toggle-slider{background:linear-gradient(135deg,var(--magic),var(--gold))}
+input:checked+.toggle-slider::before{transform:translateX(20px)}
+.mode-active-badge{
+  padding:3px 10px;border-radius:20px;
+  font-family:'Cinzel',serif;font-size:9px;
+  background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.4);
+  color:var(--gold);
+}
+.mode-active-badge.gold-blitz{background:rgba(255,215,0,.15);border-color:rgba(255,215,0,.4);color:#ffd700}
+.mode-active-badge.trade-fest{background:rgba(80,200,80,.12);border-color:rgba(80,200,80,.3);color:#90ee90}
+.event-schedule-form{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.event-schedule-form input,.event-schedule-form select{
+  padding:6px 10px;border-radius:6px;border:1px solid var(--input-border);
+  background:var(--input-bg);color:var(--parchment);font-size:11px;outline:none;
+}
+
+/* Smart Planner */
+.smart-planner-controls{
+  display:flex;flex-direction:column;gap:14px;margin-bottom:20px;
+}
+.smart-options{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;
+}
+.smart-option{
+  padding:10px;border-radius:10px;border:1px solid var(--line-soft);
+  background:var(--surface-1);cursor:none;transition:.2s;
+}
+.smart-option:hover,.smart-option.selected{
+  background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.3);
+}
+.smart-option h5{font-family:'Cinzel',serif;font-size:9px;color:var(--gold);margin-bottom:4px}
+.smart-option p{font-size:8px;color:var(--parchment-mid);opacity:.7;line-height:1.4}
+
+/* Trade Calendar */
+.trade-calendar{margin-top:20px}
+.calendar-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;padding:10px 0;
+}
+.calendar-header h3{font-family:'Cinzel Decorative',serif;font-size:1rem;color:var(--gold)}
+.calendar-grid{
+  display:grid;grid-template-columns:repeat(7,1fr);gap:6px;
+}
+.cal-day-header{
+  text-align:center;font-family:'Cinzel',serif;font-size:9px;
+  color:var(--parchment-mid);opacity:.6;padding:4px;
+}
+.cal-day{
+  min-height:70px;border-radius:8px;padding:5px;
+  border:1px solid rgba(255,255,255,.07);
+  background:var(--surface-0);cursor:none;transition:.2s;
+}
+.cal-day:hover{background:rgba(212,175,55,.05);border-color:rgba(212,175,55,.15)}
+.cal-day.today{border-color:rgba(212,175,55,.4);background:rgba(212,175,55,.06)}
+.cal-day.has-trades{border-color:rgba(123,47,191,.4)}
+.cal-day.set-complete-day{border-color:rgba(80,200,80,.4);background:rgba(80,200,80,.05)}
+.cal-day-num{
+  font-family:'Cinzel',serif;font-size:10px;color:var(--parchment-mid);
+  margin-bottom:3px;
+}
+.cal-trade-dot{
+  width:5px;height:5px;border-radius:50%;background:var(--magic-light);
+  display:inline-block;margin:1px;
+}
+.cal-complete-dot{background:#90ee90}
+
+/* Daily checklist */
+.daily-checklist{margin-top:20px;padding:16px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface-1)}
+.checklist-day-header{
+  font-family:'Cinzel Decorative',serif;font-size:.9rem;color:var(--gold);margin-bottom:8px;
+}
+.checklist-set-closures{
+  padding:8px 12px;border-radius:8px;background:rgba(80,200,80,.08);
+  border:1px solid rgba(80,200,80,.2);margin-bottom:12px;
+  font-size:11px;color:#90ee90;font-family:'Cinzel',serif;
+}
+.trade-checklist-item{
+  display:flex;align-items:center;gap:10px;padding:8px 10px;
+  border-radius:8px;background:var(--surface-1);margin-bottom:6px;
+  border:1px solid var(--line-soft);
+}
+.trade-check{
+  width:18px;height:18px;border-radius:4px;border:1px solid rgba(212,175,55,.4);
+  background:transparent;cursor:none;flex-shrink:0;transition:.2s;
+  display:flex;align-items:center;justify-content:center;
+}
+.trade-check.done{background:rgba(80,200,80,.3);border-color:rgba(80,200,80,.5)}
+.trade-check.done::after{content:'✓';color:#90ee90;font-size:10px}
+.trade-item-text{font-size:11px;color:var(--parchment-mid);flex:1;line-height:1.4}
+.trade-item-text.done-text{text-decoration:line-through;opacity:.5}
+
+/* Manual trade planner */
+.manual-trade-area{padding:14px;border-radius:12px;border:1px solid rgba(212,175,55,.15);background:var(--surface-0);margin-bottom:14px}
+.manual-trade-area h4{font-family:'Cinzel',serif;color:var(--gold);font-size:.8rem;margin-bottom:10px}
+.trade-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;
+  padding:8px;border-radius:8px;background:rgba(255,255,255,.03);
+}
+.trade-select{
+  padding:5px 10px;border-radius:6px;border:1px solid rgba(212,175,55,.25);
+  background:var(--input-bg);color:var(--parchment);font-size:11px;
+  outline:none;flex:1;min-width:100px;
+}
+
+/* ========== IMPORT/EXPORT ========== */
+.export-account-check{
+  display:flex;align-items:center;gap:10px;padding:10px;
+  border-radius:8px;background:rgba(255,255,255,.03);margin-bottom:8px;
+  border:1px solid rgba(255,255,255,.06);cursor:none;
+}
+.export-account-check:hover{background:rgba(212,175,55,.05)}
+.export-check-box{
+  width:18px;height:18px;border-radius:4px;border:1px solid rgba(212,175,55,.4);
+  display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.export-check-box.checked{background:rgba(212,175,55,.3);border-color:var(--gold)}
+.export-check-box.checked::after{content:'✓';color:var(--gold);font-size:10px}
+
+/* ========== EMPTY STATES ========== */
+.empty-state{
+  text-align:center;padding:60px 20px;
+  font-family:'Cinzel',serif;color:var(--parchment-mid);opacity:.5;
+}
+.empty-state .icon{font-size:48px;margin-bottom:12px}
+
+/* ========== UTILITIES ========== */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--line-strong),transparent);margin:20px 0}
+.gold-text{color:var(--gold)}
+.text-small{font-size:.8rem}
+.flex-center{display:flex;align-items:center;justify-content:center}
+.mt-auto{margin-top:auto}
+.w-full{width:100%}
+.hidden{display:none!important}
+.section-title{
+  font-family:'Cinzel Decorative',serif;font-size:1.1rem;
+  color:var(--gold);margin-bottom:16px;
+  padding-bottom:8px;border-bottom:1px solid var(--line-strong);
+}
+
+/* ========== GOLD LOCKED ========== */
+.gold-lock-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:20px;
+  border:1px solid rgba(255,215,0,.5);background:rgba(255,215,0,.1);
+  color:#ffd700;font-family:'Cinzel',serif;font-size:9px;font-weight:600;
+  vertical-align:middle;
+}
+
+
+.nav-theme-toggle{
+  width:100%;min-height:60px;border:0;background:transparent;color:var(--gold);
+  display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px;
+  cursor:none;font-family:'Cinzel',serif;
+}
+.nav-theme-toggle:hover{background:var(--nav-item-active)}
+.nav-theme-toggle .icon{font-size:20px;flex-shrink:0;width:36px;text-align:center}
+.nav-theme-toggle .label{font-size:11px;letter-spacing:.5px;opacity:0;transition:opacity var(--transition);white-space:nowrap}
+#right-nav:hover .nav-theme-toggle .label{opacity:1}
+body[data-theme="enchanted"] .nav-page-icon,
+body[data-theme="enchanted"] #right-nav-header .icon,
+body[data-theme="enchanted"] #left-nav-header .icon{filter:drop-shadow(0 0 6px rgba(88,207,255,.25))}
+body[data-theme="enchanted"] .page-header,
+body[data-theme="enchanted"] #album-search-bar,
+body[data-theme="enchanted"] .account-card,
+body[data-theme="enchanted"] .progress-account-block,
+body[data-theme="enchanted"] .daily-checklist,
+body[data-theme="enchanted"] .event-mode-card,
+body[data-theme="enchanted"] #modal-box,
+body[data-theme="enchanted"] .notif-banner{backdrop-filter:blur(12px)}
+
+
+
+/* ========== FAN DISCLAIMER FOOTER ========== */
+#site-disclaimer{
+  margin:0 24px 26px;
+  padding:16px 18px;
+  border-radius:14px;
+  border:1px solid var(--line-strong);
+  background:linear-gradient(135deg,var(--surface-1),var(--surface-0));
+  box-shadow:var(--shadow);
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+#site-disclaimer::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 20% 25%,rgba(255,255,255,.16),transparent 28%),
+             radial-gradient(circle at 78% 32%,rgba(127,223,255,.14),transparent 24%),
+             radial-gradient(circle at 52% 78%,rgba(124,99,255,.14),transparent 22%);
+  opacity:.8;
+}
+#site-disclaimer .footer-sparkles{
+  position:relative;z-index:1;
+  font-size:11px;letter-spacing:8px;color:var(--gold);
+  margin-bottom:8px;opacity:.85;
+}
+#site-disclaimer p{
+  position:relative;z-index:1;
+  font-size:.8rem;line-height:1.55;color:var(--parchment-mid);
+}
+#site-disclaimer strong{color:var(--gold)}
+
+/* ========== RESPONSIVE ========== */
+@media(max-width:768px){
+  :root{--nav-w:45px;--nav-w-open:180px}
+  #main-content{padding:0}
+  .page{padding:14px 10px 50px}
+  .sticker-card{min-height:90px}
+  .sticker-banner{font-size:6px}
+  .dup-input{width:22px}
+}
+@media(max-width:480px){
+  .set-accounts-row{flex-direction:column}
+  .set-account-col{border-right:none;border-bottom:2px solid var(--set-divider)}
+  .set-account-col:last-child{border-bottom:none}
+}
+
+/* ========== SPECIAL EFFECTS ========== */
+.have-flash{animation:have-flash .4s ease}
+@keyframes have-flash{
+  0%{box-shadow:none}
+  50%{box-shadow:0 0 20px rgba(212,175,55,.8),0 0 40px rgba(123,47,191,.4)}
+  100%{box-shadow:none}
+}
+
+/* Parchment texture on page bg */
+.page-bg{
+  position:fixed;inset:0;pointer-events:none;z-index:0;opacity:var(--page-bg-opacity);
+  background-image:repeating-linear-gradient(45deg,#d4af37 0,#d4af37 1px,transparent 0,transparent 50%);
+  background-size:20px 20px;
+}
+
+/* Star rating colors */
+.stars-1 .star{color:#aaccff}
+.stars-2 .star{color:#88ffaa}
+.stars-3 .star{color:#ffcc44}
+.stars-4 .star{color:#ff9933}
+.stars-5 .star{color:#ff6699}
+.stars-6 .star{color:var(--gold);text-shadow:0 0 6px rgba(212,175,55,.8)}
+
+/* Account column scroll sync */
+.album-container{width:100%}
+
+/* ========== LOADING ========== */
+#loading-screen{
+  position:fixed;inset:0;background:var(--bg);z-index:99990;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .5s;
+}
+#loading-screen.fade-out{opacity:0;pointer-events:none}
+#loading-screen h1{
+  font-family:'Cinzel Decorative',serif;font-size:2rem;color:var(--gold);
+  text-shadow:0 0 30px rgba(212,175,55,.6);margin-bottom:12px;
+  animation:pulse-gold 1.5s infinite;
+}
+@keyframes pulse-gold{0%,100%{opacity:.7}50%{opacity:1}}
+#loading-screen p{color:var(--parchment-mid);font-style:italic;opacity:.6}
+.loading-wand{font-size:40px;animation:wand-spin 1s linear infinite;margin-bottom:20px}
+@keyframes wand-spin{to{transform:rotate(360deg)}}
+
+
+
+/* ========== TUTORIAL MODE ========== */
+.nav-page-button{
+  width:100%;border:none;background:transparent;color:inherit;font:inherit;
+  text-align:left;cursor:none;
+}
+#tutorial-toggle.active{background:var(--nav-item-active)}
+#tutorial-overlay{
+  position:fixed;inset:0;z-index:6998;
+  background:rgba(7,6,18,.72);
+  opacity:0;pointer-events:none;transition:opacity .25s ease;
+}
+#tutorial-overlay.active{opacity:1}
+#tutorial-status-pill{
+  position:fixed;left:50%;top:18px;transform:translateX(-50%);
+  z-index:7003;display:none;
+  padding:10px 18px;border-radius:999px;
+  border:1px solid rgba(212,175,55,.38);
+  background:linear-gradient(135deg,rgba(22,12,44,.96),rgba(46,20,82,.96));
+  box-shadow:0 14px 34px rgba(0,0,0,.28),0 0 18px rgba(212,175,55,.18);
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.7px;color:var(--gold-light);
+}
+body.tutorial-mode #tutorial-status-pill{display:block}
+body.tutorial-nav-open #left-nav,body.tutorial-nav-open #right-nav{width:var(--nav-w-open)}
+body.tutorial-nav-open #main-content{margin-left:var(--nav-w-open);margin-right:var(--nav-w-open)}
+body.tutorial-mode #left-nav-search input,
+body.tutorial-mode #left-nav .nav-set-label,
+body.tutorial-mode #right-nav .nav-page-label,
+body.tutorial-mode #left-nav-header .label{opacity:1}
+.tutorial-highlight{
+  position:relative !important;z-index:7001 !important;
+  outline:3px solid rgba(245,215,110,.98);outline-offset:5px;
+  box-shadow:0 0 0 8px rgba(123,47,191,.24),0 0 26px rgba(245,215,110,.45) !important;
+  border-radius:14px;
+  animation:tutorial-pulse 1.5s ease-in-out infinite;
+}
+#tutorial-target-ring{
+  position:fixed;z-index:7000;display:none;pointer-events:none;
+  border-radius:18px;border:2px solid rgba(245,215,110,.98);
+  box-shadow:0 0 0 9999px rgba(7,6,18,.38),0 0 24px rgba(245,215,110,.36);
+  transition:all .25s ease;
+}
+#tutorial-target-ring.active{display:block}
+#tutorial-coachmark{
+  position:fixed;z-index:7002;display:none;pointer-events:auto;
+  width:min(360px,calc(100vw - 28px));
+  padding:18px 18px 16px;border-radius:20px;
+  background:linear-gradient(145deg,rgba(20,12,38,.98),rgba(35,16,65,.98));
+  border:1px solid rgba(212,175,55,.34);
+  box-shadow:0 22px 44px rgba(0,0,0,.38),0 0 26px rgba(212,175,55,.16);
+}
+body[data-theme="enchanted"] #tutorial-coachmark{
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(239,245,255,.98));
+  box-shadow:0 18px 42px rgba(104,111,191,.2),0 0 20px rgba(124,99,255,.12);
+}
+#tutorial-coachmark.active{display:block}
+.tutorial-step-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 10px;border-radius:999px;
+  background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.2);
+  color:var(--gold-light);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;text-transform:uppercase;
+}
+.tutorial-title{
+  margin:12px 0 8px;font-family:'Cinzel Decorative',serif;
+  font-size:1.05rem;color:var(--gold);
+}
+.tutorial-body{font-size:12px;line-height:1.6;color:var(--parchment-mid)}
+body[data-theme="enchanted"] .tutorial-body{color:#4a4470}
+.tutorial-tip{
+  margin-top:12px;padding:10px 12px;border-radius:12px;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  font-size:11px;line-height:1.5;color:var(--parchment);
+}
+body[data-theme="enchanted"] .tutorial-tip{background:rgba(124,99,255,.07);color:#2d2651}
+.tutorial-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;margin-top:15px}
+.tutorial-actions .left,.tutorial-actions .right{display:flex;gap:8px;flex-wrap:wrap}
+.tutorial-mini-note{margin-top:8px;font-size:10px;color:var(--parchment-mid);opacity:.75}
+.tutorial-theme-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.tutorial-theme-card{
+  width:100%;padding:12px 12px 11px;border-radius:16px;
+  border:1px solid var(--line-mid);background:rgba(255,255,255,.05);
+  color:var(--parchment);text-align:left;cursor:none;transition:.2s;
+}
+.tutorial-theme-card:hover{transform:translateY(-1px);border-color:var(--gold);box-shadow:0 10px 20px rgba(0,0,0,.18)}
+.tutorial-theme-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,175,55,.14),0 12px 24px rgba(0,0,0,.22)}
+.tutorial-theme-card.enchanted.selected{background:linear-gradient(145deg,rgba(88,207,255,.18),rgba(167,144,255,.16))}
+.tutorial-theme-card.wicked.selected{background:linear-gradient(145deg,rgba(212,175,55,.18),rgba(123,47,191,.16))}
+.tutorial-theme-card .theme-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-family:'Cinzel',serif;font-size:11px;letter-spacing:.4px;color:var(--gold)}
+.tutorial-theme-card .theme-icon{font-size:18px;line-height:1}
+.tutorial-theme-card .theme-desc{font-size:10px;line-height:1.45;color:var(--parchment-mid)}
+body[data-theme="enchanted"] .tutorial-theme-card{background:rgba(124,99,255,.06);color:#241c3f}
+body[data-theme="enchanted"] .tutorial-theme-card .theme-desc{color:#4a4470}
+body[data-theme="enchanted"] .tutorial-theme-card.selected{box-shadow:0 0 0 2px rgba(124,99,255,.12),0 12px 26px rgba(104,111,191,.16)}
+@keyframes tutorial-pulse{0%,100%{transform:translateZ(0) scale(1)}50%{transform:translateZ(0) scale(1.01)}}
+@media (max-width:900px){
+  body.tutorial-nav-open #main-content{margin-left:var(--nav-w);margin-right:var(--nav-w)}
+}
+
+/* ========== MOBILE TOUCH ========== */
+@media(hover:none){
+  .sticker-card:hover{animation:none}
+  .sticker-card:active{transform:scale(.97)}
+  #cursor-wand{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loading-wand">🪄</div>
+  <h1>Ever After Album</h1>
+  <p>Conjuring your enchanted stickers...</p>
+</div>
+
+<div class="page-bg"></div>
+
+<!-- Custom Cursor -->
+<div id="cursor-wand">
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <line x1="28" y1="4" x2="4" y2="28" stroke="#d4af37" stroke-width="2.5" stroke-linecap="round"/>
+    <rect x="24" y="1" width="7" height="5" rx="1.5" fill="#d4af37" transform="rotate(45 24 1)"/>
+    <circle cx="5" cy="27" r="2.5" fill="#b57bee"/>
+    <circle cx="20" cy="4" r="1.5" fill="#f5d76e" opacity=".7"/>
+    <circle cx="10" cy="14" r="1" fill="#d4af37" opacity=".5"/>
+  </svg>
+</div>
+
+<!-- Left Nav -->
+<nav id="left-nav">
+  <div id="left-nav-header">
+    <span class="icon">📚</span>
+    <span class="label">Sets</span>
+  </div>
+  <div id="left-nav-search">
+    <input type="text" id="left-search" placeholder="🔍 Search set or sticker...">
+  </div>
+  <div id="left-nav-sets"></div>
+</nav>
+
+<!-- Right Nav -->
+<nav id="right-nav">
+  <div id="right-nav-header"><button id="theme-toggle" class="nav-theme-toggle" type="button"><span class="icon" id="theme-toggle-icon">✨</span><span class="label" id="theme-toggle-label">Enchanted Mode</span></button></div>
+  <div id="right-nav-items">
+    <div class="nav-page-item active" data-page="album">
+      <span class="nav-page-icon">📖</span>
+      <span class="nav-page-label">Album</span>
+    </div>
+    <div class="nav-page-item" data-page="accounts">
+      <span class="nav-page-icon">👤</span>
+      <span class="nav-page-label">Accounts</span>
+    </div>
+    <div class="nav-page-item" data-page="progress">
+      <span class="nav-page-icon">📊</span>
+      <span class="nav-page-label">Progress</span>
+    </div>
+    <div class="nav-page-item" data-page="trade">
+      <span class="nav-page-icon">🤝</span>
+      <span class="nav-page-label">Trade Planner</span>
+    </div>
+    <button id="tutorial-toggle" class="nav-page-item nav-page-button" type="button">
+      <span class="nav-page-icon">🧭</span>
+      <span class="nav-page-label">Tutorial Mode</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div id="main-content">
+  <!-- ALBUM PAGE -->
+  <div id="page-album" class="page active">
+    <div class="page-header">
+      <h1>✨ Monopoly Ever After ✨</h1>
+      <p>Your Enchanted Sticker Album</p>
+    </div>
+    <div id="album-search-bar">
+      <label>🔍 Search:</label>
+      <input type="text" id="album-search-input" placeholder="Type set name or sticker name to jump...">
+    </div>
+    <div id="album-content"></div>
+  </div>
+
+  <!-- ACCOUNTS PAGE -->
+  <div id="page-accounts" class="page">
+    <div class="page-header">
+      <h1>👤 Account Management</h1>
+      <p>Manage your game accounts</p>
+    </div>
+    <div style="text-align:center;margin-bottom:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button id="accounts-add-btn" class="btn btn-gold" onclick="App.openAddAccount()">✦ Add Account</button>
+      <button id="accounts-export-btn" class="btn btn-ghost" onclick="App.openExportImport()">📤 Export / Import</button>
+    </div>
+    <div id="accounts-list" class="accounts-grid"></div>
+  </div>
+
+  <!-- PROGRESS PAGE -->
+  <div id="page-progress" class="page">
+    <div class="page-header">
+      <h1>📊 Album Progress</h1>
+      <p>Track your enchanted journey</p>
+    </div>
+    <div id="progress-content"></div>
+  </div>
+
+  <!-- TRADE PLANNER PAGE -->
+  <div id="page-trade" class="page">
+    <div class="page-header">
+      <h1>🤝 Trade Planner</h1>
+      <p>Strategize your sticker exchanges</p>
+    </div>
+    <div id="trade-content"></div>
+  </div>
+
+
+  <footer id="site-disclaimer" role="contentinfo">
+    <div class="footer-sparkles">✦ ✧ ✦</div>
+    <p><strong>Fan-Made Disclaimer:</strong> Monopoly GO!, Hasbro, Scopely, and any related names, characters, images, or trademarks belong to their respective owners. This site is an unofficial fan-made project and is not affiliated with, endorsed by, sponsored by, or associated with Hasbro, Scopely, or any related rights holders.</p>
+  </footer>
+
+</div>
+
+<!-- Notification containers -->
+<div id="notif-container"></div>
+<div id="left-notif-container"></div>
+
+<!-- Celebration overlay -->
+<div id="celebration-overlay"></div>
+
+<div id="tutorial-overlay"></div>
+<div id="tutorial-target-ring"></div>
+<div id="tutorial-status-pill">🧭 Tutorial Mode • Demo Data Loaded</div>
+<div id="tutorial-coachmark" aria-live="polite"></div>
+
+<!-- Modal -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// ALBUM DATA
+// ============================================================
+const ALBUM_SETS = [
+  {id:1,name:"Fairy Tale Objects",color:"#A86CA6",stickers:[
+    {name:"Glass Slipper",stars:1,isGold:false},{name:"Aladdin's lamp",stars:1,isGold:false},
+    {name:"Mermaid Comb",stars:1,isGold:false},{name:"Sew Good!",stars:1,isGold:false},
+    {name:"Enchanted Rose",stars:1,isGold:false},{name:"Red's Hood",stars:1,isGold:false},
+    {name:"Party Hat",stars:1,isGold:false},{name:"Golden Harp",stars:1,isGold:false},
+    {name:"Magic Carpet",stars:1,isGold:false}
+  ]},
+  {id:2,name:"Fairy Tale Foods",color:"#7A8AC1",stickers:[
+    {name:"Pumpkin Carriage",stars:1,isGold:false},{name:"Breadcrumb Trail",stars:1,isGold:false},
+    {name:"Poison Apple",stars:1,isGold:false},{name:"Magic Beans",stars:1,isGold:false},
+    {name:"Mermaid Cake",stars:1,isGold:false},{name:"Porridge Time",stars:1,isGold:false},
+    {name:"Wonderland Treat",stars:1,isGold:false},{name:"Eat Me Cookie",stars:1,isGold:false},
+    {name:"Drink Me Bottle",stars:2,isGold:false}
+  ]},
+  {id:3,name:"Mr M & the Beanstalk",color:"#8C77CE",stickers:[
+    {name:"Giant Greeting",stars:1,isGold:false},{name:"One Big Rock",stars:1,isGold:false},
+    {name:"Money Bath",stars:1,isGold:false},{name:"Gold Slide",stars:1,isGold:false},
+    {name:"Harping On",stars:1,isGold:false},{name:"Massive Appetite",stars:1,isGold:false},
+    {name:"Golden Egg",stars:1,isGold:false},{name:"Bye for Now",stars:2,isGold:false},
+    {name:"Portrait Pals",stars:2,isGold:false}
+  ]},
+  {id:4,name:"Puss in Boots",color:"#BA8C64",stickers:[
+    {name:"Puss in Boots",stars:1,isGold:false},{name:"Feline Footwear",stars:1,isGold:false},
+    {name:"Royal Friends",stars:1,isGold:false},{name:"Feathered Hat",stars:1,isGold:false},
+    {name:"Riding High",stars:1,isGold:false},{name:"Gold Coins",stars:1,isGold:false},
+    {name:"Milking It!",stars:2,isGold:false},{name:"Scratching Post",stars:2,isGold:false},
+    {name:"The Hero",stars:2,isGold:false}
+  ]},
+  {id:5,name:"The Princess & The Pea",color:"#64A36B",stickers:[
+    {name:"Lonely Prince",stars:1,isGold:false},{name:"Stormy Castle",stars:1,isGold:false},
+    {name:"Rainy Arrival",stars:1,isGold:false},{name:"I'm A Princess!",stars:1,isGold:false},
+    {name:"The Pea",stars:1,isGold:false},{name:"A Cunning Plan",stars:1,isGold:false},
+    {name:"Climb Into Bed!",stars:2,isGold:false},{name:"Unrested",stars:2,isGold:false},
+    {name:"Royal Feast",stars:2,isGold:false}
+  ]},
+  {id:6,name:"The Sorcerer's Apprentice",color:"#754898",stickers:[
+    {name:"Sleeping Apprentice",stars:1,isGold:false},{name:"Mighty Sorcerer",stars:1,isGold:false},
+    {name:"Book of Spells",stars:1,isGold:false},{name:"What A Mess",stars:1,isGold:false},
+    {name:"Spellcasting",stars:1,isGold:false},{name:"Flying Saucers",stars:2,isGold:false},
+    {name:"Frying Egg",stars:2,isGold:false},{name:"Pillow Flight",stars:2,isGold:false},
+    {name:"What Magic?",stars:2,isGold:false}
+  ]},
+  {id:7,name:"The Frog Prince",color:"#74AA8C",stickers:[
+    {name:"Frog",stars:1,isGold:false},{name:"The Kiss",stars:1,isGold:false},
+    {name:"A New Man",stars:1,isGold:false},{name:"Ready to Jump",stars:2,isGold:false},
+    {name:"Lily Pad",stars:2,isGold:false},{name:"Taste test",stars:2,isGold:false},
+    {name:"Frog Legs",stars:2,isGold:false},{name:"Royal Search",stars:2,isGold:false},
+    {name:"Pond Prince",stars:2,isGold:false}
+  ]},
+  {id:8,name:"Thumbelina",color:"#B26B76",stickers:[
+    {name:"Acorn Cup",stars:1,isGold:false},{name:"High Table",stars:1,isGold:false},
+    {name:"Only Way to Fly",stars:2,isGold:false},{name:"High Roller",stars:2,isGold:false},
+    {name:"Swimming Pail",stars:2,isGold:false},{name:"Teahouse",stars:2,isGold:false},
+    {name:"Sleeping Sock",stars:2,isGold:false},{name:"Clothes Line",stars:3,isGold:false},
+    {name:"Tophat Balcony",stars:3,isGold:false}
+  ]},
+  {id:9,name:"The Little Mermaid",color:"#629BB2",stickers:[
+    {name:"Underwater Friends",stars:1,isGold:false},{name:"Shipwreck Cafe",stars:2,isGold:false},
+    {name:"Water Games",stars:2,isGold:false},{name:"Below Deck",stars:2,isGold:false},
+    {name:"Wet Hair Look",stars:2,isGold:false},{name:"Seashell Necklace",stars:2,isGold:false},
+    {name:"School of Fish",stars:2,isGold:false},{name:"Prince Ahoy!",stars:3,isGold:false},
+    {name:"Making A Splash",stars:3,isGold:false}
+  ]},
+  {id:10,name:"Alice in Wonderland",color:"#6475AD",stickers:[
+    {name:"Alice",stars:1,isGold:false},{name:"White Rabbit",stars:2,isGold:false},
+    {name:"Falling",stars:2,isGold:false},{name:"Caterpillar",stars:2,isGold:false},
+    {name:"Cheshire cat",stars:2,isGold:false},{name:"Tea Party",stars:2,isGold:false},
+    {name:"Mad Hatter",stars:3,isGold:false},{name:"Tweedle Twins",stars:3,isGold:false},
+    {name:"Queen of Hearts",stars:3,isGold:false}
+  ]},
+  {id:11,name:"Rapunzel",color:"#C0A06D",stickers:[
+    {name:"The Tower",stars:2,isGold:false},{name:"Hair Routine",stars:2,isGold:false},
+    {name:"Ribbon Basket",stars:2,isGold:false},{name:"Windmill Wonder",stars:2,isGold:false},
+    {name:"Bed Head",stars:3,isGold:false},{name:"Rapunzel's Brush",stars:3,isGold:false},
+    {name:"Bird Braid!",stars:3,isGold:false},{name:"High Rollers",stars:3,isGold:false},
+    {name:"Skipping Rope",stars:3,isGold:false}
+  ]},
+  {id:12,name:"The Shoemaker Elves",color:"#9A2929",stickers:[
+    {name:"Shoe Shop",stars:2,isGold:false},{name:"Elves at Work",stars:2,isGold:false},
+    {name:"Fancy Shoes",stars:2,isGold:false},{name:"Shoe Size",stars:3,isGold:false},
+    {name:"Fine Design",stars:3,isGold:false},{name:"Material Gain",stars:3,isGold:false},
+    {name:"Sewing Kit",stars:3,isGold:false},{name:"Boot Bedtime",stars:3,isGold:false},
+    {name:"The Perfect Fit!",stars:4,isGold:false}
+  ]},
+  {id:13,name:"Wicked Objects",color:"#5A2C59",stickers:[
+    {name:"Magic Mirror",stars:2,isGold:false},{name:"Cauldron",stars:2,isGold:false},
+    {name:"Potion",stars:3,isGold:false},{name:"Spellbook",stars:3,isGold:false},
+    {name:"Broomstick",stars:3,isGold:false},{name:"Spinning Wheel",stars:3,isGold:false},
+    {name:"Poison Comb",stars:3,isGold:false},{name:"Evil Wand",stars:4,isGold:false},
+    {name:"Hook's Hook",stars:4,isGold:true}
+  ]},
+  {id:14,name:"Shadowy Tales",color:"#506F97",stickers:[
+    {name:"Evil Queen",stars:2,isGold:false},{name:"Rumpelstiltskin",stars:2,isGold:false},
+    {name:"Bridge Troll",stars:3,isGold:false},{name:"Captain Hook",stars:3,isGold:false},
+    {name:"Wicked Witch",stars:3,isGold:false},{name:"Sea Witch",stars:3,isGold:false},
+    {name:"Snow Queen",stars:3,isGold:false},{name:"Pied Piper",stars:4,isGold:false},
+    {name:"Jabberwock",stars:4,isGold:true}
+  ]},
+  {id:15,name:"Fairy Tale Places",color:"#929759",stickers:[
+    {name:"Evil Queen's Palace",stars:2,isGold:false},{name:"Baba Yaga's Hut",stars:3,isGold:false},
+    {name:"Troll Bridge",stars:3,isGold:false},{name:"Aladdin's Cave",stars:3,isGold:false},
+    {name:"Shoe House",stars:3,isGold:false},{name:"Wishing Well",stars:3,isGold:false},
+    {name:"Snow Queen's Castle",stars:3,isGold:false},{name:"Sea Lair",stars:4,isGold:false},
+    {name:"Enchanted Forest",stars:4,isGold:true}
+  ]},
+  {id:16,name:"Cinderella",color:"#A68853",stickers:[
+    {name:"Sweeping Cinders",stars:3,isGold:false},{name:"Royal Invitation",stars:3,isGold:false},
+    {name:"Mean Sisters",stars:3,isGold:false},{name:"Fairy Godmother",stars:3,isGold:false},
+    {name:"Before the Magic",stars:3,isGold:false},{name:"Going to the Ball",stars:4,isGold:false},
+    {name:"Midnight",stars:4,isGold:false},{name:"Lost Slipper",stars:4,isGold:true},
+    {name:"Last Pumpkin Home",stars:5,isGold:false}
+  ]},
+  {id:17,name:"The Gingerbread Man",color:"#9C6A52",stickers:[
+    {name:"The Baker",stars:3,isGold:false},{name:"Fire Escape",stars:3,isGold:false},
+    {name:"Gingerbread Man",stars:3,isGold:false},{name:"The Chase",stars:3,isGold:false},
+    {name:"Craving Cow",stars:3,isGold:false},{name:"Hungry Horse",stars:4,isGold:false},
+    {name:"The River",stars:4,isGold:false},{name:"Fox Ferry",stars:4,isGold:true},
+    {name:"Feeling Full",stars:5,isGold:false}
+  ]},
+  {id:18,name:"Pinocchio",color:"#6399A1",stickers:[
+    {name:"Wooden Boy",stars:3,isGold:false},{name:"Tool Kit",stars:3,isGold:false},
+    {name:"Geppetto at Work",stars:3,isGold:false},{name:"Fox and Cat",stars:3,isGold:false},
+    {name:"Friendly Cricket",stars:3,isGold:false},{name:"Big Lies",stars:4,isGold:false},
+    {name:"Donkey",stars:4,isGold:false},{name:"Blue Fairy",stars:4,isGold:true},
+    {name:"A Real Boy!",stars:5,isGold:false}
+  ]},
+  {id:19,name:"Little Red Riding Hood",color:"#AA3030",stickers:[
+    {name:"Off to Grandma's",stars:4,isGold:false},{name:"Picnic Basket",stars:4,isGold:false},
+    {name:"Forest Path",stars:4,isGold:false},{name:"Bad Wolf Hiding",stars:4,isGold:false},
+    {name:"Grandma's Cottage",stars:4,isGold:false},{name:"Granny Glamour",stars:4,isGold:true},
+    {name:"Big Bed Wolf",stars:4,isGold:true},{name:"Hightail It!",stars:4,isGold:true},
+    {name:"Brunch in Bed",stars:6,isGold:false}
+  ]},
+  {id:20,name:"Hansel and Gretel",color:"#8A679B",stickers:[
+    {name:"Lost in the Woods",stars:4,isGold:false},{name:"Gingerbread House",stars:4,isGold:false},
+    {name:"Tasty Treats",stars:4,isGold:false},{name:"A Trifle Naughty",stars:4,isGold:false},
+    {name:"Sweet Witch!",stars:4,isGold:false},{name:"Broom Town",stars:4,isGold:true},
+    {name:"Spring Cleaning",stars:4,isGold:true},{name:"Home Improvements",stars:4,isGold:true},
+    {name:"Time to Go Home!",stars:6,isGold:false}
+  ]},
+  {id:21,name:"Goldilocks",color:"#B58E6D",stickers:[
+    {name:"Morning Walk",stars:4,isGold:false},{name:"Bear's House!",stars:4,isGold:false},
+    {name:"Hungry for Porridge!",stars:4,isGold:false},{name:"Papa Bear's Chair",stars:4,isGold:false},
+    {name:"Splintered Seat",stars:4,isGold:false},{name:"Feeling Snoozy",stars:4,isGold:true},
+    {name:"The Bears Return",stars:4,isGold:true},{name:"Wake up, Goldilocks",stars:4,isGold:true},
+    {name:"New Friends",stars:6,isGold:false}
+  ]},
+  {id:22,name:"Beauty and the Beast",color:"#9D577A",stickers:[
+    {name:"Beauty",stars:5,isGold:false},{name:"Beast's Mansion",stars:5,isGold:false},
+    {name:"The Rose",stars:5,isGold:false},{name:"The Beast",stars:5,isGold:false},
+    {name:"Enchanted Mirror",stars:5,isGold:false},{name:"All Alone",stars:5,isGold:true},
+    {name:"Magic Ring",stars:5,isGold:true},{name:"Transformed",stars:5,isGold:true},
+    {name:"Happily Ever After",stars:6,isGold:false}
+  ]},
+  {id:23,name:"Sleeping Beauty",color:"#63887B",stickers:[
+    {name:"Ouch!",stars:5,isGold:false},{name:"Mean Fairy",stars:5,isGold:false},
+    {name:"Enchanted Sleep",stars:5,isGold:false},{name:"Kingdom Dreams",stars:5,isGold:false},
+    {name:"Royal Slumber",stars:5,isGold:false},{name:"Forest of Thorns",stars:5,isGold:true},
+    {name:"Knight's Sword",stars:5,isGold:true},{name:"Cutting Vines",stars:5,isGold:true},
+    {name:"Ride Awake!",stars:6,isGold:false}
+  ]},
+  {id:24,name:"The Three Little Pigs",color:"#B96D76",stickers:[
+    {name:"Pig Pals",stars:5,isGold:false},{name:"Straw House",stars:5,isGold:false},
+    {name:"Howling Wolf",stars:5,isGold:true},{name:"Stick House",stars:5,isGold:true},
+    {name:"Blown Away",stars:5,isGold:true},{name:"Safe Haven!",stars:5,isGold:true},
+    {name:"Brick House",stars:5,isGold:true},{name:"Out of Huff",stars:5,isGold:true},
+    {name:"Three Happy Pigs",stars:6,isGold:false}
+  ]}
+];
+
+// Sticker emojis per set (decorative)
+const SET_ICONS = ["🥿","🍎","🫘","🥾","💐","🧙","🐸","🌸","🧜","🐇","👑","👞","🪄","🌑","🏰","👗","🍞","🤥","🐺","🍬","🐻","🌹","💤","🐷"];
+
+// ============================================================
+// UTILITY FUNCTIONS
+// ============================================================
+function hexToRgb(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return{r,g,b};
+}
+function lightenColor(hex,amt){
+  const{r,g,b}=hexToRgb(hex);
+  return `rgb(${Math.min(255,r+amt)},${Math.min(255,g+amt)},${Math.min(255,b+amt)})`;
+}
+function darkenColor(hex,amt){
+  const{r,g,b}=hexToRgb(hex);
+  return `rgb(${Math.max(0,r-amt)},${Math.max(0,g-amt)},${Math.max(0,b-amt)})`;
+}
+function hexToRgba(hex,a){
+  const{r,g,b}=hexToRgb(hex);return`rgba(${r},${g},${b},${a})`;
+}
+function relativeLuminance({r,g,b}){
+  const toLinear=v=>{
+    const c=v/255;
+    return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);
+  };
+  const R=toLinear(r),G=toLinear(g),B=toLinear(b);
+  return .2126*R + .7152*G + .0722*B;
+}
+function getReadableTextColor(hex,{light='#fff8ef',dark='#201108',threshold=.42}={}){
+  return relativeLuminance(hexToRgb(hex)) > threshold ? dark : light;
+}
+function buildBannerStyle(setColor,{have=false,isGold=false}={}){
+  if(isGold){
+    const goldBg = have
+      ? 'linear-gradient(135deg,#b77b07 0%,#ffd766 34%,#fff8cf 52%,#efbc36 70%,#8f5d00 100%)'
+      : 'linear-gradient(135deg,#8f6510 0%,#d6ab46 36%,#f6e29a 52%,#bf8d29 72%,#745008 100%)';
+    const textColor = '#2c1600';
+    const textShadow = have
+      ? '0 1px 0 rgba(255,248,212,.55), 0 1px 2px rgba(90,54,0,.22)'
+      : '0 1px 0 rgba(255,245,200,.34), 0 1px 2px rgba(70,42,0,.3)';
+    return [
+      `background:${goldBg}`,
+      `color:${textColor}`,
+      `text-shadow:${textShadow}`,
+      'border-top:1px solid rgba(255,245,200,.45)',
+      `box-shadow:${have?'inset 0 1px 0 rgba(255,255,255,.28),0 0 10px rgba(240,192,64,.18)':'inset 0 1px 0 rgba(255,255,255,.2)'}`
+    ].join(';');
+  }
+
+  if(!have){
+    return [
+      'background:linear-gradient(180deg,rgba(92,88,102,.94),rgba(56,52,64,.98))',
+      'color:#fff7eb',
+      'text-shadow:0 1px 2px rgba(0,0,0,.72)',
+      'border-top:1px solid rgba(255,255,255,.08)'
+    ].join(';');
+  }
+
+  const {r,g,b}=hexToRgb(setColor);
+  const darker={r:Math.max(0,r-28),g:Math.max(0,g-28),b:Math.max(0,b-28)};
+  const textColor=getReadableTextColor(setColor,{light:'#fffaf1',dark:'#1b1008',threshold:.42});
+  const textShadow=textColor==='#fffaf1'
+    ? '0 1px 2px rgba(0,0,0,.58)'
+    : '0 1px 0 rgba(255,255,255,.18), 0 1px 2px rgba(0,0,0,.2)';
+
+  return [
+    `background:linear-gradient(180deg,rgba(${r},${g},${b},.92),rgba(${darker.r},${darker.g},${darker.b},.98))`,
+    `color:${textColor}`,
+    `text-shadow:${textShadow}`,
+    'border-top:1px solid rgba(255,255,255,.14)'
+  ].join(';');
+}
+function uid(){return 'id'+Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function stickerKey(setId,idx){return`s${setId}_${idx}`}
+
+// ============================================================
+// STORAGE
+// ============================================================
+const Storage={
+  get(k,def){try{const v=localStorage.getItem(k);return v?JSON.parse(v):def}catch{return def}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){console.warn('Storage error',e)}},
+};
+
+// ============================================================
+// APP STATE
+// ============================================================
+const State={
+  accounts:[],       // [{id,name,device,gameCode,gameLink,hidden,order}]
+  stickers:{},       // {accountId:{sKey:{have,duplicates}}}
+  settings:{
+    theme:'enchanted',
+    goldBlitz:{active:false,startTime:null,endTime:null,sticker1:'',sticker2:'',duration:24},
+    tradeFest:{active:false,startTime:null,endTime:null,duration:24},
+  },
+  trades:[],         // planned trades [{id,date,from,to,setId,stickerIdx,done,isGold}]
+  ui:{page:'album'},
+
+  load(){
+    this.accounts=Storage.get('mea_accounts',[]);
+    this.stickers=Storage.get('mea_stickers',{});
+    const savedSettings=Storage.get('mea_settings',{});
+    this.settings={
+      ...this.settings,
+      ...savedSettings,
+      goldBlitz:{...this.settings.goldBlitz,...(savedSettings.goldBlitz||{})},
+      tradeFest:{...this.settings.tradeFest,...(savedSettings.tradeFest||{})}
+    };
+    if(!['enchanted','wicked'].includes(this.settings.theme))this.settings.theme='enchanted';
+    this.trades=Storage.get('mea_trades',[]);
+  },
+  save(){
+    if(window.MEA_TUTORIAL_ACTIVE)return;
+    Storage.set('mea_accounts',this.accounts);
+    Storage.set('mea_stickers',this.stickers);
+    Storage.set('mea_settings',this.settings);
+    Storage.set('mea_trades',this.trades);
+  },
+  getSticker(accountId,setId,idx){
+    if(!this.stickers[accountId])this.stickers[accountId]={};
+    const k=stickerKey(setId,idx);
+    if(!this.stickers[accountId][k])this.stickers[accountId][k]={have:false,duplicates:0};
+    return this.stickers[accountId][k];
+  },
+  setSticker(accountId,setId,idx,data){
+    if(!this.stickers[accountId])this.stickers[accountId]={};
+    const k=stickerKey(setId,idx);
+    this.stickers[accountId][k]={...this.getSticker(accountId,setId,idx),...data};
+    this.save();
+  },
+  visibleAccounts(){
+    return this.accounts.filter(a=>!a.hidden).sort((a,b)=>a.order-b.order);
+  },
+  isSetComplete(accountId,setId){
+    const set=ALBUM_SETS.find(s=>s.id===setId);
+    if(!set)return false;
+    return set.stickers.every((_,i)=>this.getSticker(accountId,setId,i).have);
+  },
+  isAlbumComplete(accountId){
+    return ALBUM_SETS.every(s=>this.isSetComplete(accountId,s.id));
+  },
+  isGoldLocked(accountId){
+    const allRegular=ALBUM_SETS.every(s=>s.stickers.every((st,i)=>st.isGold||this.getSticker(accountId,s.id,i).have));
+    const notAll=!this.isAlbumComplete(accountId);
+    return allRegular&&notAll;
+  }
+};
+
+// ============================================================
+// EFFECTS & ANIMATIONS
+// ============================================================
+const Effects={
+  colors:['#d4af37','#f5d76e','#b57bee','#7b2fbf','#ff9933','#90ee90','#ff8080','#aaddff','#ffffff'],
+
+  pixieBurst(x,y,count=12){
+    const burst=document.createElement('div');
+    burst.className='pixie-burst';
+    burst.style.cssText=`left:${x}px;top:${y}px;`;
+    document.body.appendChild(burst);
+    for(let i=0;i<count;i++){
+      const p=document.createElement('div');
+      p.className='pixie-particle';
+      const angle=(i/count)*360,dist=30+Math.random()*50;
+      const tx=Math.cos(angle*Math.PI/180)*dist+'px';
+      const ty=Math.sin(angle*Math.PI/180)*dist+'px';
+      p.style.cssText=`
+        background:${this.colors[i%this.colors.length]};
+        left:${-3+Math.random()*6}px;top:${-3+Math.random()*6}px;
+        --tx:translateX(${tx});--ty:translateY(${ty});
+        animation-delay:${Math.random()*.2}s;
+        animation-duration:${.6+Math.random()*.4}s;
+      `;
+      burst.appendChild(p);
+    }
+    setTimeout(()=>burst.remove(),1200);
+  },
+
+  wandOnCard(card){
+    const w=document.createElement('div');
+    w.className='wand-overlay';
+    w.innerHTML='🪄';
+    w.style.fontSize='20px';
+    card.appendChild(w);
+    setTimeout(()=>w.remove(),900);
+  },
+
+  celebrate(msg,type='set'){
+    const ov=document.getElementById('celebration-overlay');
+    ov.innerHTML='';ov.classList.add('active');
+    // Flying wand
+    const wand=document.createElement('div');
+    wand.className='celeb-wand';wand.textContent='🪄';
+    ov.appendChild(wand);
+    // Rain particles
+    const shapes=type==='album'?['⭐','✨','🌟','💫','🏆']:['✨','💫','⭐','🌟','🎉'];
+    for(let i=0;i<60;i++){
+      const p=document.createElement('div');
+      p.className='celeb-particle';
+      p.textContent=shapes[i%shapes.length];
+      p.style.cssText=`
+        left:${Math.random()*100}vw;top:${-10+Math.random()*10}vh;
+        font-size:${10+Math.random()*20}px;
+        --tx:translateX(${-50+Math.random()*100}px);
+        --dur:${1.5+Math.random()*2}s;
+        --delay:${Math.random()*1.5}s;
+        --rot:${Math.random()*720}deg;
+      `;
+      ov.appendChild(p);
+    }
+    setTimeout(()=>{ov.classList.remove('active');ov.innerHTML=''},3000);
+    // Notification
+    Effects.notify(msg,type==='album'?'gold':'success');
+  },
+
+  notify(msg,type='info',side='right'){
+    const container=document.getElementById(side==='left'?'left-notif-container':'notif-container');
+    const b=document.createElement('div');
+    b.className=`notif-banner ${type}`;
+    b.innerHTML=msg;
+    container.appendChild(b);
+    setTimeout(()=>b.remove(),6500);
+  },
+
+  // Wand cursor trail
+  initCursor(){
+    const wand=document.getElementById('cursor-wand');
+    let lastParticle=0;
+    document.addEventListener('mousemove',e=>{
+      wand.style.left=e.clientX+'px';
+      wand.style.top=e.clientY+'px';
+      const now=Date.now();
+      if(now-lastParticle>30){
+        lastParticle=now;
+        this._addTrail(e.clientX,e.clientY);
+      }
+    });
+  },
+  _addTrail(x,y){
+    const p=document.createElement('div');
+    p.className='sparkle-particle';
+    const colors=this.colors;
+    p.style.cssText=`
+      left:${x+(-6+Math.random()*12)}px;
+      top:${y+(-6+Math.random()*12)}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${.5+Math.random()*.4}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),900);
+  }
+};
+
+// ============================================================
+// RENDER FUNCTIONS
+// ============================================================
+const Render={
+  // ---- LEFT NAV ----
+  leftNav(){
+    const container=document.getElementById('left-nav-sets');
+    container.innerHTML='';
+    ALBUM_SETS.forEach(set=>{
+      const item=document.createElement('div');
+      item.className='nav-set-item';
+      item.setAttribute('data-set-id',set.id);
+      item.innerHTML=`
+        <div class="nav-set-dot" style="background:${set.color}"></div>
+        <span class="nav-set-label" style="color:${set.color}">${set.id}. ${set.name}</span>
+      `;
+      item.addEventListener('click',()=>{
+        const el=document.getElementById(`set-${set.id}`);
+        if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+        App.navigate('album');
+      });
+      container.appendChild(item);
+    });
+  },
+
+  // ---- ALBUM PAGE ----
+  album(){
+    const accts=State.visibleAccounts();
+    const container=document.getElementById('album-content');
+    container.innerHTML='';
+    if(!accts.length){
+      container.innerHTML=`<div class="empty-state">
+        <div class="icon">📖</div>
+        <p>No accounts yet.<br>Add an account in the Accounts page to get started!</p>
+      </div>`;
+      return;
+    }
+    ALBUM_SETS.forEach(set=>{
+      const setEl=this._renderSet(set,accts);
+      container.appendChild(setEl);
+    });
+  },
+
+  _renderSet(set,accts){
+    const block=document.createElement('div');
+    block.className='set-block';
+    block.id=`set-${set.id}`;
+    const borderColor=set.color;
+    const bgColor=hexToRgba(set.color,.15);
+    const headerBg=hexToRgba(set.color,.4);
+    const textColor=darkenColor(set.color,30);
+    block.style.cssText=`border-color:${borderColor};background:${bgColor}`;
+
+    // Set header
+    const totalStickers=set.stickers.length;
+    let totalHave=0,totalGoldHave=0,totalGold=set.stickers.filter(s=>s.isGold).length;
+    accts.forEach(a=>{set.stickers.forEach((_,i)=>{if(State.getSticker(a.id,set.id,i).have)totalHave++})});
+    const maxPossible=accts.length*totalStickers;
+    const pct=maxPossible?Math.round(totalHave/maxPossible*100):0;
+
+    block.innerHTML=`
+      <div class="set-header" style="background:${headerBg}">
+        <div class="set-header-left">
+          <div class="set-number" style="color:${darkenColor(set.color,60)}">
+            Set ${set.id} &nbsp;${SET_ICONS[set.id-1]||'✨'}
+          </div>
+          <div class="set-name" style="color:var(--set-header-text)">${set.name}</div>
+        </div>
+        <div class="set-progress-bar-wrap">
+          <div class="set-progress-text" style="color:var(--set-header-meta)">${pct}%</div>
+          <div class="set-progress-bar">
+            <div class="set-progress-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="set-accounts-row" id="set-row-${set.id}"></div>
+    `;
+
+    const row=block.querySelector(`#set-row-${set.id}`);
+    accts.forEach(acct=>{
+      const col=document.createElement('div');
+      col.className='set-account-col';
+      col.id=`set-${set.id}-acct-${acct.id}`;
+      const sData=this._getSetStats(acct.id,set);
+      const isComplete=State.isSetComplete(acct.id,set.id);
+      col.innerHTML=`
+        <div class="set-acct-mini-header" style="color:${lightenColor(set.color,60)}">
+          ${acct.name}
+          ${isComplete?'<span class="gold-lock-badge">✓ Complete</span>':''}
+        </div>
+        <div class="set-acct-mini-info">${acct.device||''}${acct.gameCode?` · ${acct.gameCode}`:''}</div>
+        <div class="sticker-grid" id="grid-${set.id}-${acct.id}"></div>
+      `;
+      const grid=col.querySelector(`#grid-${set.id}-${acct.id}`);
+
+      // Render stickers in natural 1-9 order across the 3×3 grid
+      // Grid: [0,1,2,3,4,5,6,7,8] -> visual positions 0-8
+      const visualOrder=[0,1,2,3,4,5,6,7,8];
+      visualOrder.forEach(dataIdx=>{
+        const sticker=set.stickers[dataIdx];
+        if(!sticker){grid.appendChild(document.createElement('div'));return;}
+        const cardEl=this._renderStickerCard(acct.id,set,dataIdx,sticker,set.color);
+        grid.appendChild(cardEl);
+      });
+      row.appendChild(col);
+    });
+    return block;
+  },
+
+  _getSetStats(accountId,set){
+    let have=0;
+    set.stickers.forEach((_,i)=>{if(State.getSticker(accountId,set.id,i).have)have++;});
+    return{have,total:set.stickers.length};
+  },
+
+  _renderStickerCard(accountId,set,stickerIdx,sticker,setColor){
+    const data=State.getSticker(accountId,set.id,stickerIdx);
+    const card=document.createElement('div');
+    card.className=`sticker-card ${data.have?'have':'missing'} ${sticker.isGold?'gold-border':''}`;
+    card.id=`card-${accountId}-${set.id}-${stickerIdx}`;
+
+    const bgLight=data.have?hexToRgba(setColor,.25):hexToRgba(setColor,.06);
+    const bannerBg=data.have?hexToRgba(setColor,.6):hexToRgba(setColor,.2);
+    card.style.background=bgLight;
+
+    // Stars
+    const stars=Array(sticker.stars).fill(`<span class="star">★</span>`).join('');
+    const starsClass=`stars-${sticker.stars}`;
+
+    // Gold glow for have gold
+    const goldStyle=sticker.isGold&&data.have?`box-shadow:0 0 16px rgba(240,192,64,.65), inset 0 0 10px rgba(240,192,64,.14);`:'';
+    card.style.cssText+=goldStyle;
+
+    const bannerClasses=`sticker-banner ${sticker.isGold?'gold-banner':''} ${sticker.isGold&&data.have?'gold-banner-have':''} ${sticker.isGold&&!data.have?'gold-banner-missing':''}`.trim();
+    const bannerStyle=buildBannerStyle(setColor,{have:data.have,isGold:sticker.isGold});
+
+    card.innerHTML=`
+      <div class="sticker-stars ${starsClass}">${stars}</div>
+      <div class="sticker-icon-area">${data.have?SET_ICONS[set.id-1]||'✨':'❓'}</div>
+      <div class="${bannerClasses}" style="${bannerStyle}">${sticker.name}</div>
+      <div class="dup-controls">
+        <button class="dup-btn" data-action="dec" title="Remove duplicate">−</button>
+        <input class="dup-input" type="number" min="0" value="${data.duplicates}" title="Duplicates">
+        <button class="dup-btn" data-action="inc" title="Add duplicate">+</button>
+      </div>
+    `;
+
+    // Click to toggle have/missing
+    card.addEventListener('click',e=>{
+      if(e.target.classList.contains('dup-btn')||e.target.classList.contains('dup-input'))return;
+      App.toggleSticker(accountId,set.id,stickerIdx,e.clientX,e.clientY);
+    });
+
+    // Duplicate controls
+    const dupInput=card.querySelector('.dup-input');
+    card.querySelector('[data-action="dec"]').addEventListener('click',e=>{
+      e.stopPropagation();
+      App.changeDuplicate(accountId,set.id,stickerIdx,-1,e.clientX,e.clientY);
+    });
+    card.querySelector('[data-action="inc"]').addEventListener('click',e=>{
+      e.stopPropagation();
+      App.changeDuplicate(accountId,set.id,stickerIdx,1,e.clientX,e.clientY);
+    });
+    dupInput.addEventListener('change',e=>{
+      e.stopPropagation();
+      const val=Math.max(0,parseInt(e.target.value)||0);
+      State.setSticker(accountId,set.id,stickerIdx,{duplicates:val});
+    });
+    dupInput.addEventListener('click',e=>e.stopPropagation());
+
+    return card;
+  },
+
+  refreshStickerCard(accountId,setId,stickerIdx){
+    const cardId=`card-${accountId}-${setId}-${stickerIdx}`;
+    const existing=document.getElementById(cardId);
+    if(!existing)return;
+    const set=ALBUM_SETS.find(s=>s.id===setId);
+    if(!set)return;
+    const sticker=set.stickers[stickerIdx];
+    const newCard=this._renderStickerCard(accountId,set,stickerIdx,sticker,set.color);
+    existing.parentNode.replaceChild(newCard,existing);
+    newCard.classList.add('have-flash');
+    setTimeout(()=>newCard.classList.remove('have-flash'),500);
+  },
+
+  refreshSetHeader(setId){
+    const accts=State.visibleAccounts();
+    const set=ALBUM_SETS.find(s=>s.id===setId);
+    if(!set)return;
+    // Update progress bar
+    let totalHave=0;
+    accts.forEach(a=>{set.stickers.forEach((_,i)=>{if(State.getSticker(a.id,setId,i).have)totalHave++;})});
+    const pct=accts.length?Math.round(totalHave/(accts.length*set.stickers.length)*100):0;
+    const bar=document.querySelector(`#set-${setId} .set-progress-fill`);
+    const txt=document.querySelector(`#set-${setId} .set-progress-text`);
+    if(bar)bar.style.width=pct+'%';
+    if(txt)txt.textContent=pct+'%';
+  },
+
+  // ---- ACCOUNTS PAGE ----
+  accounts(){
+    const list=document.getElementById('accounts-list');
+    list.innerHTML='';
+    if(!State.accounts.length){
+      list.innerHTML=`<div class="empty-state"><div class="icon">👤</div><p>No accounts yet.<br>Click "Add Account" to begin!</p></div>`;
+      return;
+    }
+    const sorted=[...State.accounts].sort((a,b)=>a.order-b.order);
+    sorted.forEach(acct=>{
+      const card=document.createElement('div');
+      card.className=`account-card ${acct.hidden?'hidden-account':''}`;
+      const isGoldLocked=State.accounts.length>0&&State.isGoldLocked(acct.id);
+      const isComplete=State.isAlbumComplete(acct.id);
+      card.innerHTML=`
+        <div class="account-card-info">
+          <h3>${acct.name} 
+            ${isComplete?'<span class="gold-lock-badge">🏆 Complete</span>':''}
+            ${isGoldLocked&&!isComplete?'<span class="gold-lock-badge">🔒 Gold Locked</span>':''}
+            ${acct.hidden?'<span style="opacity:.4;font-size:.7rem">(hidden)</span>':''}
+          </h3>
+          <div class="meta">📱 ${acct.device||'—'}</div>
+          <div class="meta">🎮 Code: ${acct.gameCode||'—'}</div>
+          ${acct.gameLink?`<div class="meta"><a href="${acct.gameLink}" target="_blank" style="color:var(--gold-light);text-decoration:none">🔗 Game Link</a></div>`:''}
+        </div>
+        <div class="order-btns">
+          <button class="order-btn" onclick="App.moveAccount('${acct.id}',-1)">▲</button>
+          <button class="order-btn" onclick="App.moveAccount('${acct.id}',1)">▼</button>
+        </div>
+        <div class="account-card-actions">
+          <button class="btn btn-ghost" onclick="App.toggleHideAccount('${acct.id}')">${acct.hidden?'👁 Show':'🙈 Hide'}</button>
+          <button class="btn btn-gold" onclick="App.editAccount('${acct.id}')">✏️ Edit</button>
+          <button class="btn btn-danger" onclick="App.deleteAccount('${acct.id}')">🗑 Delete</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  },
+
+  // ---- PROGRESS PAGE ----
+  progress(){
+    const content=document.getElementById('progress-content');
+    content.innerHTML='';
+    const accts=State.visibleAccounts();
+    if(!accts.length){
+      content.innerHTML=`<div class="empty-state"><div class="icon">📊</div><p>Add accounts to see progress!</p></div>`;
+      return;
+    }
+    accts.forEach(acct=>{
+      const block=document.createElement('div');
+      block.className='progress-account-block';
+      // Calculate stats
+      let totalStickers=0,haveStickers=0,haveGold=0,totalGold=0,haveRegular=0,totalRegular=0;
+      let completeSets=0,starCounts={1:0,2:0,3:0,4:0,5:0,6:0};
+      let haveStarCounts={1:0,2:0,3:0,4:0,5:0,6:0};
+      ALBUM_SETS.forEach(set=>{
+        totalStickers+=set.stickers.length;
+        let setComplete=true;
+        set.stickers.forEach((st,i)=>{
+          totalGold+=st.isGold?1:0;
+          totalRegular+=st.isGold?0:1;
+          starCounts[st.stars]=(starCounts[st.stars]||0)+1;
+          const s=State.getSticker(acct.id,set.id,i);
+          if(s.have){
+            haveStickers++;
+            if(st.isGold)haveGold++;
+            else haveRegular++;
+            haveStarCounts[st.stars]=(haveStarCounts[st.stars]||0)+1;
+          } else setComplete=false;
+        });
+        if(setComplete)completeSets++;
+      });
+      const albumPct=Math.round(haveStickers/totalStickers*100);
+      const isGoldLocked=State.isGoldLocked(acct.id);
+      const isComplete=State.isAlbumComplete(acct.id);
+
+      block.innerHTML=`
+        <h3>${acct.name}
+          ${isComplete?'<span class="gold-lock-badge">🏆 Album Complete!</span>':''}
+          ${isGoldLocked&&!isComplete?'<span class="gold-lock-badge">🔒 Gold Locked</span>':''}
+        </h3>
+        <div class="progress-stat-row">
+          <div class="progress-stat"><div class="stat-val">${haveStickers}/${totalStickers}</div><div class="stat-label">Total Stickers</div></div>
+          <div class="progress-stat"><div class="stat-val">${completeSets}/${ALBUM_SETS.length}</div><div class="stat-label">Sets Complete</div></div>
+          <div class="progress-stat"><div class="stat-val">${haveRegular}/${totalRegular}</div><div class="stat-label">Regular</div></div>
+          <div class="progress-stat"><div class="stat-val" style="color:var(--gold)">${haveGold}/${totalGold}</div><div class="stat-label">Gold</div></div>
+          <div class="progress-stat"><div class="stat-val" style="color:#90ee90">${albumPct}%</div><div class="stat-label">Overall</div></div>
+        </div>
+        <div class="progress-bar-row">
+          <div class="progress-bar-label"><span>Album Completion</span><span>${albumPct}%</span></div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${albumPct}%"></div></div>
+        </div>
+        <div class="progress-bar-row">
+          <div class="progress-bar-label"><span>Regular Stickers</span><span>${Math.round(haveRegular/totalRegular*100)||0}%</span></div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${totalRegular?Math.round(haveRegular/totalRegular*100):0}%;background:linear-gradient(90deg,#6699cc,#aaddff)"></div></div>
+        </div>
+        <div class="progress-bar-row">
+          <div class="progress-bar-label"><span>Gold Stickers</span><span>${totalGold?Math.round(haveGold/totalGold*100):0}%</span></div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${totalGold?Math.round(haveGold/totalGold*100):0}%;background:linear-gradient(90deg,var(--gold-dark),var(--gold-light))"></div></div>
+        </div>
+        ${[1,2,3,4,5,6].map(s=>`
+          <div class="progress-bar-row">
+            <div class="progress-bar-label">
+              <span>${'★'.repeat(s)} Stars (${s}★)</span>
+              <span>${haveStarCounts[s]||0}/${starCounts[s]||0}</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" style="width:${starCounts[s]?Math.round((haveStarCounts[s]||0)/starCounts[s]*100):0}%;opacity:.8"></div>
+            </div>
+          </div>
+        `).join('')}
+        <div class="divider"></div>
+        <div class="section-title" style="font-size:.85rem">Sets Progress</div>
+        <div class="progress-sets-grid" id="progress-sets-${acct.id}"></div>
+      `;
+      const setsGrid=block.querySelector(`#progress-sets-${acct.id}`);
+      ALBUM_SETS.forEach(set=>{
+        const{have,total}=Render._getSetStats(acct.id,set);
+        const setComplete=have===total;
+        const pct=Math.round(have/total*100);
+        const pill=document.createElement('div');
+        pill.className=`progress-set-pill ${setComplete?'complete':''}`;
+        pill.style.borderColor=hexToRgba(set.color,.4);
+        pill.innerHTML=`
+          <span class="set-pct" style="color:${set.color}">${pct}%</span>
+          <span>${set.name}</span>
+        `;
+        setsGrid.appendChild(pill);
+      });
+      content.appendChild(block);
+    });
+  },
+
+  // ---- TRADE PLANNER ----
+  trade(){
+    const content=document.getElementById('trade-content');
+    content.innerHTML=this._tradePlannerHTML();
+    this._bindTradeEvents();
+  },
+
+  _tradePlannerHTML(){
+    const accts=State.visibleAccounts();
+    const gb=State.settings.goldBlitz;
+    const tf=State.settings.tradeFest;
+    const gbActive=gb.active||(gb.startTime&&new Date(gb.startTime)<=new Date()&&new Date(gb.endTime)>=new Date());
+    const tfActive=tf.active||(tf.startTime&&new Date(tf.startTime)<=new Date()&&new Date(tf.endTime)>=new Date());
+
+    // All gold stickers for dropdown
+    const goldStickers=[];
+    ALBUM_SETS.forEach(set=>{
+      set.stickers.forEach((st,i)=>{
+        if(st.isGold)goldStickers.push({setId:set.id,idx:i,name:`Set ${set.id}: ${st.name}`});
+      });
+    });
+
+    return`
+    <div class="trade-tabs">
+      <button class="trade-tab active" data-trade-tab="manual">📝 Manual Trades</button>
+      <button class="trade-tab" data-trade-tab="smart">🧠 Smart Planner</button>
+      <button class="trade-tab" data-trade-tab="calendar">📅 Calendar</button>
+      <button class="trade-tab" data-trade-tab="events">⚡ Events</button>
+    </div>
+
+    <!-- EVENT MODES TAB -->
+    <div class="trade-section" id="trade-tab-events">
+      <div class="event-modes">
+        <!-- Gold Blitz -->
+        <div class="event-mode-card">
+          <h4>🥇 Gold Blitz Mode</h4>
+          <div class="mode-toggle">
+            <label class="toggle-switch">
+              <input type="checkbox" id="gb-toggle" ${gbActive?'checked':''}>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="mode-active-badge gold-blitz" id="gb-badge" style="${gbActive?'':'display:none'}">${gbActive?'Active':'Inactive'}</span>
+          </div>
+          <p style="font-size:10px;color:var(--parchment-mid);margin-bottom:10px;opacity:.7">
+            During Gold Blitz: 5 gold sends + 5 regular sends per account per day.
+          </p>
+          <div class="event-schedule-form">
+            <label style="font-family:Cinzel,serif;font-size:9px;color:var(--gold)">Select Gold Sticker 1:</label>
+            <select id="gb-sticker1" class="trade-select">
+              <option value="">-- Select --</option>
+              ${goldStickers.map(g=>`<option value="${g.setId}_${g.idx}" ${gb.sticker1===`${g.setId}_${g.idx}`?'selected':''}>${g.name}</option>`).join('')}
+            </select>
+            <label style="font-family:Cinzel,serif;font-size:9px;color:var(--gold)">Select Gold Sticker 2:</label>
+            <select id="gb-sticker2" class="trade-select">
+              <option value="">-- Select --</option>
+              ${goldStickers.map(g=>`<option value="${g.setId}_${g.idx}" ${gb.sticker2===`${g.setId}_${g.idx}`?'selected':''}>${g.name}</option>`).join('')}
+            </select>
+            <label style="font-family:Cinzel,serif;font-size:9px;color:var(--gold)">Schedule Start:</label>
+            <input type="datetime-local" id="gb-start" value="${gb.startTime||''}">
+            <label style="font-family:Cinzel,serif;font-size:9px;color:var(--gold)">Schedule End:</label>
+            <input type="datetime-local" id="gb-end" value="${gb.endTime||''}">
+            <button class="btn btn-gold" onclick="App.saveGoldBlitz()">💾 Save Gold Blitz Settings</button>
+          </div>
+        </div>
+        <!-- Trade Fest -->
+        <div class="event-mode-card">
+          <h4>🎉 Trade Fest Mode</h4>
+          <div class="mode-toggle">
+            <label class="toggle-switch">
+              <input type="checkbox" id="tf-toggle" ${tfActive?'checked':''}>
+              <span class="toggle-slider"></span>
+            </label>
+            <span class="mode-active-badge trade-fest" id="tf-badge" style="${tfActive?'':'display:none'}">${tfActive?'Active':'Inactive'}</span>
+          </div>
+          <p style="font-size:10px;color:var(--parchment-mid);margin-bottom:10px;opacity:.7">
+            During Trade Fest: 10 regular sends per account per day (gold still 5).
+          </p>
+          <div class="event-schedule-form">
+            <label style="font-family:Cinzel,serif;font-size:9px;color:var(--gold)">Schedule Start:</label>
+            <input type="datetime-local" id="tf-start" value="${tf.startTime||''}">
+            <label style="font-family:Cinzel,serif;font-size:9px;color:var(--gold)">Schedule End:</label>
+            <input type="datetime-local" id="tf-end" value="${tf.endTime||''}">
+            <button class="btn btn-gold" onclick="App.saveTradeFest()">💾 Save Trade Fest Settings</button>
+          </div>
+        </div>
+      </div>
+      <div style="padding:12px;border-radius:10px;background:var(--input-bg);border:1px solid rgba(212,175,55,.15)">
+        <div style="font-family:Cinzel,serif;font-size:11px;color:var(--gold);margin-bottom:8px">📋 Current Limits</div>
+        <div style="font-size:11px;color:var(--parchment-mid);line-height:1.8">
+          Regular sends/day: <b style="color:var(--gold-light)">${tfActive?10:5}</b> per account<br>
+          Gold sends/day: <b style="color:var(--gold-light)">${gbActive?5:0}</b> per account <span style="opacity:.5">(Gold Blitz only)</span><br>
+          Resets at: <b style="color:var(--gold-light)">4:00 AM EDT / 3:00 AM EST</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANUAL TAB -->
+    <div class="trade-section active" id="trade-tab-manual">
+      <div class="manual-trade-area">
+        <h4>Plan a Trade</h4>
+        <div class="trade-row">
+          <select class="trade-select" id="mt-from">
+            <option value="">From Account...</option>
+            ${accts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}
+          </select>
+          <span style="color:var(--gold)">→</span>
+          <select class="trade-select" id="mt-to">
+            <option value="">To Account...</option>
+            ${accts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}
+          </select>
+          <select class="trade-select" id="mt-set">
+            <option value="">Select Set...</option>
+            ${ALBUM_SETS.map(s=>`<option value="${s.id}">Set ${s.id}: ${s.name}</option>`).join('')}
+          </select>
+          <select class="trade-select" id="mt-sticker" disabled>
+            <option value="">Select Sticker...</option>
+          </select>
+          <input type="date" class="trade-select" id="mt-date" style="min-width:120px" value="${new Date().toISOString().split('T')[0]}">
+          <button class="btn btn-gold" onclick="App.addManualTrade()">+ Add</button>
+        </div>
+      </div>
+      <div id="manual-trades-list"></div>
+    </div>
+
+    <!-- SMART TAB -->
+    <div class="trade-section" id="trade-tab-smart">
+      <div class="smart-planner-controls">
+        <div class="section-title">Smart Trade Planner</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+          <div style="flex:1;min-width:180px">
+            <label style="font-family:Cinzel,serif;font-size:10px;color:var(--gold);display:block;margin-bottom:6px">Strategy</label>
+            <div class="smart-options" id="smart-strategy">
+              <div class="smart-option selected" data-val="global">
+                <h5>🌍 Global Community</h5>
+                <p>All accounts support each other equally</p>
+              </div>
+              <div class="smart-option" data-val="focused">
+                <h5>🎯 Single Focus</h5>
+                <p>All accounts focus on one account</p>
+              </div>
+              <div class="smart-option" data-val="best">
+                <h5>🎲 Best Random</h5>
+                <p>Optimized random distribution</p>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:180px">
+            <label style="font-family:Cinzel,serif;font-size:10px;color:var(--gold);display:block;margin-bottom:6px">Time Span</label>
+            <div class="smart-options" id="smart-timespan">
+              <div class="smart-option selected" data-val="1">📅 Today</div>
+              <div class="smart-option" data-val="7">📆 1 Week</div>
+              <div class="smart-option" data-val="30">🗓 1 Month</div>
+              <div class="smart-option" data-val="custom">✏️ Custom</div>
+            </div>
+          </div>
+        </div>
+        <div id="smart-custom-days" style="display:none;margin-bottom:10px">
+          <label style="font-family:Cinzel,serif;font-size:10px;color:var(--gold)">Days to plan:</label>
+          <input type="number" id="smart-days-count" value="14" min="1" max="180" class="trade-select" style="width:80px">
+        </div>
+        ${accts.length>1?`
+        <div id="focused-account-select" style="display:none;margin-bottom:10px">
+          <label style="font-family:Cinzel,serif;font-size:10px;color:var(--gold)">Focus Account:</label>
+          <select class="trade-select" id="smart-focus-acct">
+            ${accts.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}
+          </select>
+        </div>
+        `:''}
+        <button class="btn btn-gold" onclick="App.runSmartPlanner()">🔮 Generate Smart Plan</button>
+      </div>
+      <div id="smart-plan-results"></div>
+    </div>
+
+    <!-- CALENDAR TAB -->
+    <div class="trade-section" id="trade-tab-calendar">
+      <div class="trade-calendar">
+        <div class="calendar-header">
+          <button class="btn btn-ghost" id="cal-prev">◀ Prev</button>
+          <h3 id="cal-month-label"></h3>
+          <button class="btn btn-ghost" id="cal-next">Next ▶</button>
+        </div>
+        <div class="calendar-grid" id="cal-day-headers"></div>
+        <div class="calendar-grid" id="cal-grid"></div>
+      </div>
+      <div id="daily-checklist-area"></div>
+    </div>
+    `;
+  },
+
+  _bindTradeEvents(){
+    // Tab switching
+    document.querySelectorAll('.trade-tab').forEach(tab=>{
+      tab.addEventListener('click',()=>{
+        document.querySelectorAll('.trade-tab').forEach(t=>t.classList.remove('active'));
+        document.querySelectorAll('.trade-section').forEach(s=>s.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(`trade-tab-${tab.dataset.tradeTab}`).classList.add('active');
+        if(tab.dataset.tradeTab==='calendar')App.renderCalendar();
+        if(tab.dataset.tradeTab==='manual')App.renderManualTrades();
+      });
+    });
+    // Set sticker select dependency
+    const setSelect=document.getElementById('mt-set');
+    if(setSelect){
+      setSelect.addEventListener('change',()=>{
+        const setId=parseInt(setSelect.value);
+        const stickerSelect=document.getElementById('mt-sticker');
+        const set=ALBUM_SETS.find(s=>s.id===setId);
+        stickerSelect.innerHTML='<option value="">Select Sticker...</option>';
+        if(set){
+          stickerSelect.disabled=false;
+          set.stickers.forEach((st,i)=>{
+            const opt=document.createElement('option');
+            opt.value=i;
+            opt.textContent=`${st.name}${st.isGold?' (Gold)':''}`;
+            stickerSelect.appendChild(opt);
+          });
+        } else stickerSelect.disabled=true;
+      });
+    }
+    // Smart strategy selection
+    document.querySelectorAll('#smart-strategy .smart-option').forEach(opt=>{
+      opt.addEventListener('click',()=>{
+        document.querySelectorAll('#smart-strategy .smart-option').forEach(o=>o.classList.remove('selected'));
+        opt.classList.add('selected');
+        const focusEl=document.getElementById('focused-account-select');
+        if(focusEl)focusEl.style.display=opt.dataset.val==='focused'?'block':'none';
+      });
+    });
+    // Smart timespan selection
+    document.querySelectorAll('#smart-timespan .smart-option').forEach(opt=>{
+      opt.addEventListener('click',()=>{
+        document.querySelectorAll('#smart-timespan .smart-option').forEach(o=>o.classList.remove('selected'));
+        opt.classList.add('selected');
+        const customEl=document.getElementById('smart-custom-days');
+        if(customEl)customEl.style.display=opt.dataset.val==='custom'?'block':'none';
+      });
+    });
+    // Gold blitz toggle
+    const gbToggle=document.getElementById('gb-toggle');
+    if(gbToggle){
+      gbToggle.addEventListener('change',()=>{
+        State.settings.goldBlitz.active=gbToggle.checked;
+        State.save();
+        const badge=document.getElementById('gb-badge');
+        if(badge){badge.style.display=gbToggle.checked?'':'none';badge.textContent=gbToggle.checked?'Active':'Inactive';}
+      });
+    }
+    const tfToggle=document.getElementById('tf-toggle');
+    if(tfToggle){
+      tfToggle.addEventListener('change',()=>{
+        State.settings.tradeFest.active=tfToggle.checked;
+        State.save();
+        const badge=document.getElementById('tf-badge');
+        if(badge){badge.style.display=tfToggle.checked?'':'none';badge.textContent=tfToggle.checked?'Active':'Inactive';}
+      });
+    }
+    // Calendar nav
+    const calPrev=document.getElementById('cal-prev');
+    const calNext=document.getElementById('cal-next');
+    if(calPrev)calPrev.addEventListener('click',()=>{App.calMonth--;App.renderCalendar()});
+    if(calNext)calNext.addEventListener('click',()=>{App.calMonth++;App.renderCalendar()});
+    // Initial renders
+    App.renderCalendar();
+    App.renderManualTrades();
+  },
+};
+
+// ============================================================
+// APP CONTROLLER
+// ============================================================
+const App={
+  calYear:new Date().getFullYear(),
+  calMonth:new Date().getMonth(),
+  prevSetComplete:{}, // track set completion state
+
+  init(){
+    State.load();
+    this.applyTheme(State.settings.theme||'enchanted',false);
+    this.initCountdown();
+    Effects.initCursor();
+    this.navigate('album');
+    Render.leftNav();
+    this._bindNav();
+    this._bindSearch();
+    Tutorial.syncToggle();
+    this._checkScheduledEvents();
+    setInterval(()=>this._checkScheduledEvents(),60000);
+    // Fade loading
+    setTimeout(()=>{
+      const ls=document.getElementById('loading-screen');
+      ls.classList.add('fade-out');
+      setTimeout(()=>ls.style.display='none',600);
+    },1200);
+  },
+
+  applyTheme(theme,save=true){
+    const next=theme==='wicked'?'wicked':'enchanted';
+    State.settings.theme=next;
+    document.body.dataset.theme=next;
+    this._updateThemeToggle();
+    if(save)State.save();
+  },
+
+  toggleTheme(){
+    if(Tutorial.active){
+      Effects.notify('🧭 Theme stays locked during the tutorial. Use the tutorial theme step to choose Enchanted or Wicked, or exit the tutorial to switch again.','info');
+      return;
+    }
+    const next=State.settings.theme==='wicked'?'enchanted':'wicked';
+    this.applyTheme(next);
+    Effects.notify(next==='enchanted'?'✨ Enchanted Mode activated.':'🌙 Wicked Mode activated.','info');
+  },
+
+  _updateThemeToggle(){
+    const btn=document.getElementById('theme-toggle');
+    const icon=document.getElementById('theme-toggle-icon');
+    const label=document.getElementById('theme-toggle-label');
+    if(!btn||!icon||!label)return;
+    const enchanted=State.settings.theme!=='wicked';
+    icon.textContent=enchanted?'✨':'🌙';
+    label.textContent=enchanted?'Enchanted Mode':'Wicked Mode';
+    btn.title=enchanted?'Switch to Wicked Mode':'Switch to Enchanted Mode';
+    btn.setAttribute('aria-label',btn.title);
+  },
+
+  initCountdown(){
+    const targetTime=new Date('2026-06-03T12:00:00-04:00');
+    const userTimeZone=Intl.DateTimeFormat().resolvedOptions().timeZone || 'local time';
+    const dateFormatter=new Intl.DateTimeFormat(undefined,{month:'long',day:'numeric',year:'numeric'});
+    const dateTimeFormatter=new Intl.DateTimeFormat(undefined,{
+      month:'long',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit',timeZoneName:'short'
+    });
+    const timeFormatter=new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit',timeZoneName:'short'});
+    const targetDateLabel=dateFormatter.format(targetTime);
+    const targetDateTimeLabel=dateTimeFormatter.format(targetTime);
+    const targetTimeLabel=timeFormatter.format(targetTime);
+    const markup=`
+      <div class="countdown-banner" aria-live="polite">
+        <span class="countdown-kicker">Spell Ends At Your Local Chime</span>
+        <p class="countdown-line">When your clock chimes ${targetTimeLabel}, this enchanted album turns back into pumpkin paperwork — gather every sticker before the fairy dust fizzles! ✨</p>
+        <div class="countdown-time" role="timer" aria-label="Countdown until ${targetDateTimeLabel} in ${userTimeZone}">
+          <div class="countdown-unit"><span class="countdown-value" data-countdown="days">00</span><span class="countdown-unit-label">Days</span></div>
+          <span class="countdown-sep">|</span>
+          <div class="countdown-unit"><span class="countdown-value" data-countdown="hours">00</span><span class="countdown-unit-label">Hours</span></div>
+          <span class="countdown-sep">|</span>
+          <div class="countdown-unit"><span class="countdown-value" data-countdown="seconds">00</span><span class="countdown-unit-label">Seconds</span></div>
+        </div>
+        <div class="countdown-deadline">Until ${targetDateLabel} • ${targetTimeLabel}</div>
+      </div>`;
+    document.querySelectorAll('.page-header').forEach(header=>{
+      header.classList.add('has-countdown');
+      if(!header.querySelector('.countdown-banner'))header.insertAdjacentHTML('beforeend',markup);
+    });
+
+    const updateCountdown=()=>{
+      const now=Date.now();
+      const diff=Math.max(0,targetTime.getTime()-now);
+      const totalSeconds=Math.floor(diff/1000);
+      const days=Math.floor(totalSeconds/86400);
+      const hours=Math.floor((totalSeconds%86400)/3600);
+      const seconds=totalSeconds%60;
+      document.querySelectorAll('[data-countdown="days"]').forEach(el=>el.textContent=String(days).padStart(2,'0'));
+      document.querySelectorAll('[data-countdown="hours"]').forEach(el=>el.textContent=String(hours).padStart(2,'0'));
+      document.querySelectorAll('[data-countdown="seconds"]').forEach(el=>el.textContent=String(seconds).padStart(2,'0'));
+
+      const ended=diff<=0;
+      document.querySelectorAll('.countdown-banner').forEach(b=>b.classList.toggle('ended',ended));
+      document.querySelectorAll('.countdown-line').forEach(line=>{
+        line.textContent=ended
+          ? 'The clock has chimed, the glitter has fled, and the enchanted album has officially turned back into ordinary mischief. ✨'
+          : `When your clock chimes ${targetTimeLabel}, this enchanted album turns back into pumpkin paperwork — gather every sticker before the fairy dust fizzles! ✨`;
+      });
+      document.querySelectorAll('.countdown-deadline').forEach(el=>{
+        el.textContent=ended ? `The spell ended on ${targetDateTimeLabel}` : `Until ${targetDateLabel} • ${targetTimeLabel}`;
+      });
+      document.querySelectorAll('.countdown-time').forEach(el=>{
+        el.setAttribute('aria-label', ended ? `Countdown complete. The spell ended on ${targetDateTimeLabel} in ${userTimeZone}` : `Countdown until ${targetDateTimeLabel} in ${userTimeZone}`);
+      });
+    };
+
+    updateCountdown();
+    if(this._countdownTimer)clearInterval(this._countdownTimer);
+    this._countdownTimer=setInterval(updateCountdown,1000);
+  },
+
+  navigate(page){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-page-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById(`page-${page}`).classList.add('active');
+    document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+    State.ui.page=page;
+    if(page==='album')Render.album();
+    else if(page==='accounts')Render.accounts();
+    else if(page==='progress')Render.progress();
+    else if(page==='trade')Render.trade();
+  },
+
+  _bindNav(){
+    document.querySelectorAll('.nav-page-item').forEach(item=>{
+      item.addEventListener('click',()=>this.navigate(item.dataset.page));
+    });
+    document.getElementById('theme-toggle')?.addEventListener('click',()=>this.toggleTheme());
+    document.getElementById('tutorial-toggle')?.addEventListener('click',()=>Tutorial.toggle());
+    document.addEventListener('keydown',e=>{
+      if(!Tutorial.active)return;
+      if(e.key==='Escape'){Tutorial.stop();}
+      if(e.key==='ArrowRight'&&!(e.target&&['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)))Tutorial.next();
+      if(e.key==='ArrowLeft'&&!(e.target&&['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)))Tutorial.prev();
+    });
+    document.getElementById('modal-overlay').addEventListener('click',e=>{
+      if(e.target===document.getElementById('modal-overlay'))this.closeModal();
+    });
+  },
+
+  _bindSearch(){
+    // Album search
+    const albumSearch=document.getElementById('album-search-input');
+    if(albumSearch){
+      albumSearch.addEventListener('input',e=>{
+        const q=e.target.value.toLowerCase().trim();
+        if(!q){document.querySelectorAll('.set-block').forEach(b=>b.style.display='');return;}
+        ALBUM_SETS.forEach(set=>{
+          const setEl=document.getElementById(`set-${set.id}`);
+          if(!setEl)return;
+          const nameMatch=set.name.toLowerCase().includes(q);
+          const stickerMatch=set.stickers.some(s=>s.name.toLowerCase().includes(q));
+          if(nameMatch||stickerMatch){
+            setEl.style.display='';
+            if(nameMatch||stickerMatch){
+              setTimeout(()=>setEl.scrollIntoView({behavior:'smooth',block:'start'}),100);
+            }
+          } else setEl.style.display='none';
+        });
+      });
+    }
+    // Left nav search
+    const leftSearch=document.getElementById('left-search');
+    if(leftSearch){
+      leftSearch.addEventListener('input',e=>{
+        const q=e.target.value.toLowerCase();
+        document.querySelectorAll('.nav-set-item').forEach(item=>{
+          const setId=parseInt(item.dataset.setId);
+          const set=ALBUM_SETS.find(s=>s.id===setId);
+          if(!set)return;
+          item.style.display=(set.name.toLowerCase().includes(q)||set.stickers.some(s=>s.name.toLowerCase().includes(q)))?'':'none';
+        });
+      });
+    }
+  },
+
+  // ---- STICKER ACTIONS ----
+  toggleSticker(accountId,setId,stickerIdx,mx,my){
+    const prev=State.getSticker(accountId,setId,stickerIdx);
+    const newHave=!prev.have;
+    const prevSetDone=State.isSetComplete(accountId,setId);
+    State.setSticker(accountId,setId,stickerIdx,{have:newHave,duplicates:prev.duplicates});
+    // Effects
+    Effects.pixieBurst(mx,my,16);
+    const cardEl=document.getElementById(`card-${accountId}-${setId}-${stickerIdx}`);
+    if(cardEl)Effects.wandOnCard(cardEl);
+    Render.refreshStickerCard(accountId,setId,stickerIdx);
+    Render.refreshSetHeader(setId);
+    // Check completions
+    const nowSetDone=State.isSetComplete(accountId,setId);
+    if(!prevSetDone&&nowSetDone){
+      const acct=State.accounts.find(a=>a.id===accountId);
+      const set=ALBUM_SETS.find(s=>s.id===setId);
+      Effects.celebrate(`✨ <b>${acct?.name||'Account'}</b> completed<br><b>${set?.name}</b>!`,'set');
+      Effects.notify(`✨ ${acct?.name} completed Set ${setId}: ${set?.name}!`,'success','right');
+    }
+    if(State.isGoldLocked(accountId)){
+      const acct=State.accounts.find(a=>a.id===accountId);
+      Effects.notify(`🔒 ${acct?.name} is now Gold Locked! Only gold stickers remain.`,'gold','right');
+    }
+    if(State.isAlbumComplete(accountId)){
+      const acct=State.accounts.find(a=>a.id===accountId);
+      Effects.celebrate(`🏆 <b>${acct?.name}</b> completed the ENTIRE ALBUM! 🏆`,'album');
+    }
+  },
+
+  changeDuplicate(accountId,setId,stickerIdx,delta,mx,my){
+    const prev=State.getSticker(accountId,setId,stickerIdx);
+    const newDup=Math.max(0,prev.duplicates+delta);
+    State.setSticker(accountId,setId,stickerIdx,{duplicates:newDup});
+    Effects.pixieBurst(mx,my,8);
+    const cardEl=document.getElementById(`card-${accountId}-${setId}-${stickerIdx}`);
+    if(cardEl)Effects.wandOnCard(cardEl);
+    Render.refreshStickerCard(accountId,setId,stickerIdx);
+  },
+
+  // ---- ACCOUNT MANAGEMENT ----
+  openAddAccount(){
+    this.showModal(`<div class="modal-title">✨ Add Account</div>
+      <div class="form-group"><label>Account Name *</label><input id="f-name" placeholder="My Account" required></div>
+      <div class="form-group"><label>Device</label><input id="f-device" placeholder="iPhone, Android, etc."></div>
+      <div class="form-group"><label>Game Code (Mogo Code)</label><input id="f-code" placeholder="ABC123"></div>
+      <div class="form-group"><label>Game Link (Mogo Link)</label><input id="f-link" placeholder="https://..."></div>
+      <div class="modal-actions">
+        <button class="btn btn-gold" onclick="App.saveNewAccount()">✦ Create Account</button>
+        <button class="btn btn-ghost" onclick="App.closeModal()">Cancel</button>
+      </div>`);
+  },
+
+  saveNewAccount(){
+    const name=document.getElementById('f-name')?.value?.trim();
+    if(!name){Effects.notify('Please enter an account name','info');return;}
+    const acct={
+      id:uid(),name,
+      device:document.getElementById('f-device')?.value?.trim()||'',
+      gameCode:document.getElementById('f-code')?.value?.trim()||'',
+      gameLink:document.getElementById('f-link')?.value?.trim()||'',
+      hidden:false,
+      order:State.accounts.length
+    };
+    State.accounts.push(acct);
+    State.save();
+    this.closeModal();
+    Render.accounts();
+    Effects.notify(`✨ Account "${name}" created!`,'success');
+  },
+
+  editAccount(id){
+    const acct=State.accounts.find(a=>a.id===id);
+    if(!acct)return;
+    this.showModal(`<div class="modal-title">✏️ Edit Account</div>
+      <div class="form-group"><label>Account Name *</label><input id="f-name" value="${acct.name}" required></div>
+      <div class="form-group"><label>Device</label><input id="f-device" value="${acct.device||''}"></div>
+      <div class="form-group"><label>Game Code</label><input id="f-code" value="${acct.gameCode||''}"></div>
+      <div class="form-group"><label>Game Link</label><input id="f-link" value="${acct.gameLink||''}"></div>
+      <div class="modal-actions">
+        <button class="btn btn-gold" onclick="App.saveEditAccount('${id}')">💾 Save</button>
+        <button class="btn btn-ghost" onclick="App.closeModal()">Cancel</button>
+      </div>`);
+  },
+
+  saveEditAccount(id){
+    const acct=State.accounts.find(a=>a.id===id);
+    if(!acct)return;
+    const name=document.getElementById('f-name')?.value?.trim();
+    if(!name)return;
+    acct.name=name;
+    acct.device=document.getElementById('f-device')?.value?.trim()||'';
+    acct.gameCode=document.getElementById('f-code')?.value?.trim()||'';
+    acct.gameLink=document.getElementById('f-link')?.value?.trim()||'';
+    State.save();
+    this.closeModal();
+    Render.accounts();
+    Effects.notify(`✨ Account updated!`,'success');
+  },
+
+  deleteAccount(id){
+    const acct=State.accounts.find(a=>a.id===id);
+    this.showModal(`<div class="modal-title">🗑 Delete Account</div>
+      <p style="text-align:center;margin-bottom:20px;color:var(--parchment-mid)">
+        Are you sure you want to delete <b style="color:var(--gold)">${acct?.name}</b>?<br>
+        All sticker data for this account will be lost!
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-danger" onclick="App.confirmDeleteAccount('${id}')">🗑 Delete</button>
+        <button class="btn btn-ghost" onclick="App.closeModal()">Cancel</button>
+      </div>`);
+  },
+
+  confirmDeleteAccount(id){
+    State.accounts=State.accounts.filter(a=>a.id!==id);
+    delete State.stickers[id];
+    State.save();
+    this.closeModal();
+    Render.accounts();
+    Effects.notify('Account deleted.','info');
+  },
+
+  toggleHideAccount(id){
+    const acct=State.accounts.find(a=>a.id===id);
+    if(acct){acct.hidden=!acct.hidden;State.save();Render.accounts();}
+  },
+
+  moveAccount(id,dir){
+    const idx=State.accounts.findIndex(a=>a.id===id);
+    if(idx<0)return;
+    State.accounts.sort((a,b)=>a.order-b.order);
+    const newIdx=idx+dir;
+    if(newIdx<0||newIdx>=State.accounts.length)return;
+    [State.accounts[idx].order,State.accounts[newIdx].order]=[State.accounts[newIdx].order,State.accounts[idx].order];
+    State.save();
+    Render.accounts();
+  },
+
+  // ---- EXPORT / IMPORT ----
+  openExportImport(){
+    const accts=State.accounts;
+    this.showModal(`<div class="modal-title">📤 Export / Import</div>
+      <div style="margin-bottom:16px">
+        <div class="section-title" style="font-size:.85rem">Export Accounts</div>
+        <p style="font-size:11px;color:var(--parchment-mid);margin-bottom:10px">Select accounts to export with their sticker data:</p>
+        ${accts.map(a=>`
+          <div class="export-account-check" onclick="this.querySelector('.export-check-box').classList.toggle('checked');this.dataset.selected=this.querySelector('.export-check-box').classList.contains('checked')" data-id="${a.id}" data-selected="false">
+            <div class="export-check-box"></div>
+            <span style="font-family:Cinzel,serif;font-size:11px;color:var(--gold)">${a.name}</span>
+            <span style="font-size:10px;color:var(--parchment-mid);margin-left:auto">${a.device||''}</span>
+          </div>
+        `).join('')}
+        <div class="modal-actions" style="margin-top:12px">
+          <button class="btn btn-gold" onclick="App.doExport()">📥 Export Selected</button>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div>
+        <div class="section-title" style="font-size:.85rem">Import Accounts</div>
+        <div class="form-group">
+          <label>Paste JSON data or upload file:</label>
+          <textarea id="import-json" style="min-height:80px;resize:vertical" placeholder='{"accounts":[...],"stickers":{...}}'></textarea>
+        </div>
+        <div class="form-group">
+          <label>Or upload JSON file:</label>
+          <input type="file" id="import-file" accept=".json" style="color:var(--parchment)">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-gold" onclick="App.doImport()">📤 Import</button>
+          <button class="btn btn-ghost" onclick="App.closeModal()">Close</button>
+        </div>
+      </div>`);
+    // File reader
+    document.getElementById('import-file')?.addEventListener('change',e=>{
+      const file=e.target.files[0];
+      if(!file)return;
+      const reader=new FileReader();
+      reader.onload=ev=>document.getElementById('import-json').value=ev.target.result;
+      reader.readAsText(file);
+    });
+  },
+
+  doExport(){
+    const selectedItems=document.querySelectorAll('.export-account-check[data-selected="true"]');
+    const ids=[...selectedItems].map(el=>el.dataset.id);
+    if(!ids.length){Effects.notify('Please select at least one account.','info');return;}
+    const exportData={
+      accounts:State.accounts.filter(a=>ids.includes(a.id)),
+      stickers:{}
+    };
+    ids.forEach(id=>{if(State.stickers[id])exportData.stickers[id]=State.stickers[id];});
+    const blob=new Blob([JSON.stringify(exportData,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='mea-album-export.json';a.click();
+    URL.revokeObjectURL(url);
+    Effects.notify('✨ Export complete!','success');
+  },
+
+  doImport(){
+    const json=document.getElementById('import-json')?.value?.trim();
+    if(!json){Effects.notify('Please paste JSON data.','info');return;}
+    try{
+      const data=JSON.parse(json);
+      if(!data.accounts)throw new Error('Invalid format');
+      data.accounts.forEach(a=>{
+        const exists=State.accounts.find(acc=>acc.id===a.id);
+        if(!exists){
+          a.order=a.order??State.accounts.length;
+          State.accounts.push(a);
+        } else Object.assign(exists,a);
+      });
+      if(data.stickers){
+        Object.entries(data.stickers).forEach(([id,sData])=>{
+          State.stickers[id]={...(State.stickers[id]||{}),...sData};
+        });
+      }
+      State.save();
+      this.closeModal();
+      Render.accounts();
+      Effects.notify(`✨ Import complete! ${data.accounts.length} account(s) imported.`,'success');
+    } catch(e){Effects.notify('Invalid JSON format. Please check your data.','info');}
+  },
+
+  // ---- GOLD BLITZ ----
+  saveGoldBlitz(){
+    const s1=document.getElementById('gb-sticker1')?.value||'';
+    const s2=document.getElementById('gb-sticker2')?.value||'';
+    const start=document.getElementById('gb-start')?.value||'';
+    const end=document.getElementById('gb-end')?.value||'';
+    const active=document.getElementById('gb-toggle')?.checked||false;
+    State.settings.goldBlitz={active,sticker1:s1,sticker2:s2,startTime:start||null,endTime:end||null,duration:24};
+    State.save();
+    Effects.notify('🥇 Gold Blitz settings saved!','gold');
+  },
+
+  saveTradeFest(){
+    const start=document.getElementById('tf-start')?.value||'';
+    const end=document.getElementById('tf-end')?.value||'';
+    const active=document.getElementById('tf-toggle')?.checked||false;
+    State.settings.tradeFest={active,startTime:start||null,endTime:end||null,duration:24};
+    State.save();
+    Effects.notify('🎉 Trade Fest settings saved!','success');
+  },
+
+  _checkScheduledEvents(){
+    const now=new Date();
+    const gb=State.settings.goldBlitz;
+    const tf=State.settings.tradeFest;
+    // Auto-activate based on schedule
+    if(gb.startTime&&gb.endTime){
+      const start=new Date(gb.startTime),end=new Date(gb.endTime);
+      const shouldBeActive=now>=start&&now<=end;
+      if(shouldBeActive!==gb.active){
+        State.settings.goldBlitz.active=shouldBeActive;
+        State.save();
+        if(shouldBeActive)Effects.notify('🥇 Gold Blitz has started!','gold');
+      }
+    }
+    if(tf.startTime&&tf.endTime){
+      const start=new Date(tf.startTime),end=new Date(tf.endTime);
+      const shouldBeActive=now>=start&&now<=end;
+      if(shouldBeActive!==tf.active){
+        State.settings.tradeFest.active=shouldBeActive;
+        State.save();
+        if(shouldBeActive)Effects.notify('🎉 Trade Fest has started!','success');
+      }
+    }
+  },
+
+  // ---- MANUAL TRADES ----
+  addManualTrade(){
+    const from=document.getElementById('mt-from')?.value;
+    const to=document.getElementById('mt-to')?.value;
+    const setId=parseInt(document.getElementById('mt-set')?.value);
+    const stickerIdx=parseInt(document.getElementById('mt-sticker')?.value);
+    const date=document.getElementById('mt-date')?.value;
+    if(!from||!to||!setId||isNaN(stickerIdx)||!date){
+      Effects.notify('Please fill all trade fields.','info');return;
+    }
+    if(from===to){Effects.notify('Cannot trade with the same account!','info');return;}
+    // Check sender has duplicate
+    const fromSticker=State.getSticker(from,setId,stickerIdx);
+    if(!fromSticker.have){Effects.notify('Sender does not have this sticker!','info');return;}
+    if(fromSticker.duplicates<1){Effects.notify('Sender has no duplicates to trade!','info');return;}
+    const set=ALBUM_SETS.find(s=>s.id===setId);
+    const sticker=set?.stickers[stickerIdx];
+    State.trades.push({
+      id:uid(),date,from,to,setId,stickerIdx,
+      done:false,isGold:sticker?.isGold||false
+    });
+    State.save();
+    this.renderManualTrades();
+    Effects.notify('✨ Trade planned!','success');
+  },
+
+  renderManualTrades(){
+    const list=document.getElementById('manual-trades-list');
+    if(!list)return;
+    const pending=State.trades.filter(t=>!t.done).sort((a,b)=>a.date.localeCompare(b.date));
+    const done=State.trades.filter(t=>t.done).slice(-5);
+    if(!pending.length&&!done.length){
+      list.innerHTML=`<div class="empty-state"><div class="icon">🤝</div><p>No trades planned yet.</p></div>`;
+      return;
+    }
+    list.innerHTML=`<div class="section-title" style="font-size:.85rem">Pending Trades (${pending.length})</div>`;
+    pending.forEach(trade=>list.appendChild(this._tradeItemEl(trade,false)));
+    if(done.length){
+      const doneHeader=document.createElement('div');
+      doneHeader.className='section-title';doneHeader.style.fontSize='.85rem';
+      doneHeader.textContent=`Recent Completed (${done.length})`;
+      list.appendChild(doneHeader);
+      done.forEach(trade=>list.appendChild(this._tradeItemEl(trade,true)));
+    }
+  },
+
+  _tradeItemEl(trade,isDone){
+    const fromAcct=State.accounts.find(a=>a.id===trade.from);
+    const toAcct=State.accounts.find(a=>a.id===trade.to);
+    const set=ALBUM_SETS.find(s=>s.id===trade.setId);
+    const sticker=set?.stickers[trade.stickerIdx];
+    const el=document.createElement('div');
+    el.className='trade-checklist-item';
+    el.innerHTML=`
+      <div class="trade-check ${trade.done?'done':''}" onclick="App.completeTrade('${trade.id}')"></div>
+      <div class="trade-item-text ${trade.done?'done-text':''}">
+        <b style="color:var(--gold)">${fromAcct?.name||'?'}</b> → 
+        <b style="color:var(--magic-light)">${toAcct?.name||'?'}</b><br>
+        ${sticker?.isGold?'🥇 ':''}<b>${sticker?.name||'?'}</b> 
+        <span style="opacity:.6">(Set ${trade.setId}: ${set?.name||'?'})</span><br>
+        <span style="font-size:10px;opacity:.5">📅 ${trade.date}</span>
+      </div>
+      ${!trade.done?`<button class="btn btn-danger" style="padding:4px 8px;font-size:9px" onclick="App.deleteTrade('${trade.id}')">✕</button>`:''}
+    `;
+    return el;
+  },
+
+  completeTrade(id){
+    const trade=State.trades.find(t=>t.id===id);
+    if(!trade||trade.done)return;
+    // Adjust sticker data
+    const fromSticker=State.getSticker(trade.from,trade.setId,trade.stickerIdx);
+    if(fromSticker.duplicates>0){
+      State.setSticker(trade.from,trade.setId,trade.stickerIdx,{duplicates:fromSticker.duplicates-1});
+    }
+    // Receiver gets sticker if they don't have it
+    const toSticker=State.getSticker(trade.to,trade.setId,trade.stickerIdx);
+    if(!toSticker.have){
+      State.setSticker(trade.to,trade.setId,trade.stickerIdx,{have:true,duplicates:toSticker.duplicates});
+    } else {
+      State.setSticker(trade.to,trade.setId,trade.stickerIdx,{duplicates:toSticker.duplicates+1});
+    }
+    trade.done=true;
+    State.save();
+    this.renderManualTrades();
+    // Celebration effect at top
+    const fromA=State.accounts.find(a=>a.id===trade.from);
+    const toA=State.accounts.find(a=>a.id===trade.to);
+    const sticker=ALBUM_SETS.find(s=>s.id===trade.setId)?.stickers[trade.stickerIdx];
+    Effects.pixieBurst(window.innerWidth/2,window.innerHeight/2,20);
+    Effects.notify(`✨ Trade complete!<br>${fromA?.name} → ${toA?.name}: ${sticker?.name}`,'success','left');
+    // Check completions
+    if(State.isSetComplete(trade.to,trade.setId)){
+      const set=ALBUM_SETS.find(s=>s.id===trade.setId);
+      Effects.celebrate(`✨ ${toA?.name} completed ${set?.name}!`,'set');
+    }
+  },
+
+  deleteTrade(id){
+    State.trades=State.trades.filter(t=>t.id!==id);
+    State.save();
+    this.renderManualTrades();
+  },
+
+  // ---- SMART PLANNER ----
+  runSmartPlanner(){
+    const accts=State.visibleAccounts();
+    if(accts.length<2){Effects.notify('Need at least 2 accounts for smart trading!','info');return;}
+    const strategyEl=document.querySelector('#smart-strategy .smart-option.selected');
+    const strategy=strategyEl?.dataset.val||'global';
+    const timespanEl=document.querySelector('#smart-timespan .smart-option.selected');
+    let days=parseInt(timespanEl?.dataset.val)||1;
+    if(timespanEl?.dataset.val==='custom')days=parseInt(document.getElementById('smart-days-count')?.value)||7;
+    const focusId=strategy==='focused'?document.getElementById('smart-focus-acct')?.value:null;
+    const gb=State.settings.goldBlitz;
+    const tf=State.settings.tradeFest;
+
+    // Build smart plan
+    const plan=SmartPlanner.generate(accts,days,strategy,focusId,gb,tf);
+    const resultsEl=document.getElementById('smart-plan-results');
+    if(!resultsEl)return;
+
+    if(!plan.length){
+      resultsEl.innerHTML=`<div class="empty-state"><div class="icon">🤔</div><p>No beneficial trades found!<br>All accounts may already have each other's duplicates.</p></div>`;
+      return;
+    }
+
+    // Add planned trades to State
+    let added=0;
+    plan.forEach(dayPlan=>{
+      dayPlan.trades.forEach(t=>{
+        const existing=State.trades.find(x=>!x.done&&x.from===t.from&&x.to===t.to&&x.setId===t.setId&&x.stickerIdx===t.stickerIdx&&x.date===dayPlan.date);
+        if(!existing){
+          State.trades.push({id:uid(),...t,date:dayPlan.date,done:false});
+          added++;
+        }
+      });
+    });
+    State.save();
+
+    // Render plan summary
+    resultsEl.innerHTML=`
+      <div style="padding:14px;border-radius:10px;background:rgba(80,200,80,.08);border:1px solid rgba(80,200,80,.2);margin-bottom:14px">
+        <div style="font-family:Cinzel Decorative,serif;color:#90ee90;font-size:.85rem;margin-bottom:6px">✨ Plan Generated!</div>
+        <div style="font-size:11px;color:var(--parchment-mid)">
+          ${plan.length} day(s) planned | ${added} trade(s) added to your plan
+        </div>
+      </div>
+      ${plan.map(day=>`
+        <div style="margin-bottom:12px;padding:12px;border-radius:10px;border:1px solid rgba(212,175,55,.15);background:rgba(255,255,255,.02)">
+          <div style="font-family:Cinzel,serif;color:var(--gold);font-size:.8rem;margin-bottom:6px">📅 ${day.date}</div>
+          ${day.setClosures.length?`<div style="font-size:10px;color:#90ee90;margin-bottom:6px">🎉 Sets closing: ${day.setClosures.join(', ')}</div>`:''}
+          ${day.trades.map(t=>{
+            const fromA=accts.find(a=>a.id===t.from);
+            const toA=accts.find(a=>a.id===t.to);
+            const set=ALBUM_SETS.find(s=>s.id===t.setId);
+            const st=set?.stickers[t.stickerIdx];
+            return`<div style="font-size:10px;color:var(--parchment-mid);padding:3px 0">
+              ${t.isGold?'🥇':''} <b style="color:var(--gold)">${fromA?.name}</b> → <b style="color:var(--magic-light)">${toA?.name}</b>: ${st?.name}
+            </div>`;
+          }).join('')}
+        </div>
+      `).join('')}
+      <div class="modal-actions" style="margin-top:12px">
+        <button class="btn btn-gold" onclick="document.querySelector('[data-trade-tab=calendar]').click()">📅 View in Calendar</button>
+        <button class="btn btn-ghost" onclick="document.querySelector('[data-trade-tab=manual]').click()">📝 View All Trades</button>
+      </div>
+    `;
+    Effects.notify(`✨ Smart plan: ${plan.length} days, ${added} trades added!`,'success');
+  },
+
+  // ---- CALENDAR ----
+  renderCalendar(){
+    const now=new Date();
+    if(!this.calYear)this.calYear=now.getFullYear();
+    if(this.calMonth===undefined)this.calMonth=now.getMonth();
+    const year=this.calYear,month=this.calMonth;
+    const firstDay=new Date(year,month,1);
+    const lastDay=new Date(year,month+1,0);
+    const monthNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const label=document.getElementById('cal-month-label');
+    if(label)label.textContent=`${monthNames[month]} ${year}`;
+    // Day headers
+    const dayHeaders=document.getElementById('cal-day-headers');
+    if(dayHeaders){
+      dayHeaders.innerHTML=['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
+        .map(d=>`<div class="cal-day-header">${d}</div>`).join('');
+    }
+    const grid=document.getElementById('cal-grid');
+    if(!grid)return;
+    grid.innerHTML='';
+    // Empty cells before first day
+    for(let i=0;i<firstDay.getDay();i++){
+      grid.appendChild(Object.assign(document.createElement('div'),{className:'cal-day',style:'opacity:.2'}));
+    }
+    const todayStr=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    for(let d=1;d<=lastDay.getDate();d++){
+      const dateStr=`${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayTrades=State.trades.filter(t=>t.date===dateStr);
+      const dayEl=document.createElement('div');
+      let classes='cal-day';
+      if(dateStr===todayStr)classes+=' today';
+      if(dayTrades.length)classes+=' has-trades';
+      const pendingTrades=dayTrades.filter(t=>!t.done);
+      const doneTrades=dayTrades.filter(t=>t.done);
+      dayEl.className=classes;
+      dayEl.innerHTML=`
+        <div class="cal-day-num">${d}</div>
+        ${pendingTrades.slice(0,3).map(()=>`<span class="cal-trade-dot"></span>`).join('')}
+        ${doneTrades.slice(0,2).map(()=>`<span class="cal-trade-dot cal-complete-dot"></span>`).join('')}
+        ${dayTrades.length>5?`<span style="font-size:8px;opacity:.5">+${dayTrades.length-5}</span>`:''}
+      `;
+      dayEl.addEventListener('click',()=>this.showDayChecklist(dateStr));
+      grid.appendChild(dayEl);
+    }
+  },
+
+  showDayChecklist(dateStr){
+    const dayTrades=State.trades.filter(t=>t.date===dateStr).sort((a,b)=>a.done-b.done);
+    const area=document.getElementById('daily-checklist-area');
+    if(!area)return;
+    // Set closures on this day if all trades completed
+    const closures=[];
+    const accts=State.visibleAccounts();
+    dayTrades.filter(t=>!t.done).forEach(t=>{
+      const toAcct=accts.find(a=>a.id===t.to);
+      const set=ALBUM_SETS.find(s=>s.id===t.setId);
+      if(toAcct&&set){
+        // Simulate if this trade would close the set
+        const missing=set.stickers.filter((_,i)=>!State.getSticker(t.to,t.setId,i).have);
+        if(missing.length===1&&missing[0]===set.stickers[t.stickerIdx]){
+          closures.push(`${toAcct.name}: ${set.name}`);
+        }
+      }
+    });
+    area.innerHTML=`
+      <div class="daily-checklist">
+        <div class="checklist-day-header">📅 ${dateStr} — Trades (${dayTrades.length})</div>
+        ${closures.length?`<div class="checklist-set-closures">🎉 Sets closing today: ${closures.join(' | ')}</div>`:''}
+        ${!dayTrades.length?'<div style="opacity:.4;font-size:11px;text-align:center;padding:20px">No trades on this day.</div>':''}
+        ${dayTrades.map(t=>{
+          const fromA=State.accounts.find(a=>a.id===t.from);
+          const toA=State.accounts.find(a=>a.id===t.to);
+          const set=ALBUM_SETS.find(s=>s.id===t.setId);
+          const st=set?.stickers[t.stickerIdx];
+          return`<div class="trade-checklist-item">
+            <div class="trade-check ${t.done?'done':''}" onclick="App.completeTrade('${t.id}');App.showDayChecklist('${dateStr}')"></div>
+            <div class="trade-item-text ${t.done?'done-text':''}">
+              ${t.isGold?'🥇 ':''}<b style="color:var(--gold)">${fromA?.name||'?'}</b> → 
+              <b style="color:var(--magic-light)">${toA?.name||'?'}</b>: <b>${st?.name||'?'}</b>
+              <br><span style="font-size:9px;opacity:.5">Set ${t.setId}: ${set?.name||'?'}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+    area.scrollIntoView({behavior:'smooth'});
+  },
+
+  // ---- MODAL ----
+  showModal(html){
+    document.getElementById('modal-body').innerHTML=html;
+    document.getElementById('modal-overlay').classList.add('open');
+  },
+  closeModal(){
+    document.getElementById('modal-overlay').classList.remove('open');
+  }
+};
+
+
+
+// ============================================================
+// TUTORIAL MODE
+// ============================================================
+const Tutorial={
+  active:false,
+  stepIndex:0,
+  steps:[],
+  snapshot:null,
+  tutorialTheme:null,
+  themeChosen:false,
+  currentTarget:null,
+
+  syncToggle(){
+    const btn=document.getElementById('tutorial-toggle');
+    if(!btn)return;
+    btn.classList.toggle('active',this.active);
+    btn.querySelector('.nav-page-label').textContent=this.active?'Exit Tutorial':'Tutorial Mode';
+    btn.querySelector('.nav-page-icon').textContent=this.active?'🛑':'🧭';
+    btn.title=this.active?'Exit tutorial mode':'Start tutorial mode';
+    document.body.classList.toggle('tutorial-mode',this.active);
+    document.body.classList.toggle('tutorial-nav-open',this.active);
+    window.MEA_TUTORIAL_ACTIVE=this.active;
+  },
+
+  toggle(){
+    if(this.active)this.stop();
+    else this.start();
+  },
+
+  start(){
+    if(this.active)return;
+    this.themeChosen=false;
+    this.tutorialTheme=State.settings.theme||'enchanted';
+    this.currentTarget=null;
+    this.snapshot={
+      accounts:JSON.parse(JSON.stringify(State.accounts)),
+      stickers:JSON.parse(JSON.stringify(State.stickers)),
+      settings:JSON.parse(JSON.stringify(State.settings)),
+      trades:JSON.parse(JSON.stringify(State.trades)),
+      ui:JSON.parse(JSON.stringify(State.ui)),
+      calYear:App.calYear,
+      calMonth:App.calMonth,
+      searches:{
+        album:document.getElementById('album-search-input')?.value||'',
+        left:document.getElementById('left-search')?.value||''
+      }
+    };
+    this.active=true;
+    this.syncToggle();
+    const demo=this._buildDemoState();
+    State.accounts=demo.accounts;
+    State.stickers=demo.stickers;
+    State.trades=demo.trades;
+    State.settings={...demo.settings};
+    State.ui={page:'album'};
+    App.calYear=demo.calendarFocus.year;
+    App.calMonth=demo.calendarFocus.month;
+    document.getElementById('album-search-input').value='';
+    document.getElementById('left-search').value='';
+    Render.leftNav();
+    App.navigate('album');
+    this.steps=this._buildSteps();
+    this.stepIndex=0;
+    this._showOverlay();
+    this._updateStatusPill();
+    this.go(0);
+    Effects.notify('🧭 Tutorial mode enabled with demo data. Exit anytime to return to your real album.','info');
+  },
+
+  stop(notify=true){
+    if(!this.active)return;
+    this._clearHighlight();
+    this._hideOverlay();
+    this.active=false;
+    window.MEA_TUTORIAL_ACTIVE=false;
+    document.body.classList.remove('tutorial-mode','tutorial-nav-open');
+    if(this.snapshot){
+      State.accounts=JSON.parse(JSON.stringify(this.snapshot.accounts));
+      State.stickers=JSON.parse(JSON.stringify(this.snapshot.stickers));
+      State.settings=JSON.parse(JSON.stringify(this.snapshot.settings));
+      State.trades=JSON.parse(JSON.stringify(this.snapshot.trades));
+      State.ui=JSON.parse(JSON.stringify(this.snapshot.ui));
+      App.calYear=this.snapshot.calYear;
+      App.calMonth=this.snapshot.calMonth;
+      Render.leftNav();
+      App.applyTheme(State.settings.theme||'enchanted',false);
+      App.navigate(this.snapshot.ui?.page||'album');
+      const albumInput=document.getElementById('album-search-input');
+      const leftInput=document.getElementById('left-search');
+      if(albumInput){albumInput.value=this.snapshot.searches?.album||'';albumInput.dispatchEvent(new Event('input',{bubbles:true}));}
+      if(leftInput){leftInput.value=this.snapshot.searches?.left||'';leftInput.dispatchEvent(new Event('input',{bubbles:true}));}
+    }
+    this.snapshot=null;
+    this.steps=[];
+    this.stepIndex=0;
+    this.tutorialTheme=null;
+    this.themeChosen=false;
+    this.currentTarget=null;
+    this.syncToggle();
+    if(notify)Effects.notify('✨ Tutorial mode turned off. Your real album is back.','success');
+  },
+
+  next(){
+    if(!this.active)return;
+    const step=this.steps[this.stepIndex];
+    if(step?.themeChoice && !this.themeChosen){
+      Effects.notify('✨ Choose Enchanted or Wicked first so the tutorial can stay in that look the whole way through.','gold');
+      return;
+    }
+    if(this.stepIndex>=this.steps.length-1){this.stop();return;}
+    this.go(this.stepIndex+1);
+  },
+
+  prev(){
+    if(!this.active)return;
+    this.go(Math.max(0,this.stepIndex-1));
+  },
+
+  async go(index){
+    if(!this.active)return;
+    this.stepIndex=index;
+    const step=this.steps[index];
+    if(!step)return;
+    this._clearHighlight();
+    if(step.before)await step.before();
+    await this._wait(120);
+    let target=null;
+    if(step.selector){
+      target=await this._findTarget(step.selector,step.timeout||1800);
+    }else if(typeof step.getTarget==='function'){
+      target=await step.getTarget();
+    }
+    if(target){
+      target.classList.add('tutorial-highlight');
+      target.scrollIntoView({behavior:'smooth',block:step.scrollBlock||'center',inline:'center'});
+      await this._wait(220);
+    }
+    this.currentTarget=target||null;
+    this._positionRing(target);
+    this._renderCoachmark(step,target);
+  },
+
+  _showOverlay(){
+    document.getElementById('tutorial-overlay')?.classList.add('active');
+  },
+  _hideOverlay(){
+    document.getElementById('tutorial-overlay')?.classList.remove('active');
+    document.getElementById('tutorial-coachmark')?.classList.remove('active');
+    document.getElementById('tutorial-target-ring')?.classList.remove('active');
+  },
+  _clearHighlight(){
+    document.querySelectorAll('.tutorial-highlight').forEach(el=>el.classList.remove('tutorial-highlight'));
+    document.getElementById('tutorial-target-ring')?.classList.remove('active');
+  },
+
+  _positionRing(target){
+    const ring=document.getElementById('tutorial-target-ring');
+    if(!ring)return;
+    if(!target){ring.classList.remove('active');return;}
+    const rect=target.getBoundingClientRect();
+    const pad=10;
+    ring.style.left=Math.max(8,rect.left-pad)+'px';
+    ring.style.top=Math.max(8,rect.top-pad)+'px';
+    ring.style.width=Math.min(window.innerWidth-16,rect.width+pad*2)+'px';
+    ring.style.height=Math.min(window.innerHeight-16,rect.height+pad*2)+'px';
+    ring.classList.add('active');
+  },
+
+  _renderCoachmark(step,target){
+    const box=document.getElementById('tutorial-coachmark');
+    if(!box)return;
+    const total=this.steps.length;
+    const atEnd=this.stepIndex===total-1;
+    const nextDisabled=step?.themeChoice && !this.themeChosen;
+    box.innerHTML=`
+      <div class="tutorial-step-pill">✨ Step ${this.stepIndex+1} of ${total}</div>
+      <div class="tutorial-title">${step.title}</div>
+      <div class="tutorial-body">${step.body}</div>
+      ${step.themeChoice?this._themeChoiceHTML():''}
+      ${step.tip?`<div class="tutorial-tip">💡 ${step.tip}</div>`:''}
+      <div class="tutorial-mini-note">Use <b>Next</b>, <b>Back</b>, or press <b>Esc</b> to leave tutorial mode.</div>
+      <div class="tutorial-actions">
+        <div class="left">
+          <button class="btn btn-ghost" data-tutorial-action="stop">Exit</button>
+          <button class="btn btn-ghost" data-tutorial-action="prev" ${this.stepIndex===0?'disabled style="opacity:.45"':''}>← Back</button>
+        </div>
+        <div class="right">
+          <button class="btn btn-gold" data-tutorial-action="next" ${nextDisabled?'disabled style="opacity:.45"':''}>${atEnd?'Finish':'Next →'}</button>
+        </div>
+      </div>`;
+    box.classList.add('active');
+    box.querySelector('[data-tutorial-action="stop"]')?.addEventListener('click',()=>this.stop());
+    box.querySelector('[data-tutorial-action="prev"]')?.addEventListener('click',()=>this.prev());
+    box.querySelector('[data-tutorial-action="next"]')?.addEventListener('click',()=>this.next());
+    box.querySelectorAll('[data-tutorial-theme]').forEach(btn=>btn.addEventListener('click',()=>this.chooseTheme(btn.dataset.tutorialTheme)));
+    this._positionCoachmark(box,target);
+  },
+
+  _positionCoachmark(box,target){
+    const margin=18;
+    const width=Math.min(360,window.innerWidth-28);
+    if(!target){
+      box.style.left=Math.max(14,(window.innerWidth-width)/2)+'px';
+      box.style.top=Math.max(20,(window.innerHeight-box.offsetHeight)/2)+'px';
+      return;
+    }
+    const rect=target.getBoundingClientRect();
+    const boxRect=box.getBoundingClientRect();
+    let left=Math.min(window.innerWidth-boxRect.width-margin,Math.max(margin,rect.left));
+    let top=rect.bottom+18;
+    if(top+boxRect.height>window.innerHeight-margin){
+      top=rect.top-boxRect.height-18;
+    }
+    if(top<margin){
+      top=Math.max(margin,(window.innerHeight-boxRect.height)/2);
+      left=Math.min(window.innerWidth-boxRect.width-margin,Math.max(margin,rect.right+18));
+      if(left+boxRect.width>window.innerWidth-margin){
+        left=Math.max(margin,rect.left-boxRect.width-18);
+      }
+    }
+    box.style.left=left+'px';
+    box.style.top=Math.max(margin,top)+'px';
+  },
+
+  _wait(ms){return new Promise(r=>setTimeout(r,ms));},
+  async _findTarget(selector,timeout=1800){
+    const start=Date.now();
+    while(Date.now()-start<timeout){
+      const el=document.querySelector(selector);
+      if(el)return el;
+      await this._wait(80);
+    }
+    return document.querySelector(selector);
+  },
+  _tradeTab(tab){document.querySelector(`[data-trade-tab="${tab}"]`)?.click();},
+  _fmtDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;},
+
+  chooseTheme(theme){
+    if(!this.active)return;
+    const next=theme==='wicked'?'wicked':'enchanted';
+    this.tutorialTheme=next;
+    this.themeChosen=true;
+    App.applyTheme(next,false);
+    this._updateStatusPill();
+    this._renderCoachmark(this.steps[this.stepIndex],this.currentTarget);
+    Effects.notify(next==='enchanted'?'✨ Tutorial set to Enchanted Mode for the rest of the walkthrough.':'🌙 Tutorial set to Wicked Mode for the rest of the walkthrough.','info');
+  },
+
+  _updateStatusPill(){
+    const pill=document.getElementById('tutorial-status-pill');
+    if(!pill)return;
+    const chosen=this.themeChosen ? (this.tutorialTheme==='wicked'?'🌙 Wicked':'✨ Enchanted') : 'Choose Theme';
+    pill.textContent=`🧭 Tutorial Mode • Demo Data Loaded • ${chosen}`;
+  },
+
+  _themeChoiceHTML(){
+    const selected=this.tutorialTheme||State.settings.theme||'enchanted';
+    return `
+      <div class="tutorial-theme-grid">
+        <button class="tutorial-theme-card enchanted ${selected==='enchanted'?'selected':''}" data-tutorial-theme="enchanted" type="button">
+          <div class="theme-head"><span class="theme-icon">✨</span><span>Enchanted Mode</span></div>
+          <div class="theme-desc">The bright fairy-tale look. Think light mode with airy whites, soft blues, and sparkling accents.</div>
+        </button>
+        <button class="tutorial-theme-card wicked ${selected==='wicked'?'selected':''}" data-tutorial-theme="wicked" type="button">
+          <div class="theme-head"><span class="theme-icon">🌙</span><span>Wicked Mode</span></div>
+          <div class="theme-desc">The darker moonlit look. Think dark mode with richer shadows, gold trim, and a more dramatic glow.</div>
+        </button>
+      </div>`;
+  },
+
+  _buildDemoState(){
+    const accounts=[
+      {id:'demo-aurora',name:'Aurora',device:'iPhone 16',gameCode:'AUR-101',gameLink:'https://example.com/aurora',hidden:false,order:0},
+      {id:'demo-briar',name:'Briar',device:'iPad Mini',gameCode:'BRI-202',gameLink:'https://example.com/briar',hidden:false,order:1},
+      {id:'demo-fable',name:'Fable',device:'Android Tablet',gameCode:'FAB-303',gameLink:'https://example.com/fable',hidden:false,order:2}
+    ];
+    const stickers={};
+    accounts.forEach((acct,aIdx)=>{
+      stickers[acct.id]={};
+      ALBUM_SETS.forEach(set=>{
+        set.stickers.forEach((st,idx)=>{
+          const k=stickerKey(set.id,idx);
+          let have=((set.id*2)+idx+(aIdx*3))%9 < (aIdx===0?5:aIdx===1?4:6);
+          if(st.isGold)have=((set.id+idx+aIdx)%7===0);
+          let duplicates=have && ((set.id+idx+aIdx)%4===0) ? 1+((set.id+idx)%2) : 0;
+          stickers[acct.id][k]={have,duplicates};
+        });
+      });
+    });
+    // Override the opening set so the tutorial examples are obvious.
+    stickers['demo-aurora'][stickerKey(1,0)]={have:true,duplicates:2};
+    stickers['demo-aurora'][stickerKey(1,1)]={have:false,duplicates:0};
+    stickers['demo-aurora'][stickerKey(1,2)]={have:true,duplicates:1};
+    stickers['demo-briar'][stickerKey(1,0)]={have:true,duplicates:1};
+    stickers['demo-briar'][stickerKey(1,1)]={have:true,duplicates:2};
+    stickers['demo-fable'][stickerKey(1,1)]={have:false,duplicates:0};
+    const golds=[];
+    ALBUM_SETS.forEach(set=>set.stickers.forEach((st,idx)=>{if(st.isGold)golds.push({setId:set.id,idx});}));
+    const now=new Date();
+    const tomorrow=new Date(now);tomorrow.setDate(now.getDate()+1);
+    const twoDays=new Date(now);twoDays.setDate(now.getDate()+2);
+    const threeDays=new Date(now);threeDays.setDate(now.getDate()+3);
+    const trades=[
+      {id:'demo-trade-1',date:this._fmtDate(tomorrow),from:'demo-briar',to:'demo-aurora',setId:1,stickerIdx:1,done:false,isGold:false},
+      {id:'demo-trade-2',date:this._fmtDate(twoDays),from:'demo-fable',to:'demo-briar',setId:5,stickerIdx:4,done:false,isGold:false},
+      {id:'demo-trade-3',date:this._fmtDate(threeDays),from:'demo-aurora',to:'demo-fable',setId:golds[0]?.setId||16,stickerIdx:golds[0]?.idx||7,done:false,isGold:true}
+    ];
+    const gbStart=new Date(now);gbStart.setHours(now.getHours()-1,0,0,0);
+    const gbEnd=new Date(now);gbEnd.setHours(now.getHours()+23,0,0,0);
+    const tfStart=new Date(now);tfStart.setHours(now.getHours()-2,0,0,0);
+    const tfEnd=new Date(now);tfEnd.setHours(now.getHours()+30,0,0,0);
+    return{
+      accounts,
+      stickers,
+      trades,
+      settings:{
+        theme:State.settings.theme||'enchanted',
+        goldBlitz:{active:true,startTime:gbStart.toISOString().slice(0,16),endTime:gbEnd.toISOString().slice(0,16),sticker1:golds[0]?`${golds[0].setId}_${golds[0].idx}`:'',sticker2:golds[1]?`${golds[1].setId}_${golds[1].idx}`:'',duration:24},
+        tradeFest:{active:true,startTime:tfStart.toISOString().slice(0,16),endTime:tfEnd.toISOString().slice(0,16),duration:24}
+      },
+      calendarFocus:{year:tomorrow.getFullYear(),month:tomorrow.getMonth()}
+    };
+  },
+
+  _buildSteps(){
+    return[
+      {
+        title:'Welcome to guided demo mode',
+        body:'This tour swaps in fake accounts, stickers, trades, and events so you can safely learn every major feature without touching your real album.',
+        tip:'When you exit, the site restores your real data exactly as it was.',
+        before:async()=>{App.navigate('album');window.scrollTo({top:0,behavior:'smooth'});}
+      },
+      {
+        title:'Choose your tutorial mode',
+        body:'Pick the look you want for this walkthrough. <b>Enchanted Mode</b> is the site\'s light mode, while <b>Wicked Mode</b> is the darker night-mode version. Once you choose, the tutorial stays in that mode from start to finish so every example feels consistent.',
+        tip:'This only affects the guided demo. Exiting the tutorial restores your normal website theme.',
+        before:async()=>{App.navigate('album');window.scrollTo({top:0,behavior:'smooth'});},
+        selector:'#theme-toggle',
+        themeChoice:true
+      },
+      {
+        title:'Create new accounts here',
+        body:'The Accounts page is where new profiles begin. Use this button to add another Monopoly GO account with its name, device, mogo code, and link.',
+        tip:'This is the starting point for building the side-by-side album view.',
+        before:async()=>{App.navigate('accounts');window.scrollTo({top:0,behavior:'smooth'});},
+        selector:'#accounts-add-btn'
+      },
+      {
+        title:'Import and export account data',
+        body:'Use Export / Import to back up selected accounts or move album progress between devices and browsers.',
+        tip:'The export tool includes both account details and sticker progress.',
+        before:async()=>{App.navigate('accounts');},
+        selector:'#accounts-export-btn'
+      },
+      {
+        title:'Edit and hide accounts',
+        body:'Each account card includes quick actions to edit the profile or hide that account from the album, progress, and trade views without deleting it.',
+        tip:'Hide is perfect for parking extra accounts temporarily.',
+        before:async()=>{App.navigate('accounts');},
+        selector:'#accounts-list .account-card:first-child .account-card-actions'
+      },
+      {
+        title:'Reorder account columns',
+        body:'These arrow controls change account order. The same order is used everywhere the site shows multiple accounts side by side.',
+        tip:'Move your main account to the first slot so it always stays easiest to compare.',
+        before:async()=>{App.navigate('accounts');},
+        selector:'#accounts-list .account-card:first-child .order-btns'
+      },
+      {
+        title:'Compare multiple accounts side by side',
+        body:'Back on the Album page, every set displays each visible account in parallel so you can compare missing stickers at a glance.',
+        tip:'This is why account order matters—it controls the column layout.',
+        before:async()=>{App.navigate('album');window.scrollTo({top:0,behavior:'smooth'});},
+        selector:'#set-1 .set-accounts-row'
+      },
+      {
+        title:'Tap a sticker when you have it',
+        body:'Click any sticker card to toggle between missing and owned. The card art, stars, and banner styling update instantly.',
+        tip:'Completing a set or album triggers celebration effects and progress updates automatically.',
+        before:async()=>{App.navigate('album');},
+        selector:'#card-demo-aurora-1-0'
+      },
+      {
+        title:'Track duplicates here',
+        body:'Use minus, plus, or direct number entry to adjust duplicates for each sticker. Duplicates power manual trades and smart planning.',
+        tip:'A sender needs at least 1 duplicate before a trade can be scheduled.',
+        before:async()=>{App.navigate('album');},
+        selector:'#card-demo-aurora-1-0 .dup-controls'
+      },
+      {
+        title:'Search sets and sticker names',
+        body:'The album search jumps to matching set names or sticker names so you can find what you need fast.',
+        tip:'Try typing part of a sticker title like “glass” or a set name keyword.',
+        before:async()=>{App.navigate('album');const input=document.getElementById('album-search-input');if(input){input.value='glass';input.dispatchEvent(new Event('input',{bubbles:true}));}},
+        selector:'#album-search-bar'
+      },
+      {
+        title:'Use the set navigation rail',
+        body:'The left sidebar lets you search within the full album and jump directly to a set. It works especially well once the album gets long.',
+        tip:'In tutorial mode, the nav is pinned open so you can see everything clearly.',
+        before:async()=>{App.navigate('album');const input=document.getElementById('album-search-input');if(input){input.value='';input.dispatchEvent(new Event('input',{bubbles:true}));}const left=document.getElementById('left-search');if(left){left.value='fairy';left.dispatchEvent(new Event('input',{bubbles:true}));}},
+        selector:'#left-nav'
+      },
+      {
+        title:'See progress by account',
+        body:'The Progress page rolls everything up into totals, set completion, regular vs gold counts, and star-tier breakdowns for each visible account.',
+        tip:'This is the fastest page for spotting who is closest to finishing.',
+        before:async()=>{const left=document.getElementById('left-search');if(left){left.value='';left.dispatchEvent(new Event('input',{bubbles:true}));}App.navigate('progress');window.scrollTo({top:0,behavior:'smooth'});},
+        selector:'#progress-content .progress-account-block:first-child'
+      },
+      {
+        title:'Plan trades manually',
+        body:'Manual Trades lets you choose sender, receiver, set, sticker, and date yourself. It is best when you already know the exact swap you want to schedule.',
+        tip:'The site checks that the sender actually owns the sticker and has a spare duplicate.',
+        before:async()=>{App.navigate('trade');this._tradeTab('manual');window.scrollTo({top:0,behavior:'smooth'});},
+        selector:'.manual-trade-area'
+      },
+      {
+        title:'Use smart planner strategies',
+        body:'Smart Planner can auto-build trade plans. Global balances help across everyone, Single Focus feeds one account first, and Best Random creates an optimized mixed plan.',
+        tip:'Time Span can plan for today, a week, a month, or a custom number of days.',
+        before:async()=>{App.navigate('trade');this._tradeTab('smart');await this._wait(120);document.querySelector('#smart-strategy .smart-option[data-val="focused"]')?.click();document.querySelector('#smart-timespan .smart-option[data-val="custom"]')?.click();const days=document.getElementById('smart-days-count');if(days)days.value=10;},
+        selector:'#trade-tab-smart .smart-planner-controls'
+      },
+      {
+        title:'Preview generated smart trade plans',
+        body:'After choosing a strategy, generate the plan to produce suggested trades, closure opportunities, and direct shortcuts into the calendar or manual list.',
+        tip:'This is the quickest way to discover the most valuable trades across several accounts.',
+        before:async()=>{App.navigate('trade');this._tradeTab('smart');await this._wait(120);document.querySelector('#smart-strategy .smart-option[data-val="focused"]')?.click();document.querySelector('#smart-timespan .smart-option[data-val="custom"]')?.click();const days=document.getElementById('smart-days-count');if(days)days.value=10;App.runSmartPlanner();},
+        selector:'#smart-plan-results'
+      },
+      {
+        title:'Review the calendar and daily checklist',
+        body:'The Calendar tab lays out scheduled trades by date. Clicking a day opens a checklist so you can work through the day’s sends and completions.',
+        tip:'Completed checklist items can update sticker ownership automatically.',
+        before:async()=>{App.navigate('trade');this._tradeTab('calendar');await this._wait(180);const day=document.querySelector('#cal-grid .cal-day.has-trades');day?.click();},
+        selector:'#daily-checklist-area'
+      },
+      {
+        title:'Event modes change the rules',
+        body:'The Events tab lets you configure Gold Blitz and Trade Fest. Those settings change how many regular or gold trades the smart planner is allowed to schedule.',
+        tip:'Gold Blitz also narrows gold trading to the selected featured gold stickers.',
+        before:async()=>{App.navigate('trade');this._tradeTab('events');window.scrollTo({top:0,behavior:'smooth'});},
+        selector:'#trade-tab-events .event-modes'
+      },
+      {
+        title:'That is the full tour',
+        body:'You have now seen account setup, album interaction, navigation, search, progress tracking, manual trades, smart planner tools, calendar planning, and event controls.',
+        tip:'Press Finish to leave demo mode and jump back to your real website state.',
+        before:async()=>{App.navigate('album');window.scrollTo({top:0,behavior:'smooth'});},
+        selector:'#tutorial-toggle'
+      }
+    ];
+  }
+};
+
+// ============================================================
+// SMART PLANNER ENGINE
+// ============================================================
+const SmartPlanner={
+  generate(accts,days,strategy,focusId,gb,tf){
+    if(accts.length<2)return[];
+    const plan=[];
+    // Simulate sticker state
+    const simState={};
+    accts.forEach(a=>{
+      simState[a.id]={};
+      ALBUM_SETS.forEach(set=>{
+        set.stickers.forEach((_,i)=>{
+          const d=State.getSticker(a.id,set.id,i);
+          simState[a.id][stickerKey(set.id,i)]={have:d.have,duplicates:d.duplicates};
+        });
+      });
+    });
+
+    const startDate=new Date();
+    for(let day=0;day<days;day++){
+      const date=new Date(startDate);date.setDate(date.getDate()+day);
+      const dateStr=`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      
+      // Check if gold blitz is active on this day
+      const gbActiveDay=gb.active||(gb.startTime&&gb.endTime&&date>=new Date(gb.startTime)&&date<=new Date(gb.endTime));
+      const tfActiveDay=tf.active||(tf.startTime&&tf.endTime&&date>=new Date(tf.startTime)&&date<=new Date(tf.endTime));
+      const regularLimit=tfActiveDay?10:5;
+      const goldLimit=gbActiveDay?5:0;
+
+      // Track sends per account
+      const sends={};
+      const goldSends={};
+      accts.forEach(a=>{sends[a.id]=0;goldSends[a.id]=0;});
+
+      const dayTrades=[];
+      const setClosures=[];
+
+      // Find beneficial trades - prioritize set completion
+      const tradeCandidates=this._findCandidates(accts,simState,strategy,focusId,gbActiveDay,gb);
+      
+      tradeCandidates.forEach(candidate=>{
+        const{from,to,setId,stickerIdx,isGold}=candidate;
+        if(isGold&&goldLimit===0)return;
+        const fromSends=isGold?goldSends[from]:sends[from];
+        const limit=isGold?goldLimit:regularLimit;
+        if(fromSends>=limit)return;
+        // Check sim state
+        const k=stickerKey(setId,stickerIdx);
+        const fromData=simState[from][k];
+        const toData=simState[to][k];
+        if(!fromData.have||fromData.duplicates<1)return;
+        if(toData.have)return; // receiver already has it
+        // Do trade
+        fromData.duplicates--;
+        toData.have=true;
+        if(isGold)goldSends[from]++;else sends[from]++;
+        dayTrades.push({from,to,setId,stickerIdx,isGold});
+        // Check set closure
+        const set=ALBUM_SETS.find(s=>s.id===setId);
+        if(set){
+          const toAcct=accts.find(a=>a.id===to);
+          const allHave=set.stickers.every((_,i)=>simState[to][stickerKey(setId,i)]?.have);
+          if(allHave)setClosures.push(`${toAcct?.name}: ${set.name}`);
+        }
+      });
+
+      if(dayTrades.length){
+        plan.push({date:dateStr,trades:dayTrades,setClosures});
+      }
+      if(plan.length===0&&day===days-1)break; // No trades found at all
+    }
+    return plan;
+  },
+
+  _findCandidates(accts,simState,strategy,focusId,gbActive,gb){
+    const candidates=[];
+    // Find who needs what
+    const needs={};
+    const hasDup={};
+    accts.forEach(a=>{
+      needs[a.id]=[];hasDup[a.id]=[];
+      ALBUM_SETS.forEach(set=>{
+        set.stickers.forEach((st,i)=>{
+          const k=stickerKey(set.id,i);
+          const d=simState[a.id][k];
+          if(!d.have)needs[a.id].push({setId:set.id,stickerIdx:i,isGold:st.isGold,set});
+          if(d.have&&d.duplicates>0)hasDup[a.id].push({setId:set.id,stickerIdx:i,isGold:st.isGold});
+        });
+      });
+    });
+
+    // Score: prioritize trades that help complete sets
+    const toAccounts=strategy==='focused'&&focusId?[focusId]:accts.map(a=>a.id);
+    toAccounts.forEach(toId=>{
+      const needed=needs[toId]||[];
+      // Sort by set progress (closer to complete = higher priority)
+      const scored=needed.map(n=>{
+        const set=n.set;
+        const have=set.stickers.filter((_,i)=>simState[toId][stickerKey(set.id,i)]?.have).length;
+        const priority=have/set.stickers.length;
+        return{...n,priority};
+      }).sort((a,b)=>b.priority-a.priority);
+      scored.forEach(need=>{
+        // Gold blitz filter
+        if(need.isGold&&gbActive){
+          const s1=gb.sticker1,s2=gb.sticker2;
+          const k=`${need.setId}_${need.stickerIdx}`;
+          if(k!==s1&&k!==s2)return; // Only blitz stickers during gold blitz
+        }
+        if(need.isGold&&!gbActive)return; // Can't trade gold outside blitz
+        // Find a sender
+        accts.filter(a=>a.id!==toId).forEach(fromAcct=>{
+          const dup=hasDup[fromAcct.id].find(d=>d.setId===need.setId&&d.stickerIdx===need.stickerIdx);
+          if(dup){
+            candidates.push({from:fromAcct.id,to:toId,...need});
+          }
+        });
+      });
+    });
+    return candidates;
+  }
+};
+
+// ============================================================
+// INITIALIZE
+// ============================================================
+document.addEventListener('DOMContentLoaded',()=>App.init());
+</script>
+</body>
+</html>
