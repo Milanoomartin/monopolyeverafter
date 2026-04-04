@@ -5094,7 +5094,7 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     let totalHave = 0;
     accts.forEach(a=>set.stickers.forEach((_,i)=>{ if(State.getSticker(a.id,set.id,i).have)totalHave++; }));
     const pct = accts.length ? Math.round(totalHave / (accts.length * totalStickers) * 100) : 0;
-    const setVaultTotal = accts.reduce((sum,acct)=>sum + State.getSetVaultStars(acct.id, set.id),0);
+    const setVaultTotal = accts.reduce((sum,acct)=>sum + State.getAccountVaultStars(acct.id),0);
 
     block.innerHTML = `
       <div class="set-header" style="background:${headerBg}">
@@ -5229,7 +5229,7 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     const chip = document.getElementById(`set-vault-total-${setId}`);
     if(bar)bar.style.width = pct + '%';
     if(txt)txt.textContent = pct + '%';
-    if(chip)chip.textContent = `⭐ ${accts.reduce((sum,a)=>sum + State.getSetVaultStars(a.id,setId),0)} vault stars`;
+    if(chip)chip.textContent = `⭐ ${accts.reduce((sum,a)=>sum + State.getAccountVaultStars(a.id),0)} vault stars`;
     accts.forEach(acct=>{
       const mini = document.getElementById(`mini-stars-${setId}-${acct.id}`);
       if(mini)mini.textContent = `⭐ ${State.getSetVaultStars(acct.id,setId)}`;
