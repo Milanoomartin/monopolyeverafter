@@ -1871,14 +1871,16 @@ const Render={
     const accts=State.visibleAccounts();
     const set=ALBUM_SETS.find(s=>s.id===setId);
     if(!set)return;
-    // Update progress bar
-    let totalHave=0;
-    accts.forEach(a=>{set.stickers.forEach((_,i)=>{if(State.getSticker(a.id,setId,i).have)totalHave++;})});
-    const pct=accts.length?Math.round(totalHave/(accts.length*set.stickers.length)*100):0;
-    const bar=document.querySelector(`#set-${setId} .set-progress-fill`);
-    const txt=document.querySelector(`#set-${setId} .set-progress-text`);
-    if(bar)bar.style.width=pct+'%';
-    if(txt)txt.textContent=pct+'%';
+    accts.forEach(acct=>{
+      const acctHave=set.stickers.filter((_,i)=>State.getSticker(acct.id,setId,i).have).length;
+      const acctPct=set.stickers.length?Math.round(acctHave/set.stickers.length*100):0;
+      const bar=document.getElementById(`set-fill-${setId}-${acct.id}`);
+      const txt=document.getElementById(`set-pct-${setId}-${acct.id}`);
+      const chip=document.getElementById(`set-acct-stars-${setId}-${acct.id}`);
+      if(bar)bar.style.width=acctPct+'%';
+      if(txt)txt.textContent=acctPct+'%';
+      if(chip)chip.textContent=`⭐ ${State.getAccountVaultStars(acct.id)}`;
+    });
   },
 
   // ---- ACCOUNTS PAGE ----
@@ -3713,6 +3715,44 @@ body[data-theme="enchanted"] .mini-star-pill,
 body[data-theme="enchanted"] .vault-star-pill{
   background:rgba(255,255,255,.72);border-color:rgba(124,99,255,.18);color:#5c45c9
 }
+/* ========== PER-ACCOUNT SET HEADER ========== */
+.set-header{
+  padding:10px 14px;
+  display:flex;align-items:stretch;gap:0;flex-wrap:nowrap;overflow:hidden;
+}
+.set-header-left{
+  min-width:max(100px,18%);padding-right:10px;
+  display:flex;flex-direction:column;justify-content:center;
+  border-right:1px solid rgba(255,255,255,.15);
+}
+.set-header-accts-row{
+  display:flex;flex:1;align-items:stretch;justify-content:flex-end;
+  gap:0;overflow:hidden;
+}
+.set-header-acct-col{
+  flex:1;min-width:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:6px 8px;
+  border-left:1px solid rgba(255,255,255,.12);
+  gap:3px;
+}
+.set-hdr-acct-name{
+  font-family:'Cinzel',serif;font-size:8.5px;
+  color:var(--set-header-text);opacity:.85;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+  letter-spacing:.3px;margin-bottom:1px;
+}
+.set-header-acct-col .set-star-chip{
+  font-size:8px;padding:2px 7px;
+}
+.set-header-acct-col .set-progress-bar-wrap{
+  width:100%;max-width:80px;
+}
+.set-header-acct-col .set-progress-text{
+  font-size:8px;text-align:center;
+}
+
+
 .set-account-col.hidden-by-filter,.set-block.hidden-by-filter{display:none!important}
 .sticker-card.filtered-out{display:none!important}
 .sticker-card{
@@ -4294,7 +4334,7 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
           <button type="button" class="album-action-btn" id="filter-clear-all">✨ Clear Filters</button>
           <button type="button" class="album-action-btn" id="album-undo-btn">↩ Undo</button>
           <button type="button" class="album-action-btn danger" id="album-clear-btn">🧹 Clear Album</button>
-        `;
+                  `;
         searchBar.appendChild(filterBar);
       }
       const albumContent = document.getElementById('album-content');
@@ -5090,11 +5130,24 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     const headerBg = hexToRgba(set.color,.4);
     block.style.cssText = `border-color:${borderColor};background:${bgColor}`;
 
-    const totalStickers = set.stickers.length;
-    let totalHave = 0;
-    accts.forEach(a=>set.stickers.forEach((_,i)=>{ if(State.getSticker(a.id,set.id,i).have)totalHave++; }));
-    const pct = accts.length ? Math.round(totalHave / (accts.length * totalStickers) * 100) : 0;
-    const setVaultTotal = accts.reduce((sum,acct)=>sum + State.getAccountVaultStars(acct.id),0);
+    // Build per-account header columns
+    const acctHeaderCols = accts.map(acct=>{
+      const acctHave = set.stickers.filter((_,i)=>State.getSticker(acct.id,set.id,i).have).length;
+      const acctPct = set.stickers.length ? Math.round(acctHave/set.stickers.length*100) : 0;
+      const acctAlbumStars = State.getAccountVaultStars(acct.id);
+      return `
+        <div class="set-header-acct-col" id="set-hdr-acct-${set.id}-${acct.id}">
+          <div class="set-hdr-acct-name">${acct.name}</div>
+          <div class="set-star-chip" id="set-acct-stars-${set.id}-${acct.id}">⭐ ${acctAlbumStars}</div>
+          <div class="set-progress-bar-wrap">
+            <div class="set-progress-text" id="set-pct-${set.id}-${acct.id}" style="color:var(--set-header-meta)">${acctPct}%</div>
+            <div class="set-progress-bar">
+              <div class="set-progress-fill" id="set-fill-${set.id}-${acct.id}" style="width:${acctPct}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
 
     block.innerHTML = `
       <div class="set-header" style="background:${headerBg}">
@@ -5104,14 +5157,8 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
           </div>
           <div class="set-name" style="color:var(--set-header-text)">${set.name}</div>
         </div>
-        <div class="set-header-right">
-          <div class="set-star-chip" id="set-vault-total-${set.id}">⭐ ${setVaultTotal} vault stars</div>
-          <div class="set-progress-bar-wrap">
-            <div class="set-progress-text" id="set-progress-text-${set.id}" style="color:var(--set-header-meta)">${pct}%</div>
-            <div class="set-progress-bar">
-              <div class="set-progress-fill" id="set-progress-fill-${set.id}" style="width:${pct}%"></div>
-            </div>
-          </div>
+        <div class="set-header-right set-header-accts-row">
+          ${acctHeaderCols}
         </div>
       </div>
       <div class="set-accounts-row" id="set-row-${set.id}"></div>
@@ -5123,11 +5170,11 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
       col.className = 'set-account-col';
       col.id = `set-${set.id}-acct-${acct.id}`;
       const isComplete = State.isSetComplete(acct.id,set.id);
-      const setStars = State.getSetVaultStars(acct.id,set.id);
+      const acctAlbumStarsCol = State.getAccountVaultStars(acct.id);
       col.innerHTML = `
         <div class="set-acct-mini-header" style="color:${lightenColor(set.color,60)}">
           ${acct.name}
-          <span class="mini-star-pill" id="mini-stars-${set.id}-${acct.id}">⭐ ${setStars}</span>
+          <span class="mini-star-pill" id="mini-stars-${set.id}-${acct.id}">⭐ ${acctAlbumStarsCol} Stars</span>
           ${isComplete?'<span class="gold-lock-badge">✓ Complete</span>':''}
         </div>
         <div class="set-acct-mini-info">${acct.device||''}${acct.gameCode?` · ${acct.gameCode}`:''}</div>
@@ -5221,18 +5268,18 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     const accts = State.visibleAccounts();
     const set = ALBUM_SETS.find(s=>s.id===setId);
     if(!set)return;
-    let totalHave = 0;
-    accts.forEach(a=>set.stickers.forEach((_,i)=>{ if(State.getSticker(a.id,set.id,i).have)totalHave++; }));
-    const pct = accts.length ? Math.round(totalHave/(accts.length*set.stickers.length)*100) : 0;
-    const bar = document.getElementById(`set-progress-fill-${setId}`);
-    const txt = document.getElementById(`set-progress-text-${setId}`);
-    const chip = document.getElementById(`set-vault-total-${setId}`);
-    if(bar)bar.style.width = pct + '%';
-    if(txt)txt.textContent = pct + '%';
-    if(chip)chip.textContent = `⭐ ${accts.reduce((sum,a)=>sum + State.getAccountVaultStars(a.id),0)} vault stars`;
     accts.forEach(acct=>{
+      const acctHave = set.stickers.filter((_,i)=>State.getSticker(acct.id,setId,i).have).length;
+      const acctPct = set.stickers.length ? Math.round(acctHave/set.stickers.length*100) : 0;
+      const acctAlbumStars = State.getAccountVaultStars(acct.id);
+      const bar = document.getElementById(`set-fill-${setId}-${acct.id}`);
+      const txt = document.getElementById(`set-pct-${setId}-${acct.id}`);
+      const chip = document.getElementById(`set-acct-stars-${setId}-${acct.id}`);
       const mini = document.getElementById(`mini-stars-${setId}-${acct.id}`);
-      if(mini)mini.textContent = `⭐ ${State.getSetVaultStars(acct.id,setId)}`;
+      if(bar)bar.style.width = acctPct + '%';
+      if(txt)txt.textContent = acctPct + '%';
+      if(chip)chip.textContent = `⭐ ${acctAlbumStars}`;
+      if(mini)mini.textContent = `⭐ ${acctAlbumStars} Stars`;
     });
   };
 
@@ -5417,12 +5464,14 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
   App.setDuplicateAbsolute = function(accountId,setId,stickerIdx,value){
     const current = State.getSticker(accountId,setId,stickerIdx);
     const next = Math.max(0, parseInt(value,10) || 0);
-    if((current.duplicates||0) === next){
+    const needsHaveFlip = next > 0 && !current.have;
+    if((current.duplicates||0) === next && !needsHaveFlip){
       Render.refreshStickerCard(accountId,setId,stickerIdx);
       return;
     }
     HistoryMagic.checkpoint('duplicate edit');
-    State.setSticker(accountId,setId,stickerIdx,{duplicates:next});
+    // Auto-flip: if setting duplicates > 0 on a missing sticker, mark as have
+    State.setSticker(accountId,setId,stickerIdx,{duplicates:next, ...(needsHaveFlip?{have:true}:{})});
     const acct = State.accounts.find(a=>a.id===accountId);
     const sticker = ALBUM_SETS.find(s=>s.id===setId)?.stickers?.[stickerIdx];
     Render.refreshStickerCard(accountId,setId,stickerIdx);
@@ -5532,12 +5581,23 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
 
   App.changeDuplicate = function(...args){
     const [accountId,setId,stickerIdx,delta] = args;
-    const sticker = ALBUM_SETS.find(s=>s.id===setId)?.stickers?.[stickerIdx];
-    const acct = State.accounts.find(a=>a.id===accountId);
     const before = {...State.getSticker(accountId,setId,stickerIdx)};
     const nextDup = Math.max(0, (before.duplicates||0) + (parseInt(delta,10)||0));
-    if(nextDup === (before.duplicates||0))return;
+    if(nextDup === (before.duplicates||0) && before.have === before.have){}// allow
     HistoryMagic.checkpoint('change duplicate');
+    // Auto-flip: if increasing dupes on a missing sticker, mark as have automatically
+    if(parseInt(delta,10) > 0 && !before.have){
+      State.setSticker(accountId,setId,stickerIdx,{have:true, duplicates:nextDup});
+      Render.refreshStickerCard(accountId,setId,stickerIdx);
+      Render.refreshSetHeader(setId);
+      Render.updateAlbumAccountSummaries();
+      if(State.ui.page==='starvault')Render.starVault();
+      if(State.ui.page==='progress')Render.progress();
+      if(State.ui.page==='album')App.applyAlbumFilters(false);
+      Effects.pixieBurst(args[4]||window.innerWidth/2, args[5]||window.innerHeight/2, 8);
+      return;
+    }
+    if(nextDup === (before.duplicates||0))return;
     const result = AppOriginal.changeDuplicate(...args);
     const setIdOnly = args[1];
     Render.updateAlbumAccountSummaries();
@@ -5625,6 +5685,7 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     Enhancements.afterInit();
     HistoryMagic.reset();
   };
+
 
   window.addEventListener('deviceorientation',(event)=>{
     if(State.settings.magic?.tiltShimmer===false)return;
