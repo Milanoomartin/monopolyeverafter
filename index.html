@@ -373,6 +373,14 @@ input,select,textarea{font-family:'IM Fell English',serif;cursor:none}
   padding:4px;margin-bottom:6px;opacity:.6;
 }
 .set-acct-mini-info{font-size:8px;opacity:.5;margin-bottom:6px;text-align:center}
+.set-acct-progress{margin:0 4px 10px}
+.set-acct-progress-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;font-family:'Cinzel',serif;font-size:8px;color:var(--parchment-mid);opacity:.9}
+.set-acct-progress-track{height:8px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.08);overflow:hidden;box-shadow:inset 0 1px 3px rgba(0,0,0,.22)}
+.set-acct-progress-fill{height:100%;border-radius:999px;transition:width .45s ease, box-shadow .25s ease;background:linear-gradient(90deg,#d96b6b,#f0b36a)}
+.set-acct-progress-fill.mid{background:linear-gradient(90deg,#d9a85b,#f3dc7a)}
+.set-acct-progress-fill.good{background:linear-gradient(90deg,#7bc96f,#baf58d)}
+.set-acct-progress-fill.complete{background:linear-gradient(90deg,#67d48e,#d8ff8a);box-shadow:0 0 12px rgba(186,245,141,.45);animation:set-progress-complete 1.6s ease-in-out infinite}
+@keyframes set-progress-complete{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
 .sticker-grid{
   display:grid;grid-template-columns:repeat(3,1fr);
   gap:5px;
@@ -1311,7 +1319,7 @@ const ALBUM_SETS = [
     {name:"Acorn Cup",stars:1,isGold:false},{name:"High Table",stars:1,isGold:false},
     {name:"Only Way to Fly",stars:2,isGold:false},{name:"High Roller",stars:2,isGold:false},
     {name:"Swimming Pail",stars:2,isGold:false},{name:"Teahouse",stars:2,isGold:false},
-    {name:"Sleeping Sock",stars:2,isGold:false},{name:"Clothes Line",stars:3,isGold:false},
+    {name:"Sleeping Sock",stars:2,isGold:false},{name:"Clothes Line",stars:2,isGold:false},
     {name:"Tophat Balcony",stars:3,isGold:false}
   ]},
   {id:9,name:"The Little Mermaid",color:"#629BB2",stickers:[
@@ -3692,14 +3700,40 @@ document.addEventListener('DOMContentLoaded',()=>App.init());
 .album-account-summary .meta{
   font-size:10px;color:var(--parchment-mid);opacity:.8;margin-bottom:8px
 }
+.album-account-summary .summary-top{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:8px
+}
 .album-account-summary .stars{
   display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;
   background:rgba(0,0,0,.18);border:1px solid rgba(212,175,55,.22);
   font-family:'Cinzel',serif;font-size:12px;color:var(--gold-light)
 }
-.album-account-summary .sub{
-  margin-top:8px;font-size:10px;color:var(--parchment-mid);opacity:.8
+.album-account-summary .status-badge{
+  display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.4px;border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.14);color:var(--parchment-mid)
 }
+.album-account-summary .status-badge.complete{
+  border-color:rgba(212,175,55,.35);background:rgba(212,175,55,.12);color:var(--gold-light)
+}
+.album-account-summary .summary-progress{margin:8px 0 10px}
+.album-account-summary .summary-progress-label{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;
+  font-family:'Cinzel',serif;font-size:10px;color:var(--parchment-mid)
+}
+.album-account-summary .summary-progress-track{
+  height:8px;border-radius:999px;background:rgba(0,0,0,.14);overflow:hidden;border:1px solid var(--line-soft)
+}
+.album-account-summary .summary-progress-fill{
+  height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold-dark),var(--gold-light));transition:width .35s ease
+}
+.album-account-summary .sub{
+  margin-top:8px;font-size:10px;color:var(--parchment-mid);opacity:.88;line-height:1.45
+}
+.album-account-summary .sub-title{display:block;margin-bottom:5px;font-family:'Cinzel',serif;color:var(--gold-light);font-size:10px;letter-spacing:.4px}
+.album-account-summary .dup-list{display:flex;flex-direction:column;gap:4px}
+.album-account-summary .dup-item{padding:6px 8px;border-radius:10px;background:rgba(0,0,0,.1);border:1px solid var(--line-soft)}
+.album-account-summary .dup-empty{font-style:italic}
 .set-header-right{
   display:flex;align-items:center;gap:10px;justify-content:flex-end;flex-wrap:wrap
 }
@@ -4180,7 +4214,7 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
   State.getAccountVaultStars = function(accountId){
     return ALBUM_SETS.reduce((sum,set)=>sum + this.getSetVaultStars(accountId,set.id),0);
   };
-  State.getAccountVaultBreakdown = function(accountId,limit=6){
+  State.getAccountVaultBreakdown = function(accountId,limit=10){
     const rows = [];
     ALBUM_SETS.forEach(set=>{
       set.stickers.forEach((sticker,idx)=>{
@@ -4199,7 +4233,7 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
         }
       });
     });
-    return rows.sort((a,b)=>b.stars-a.stars || b.duplicates-a.duplicates || a.sticker.localeCompare(b.sticker)).slice(0,limit);
+    return rows.sort((a,b)=>b.duplicates-a.duplicates || b.stickerStars-a.stickerStars || a.setId-b.setId || a.sticker.localeCompare(b.sticker)).slice(0,limit);
   };
 
   const RenderOriginal = {
@@ -5090,13 +5124,30 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     if(!accounts.length){ holder.innerHTML = ''; return; }
     holder.innerHTML = accounts.map(acct=>{
       const total = State.getAccountVaultStars(acct.id);
-      const breakdown = State.getAccountVaultBreakdown(acct.id, 2);
+      const breakdown = State.getAccountVaultBreakdown(acct.id, 10);
+      const totalStickers = ALBUM_SETS.reduce((sum,set)=>sum + set.stickers.length,0);
+      const owned = ALBUM_SETS.reduce((sum,set)=>sum + set.stickers.filter((_,idx)=>State.getSticker(acct.id,set.id,idx).have).length,0);
+      const pct = totalStickers ? Math.round((owned/totalStickers)*100) : 0;
+      const isComplete = State.isAlbumComplete(acct.id);
       return `
         <div class="album-account-summary">
           <div class="name">${acct.name}</div>
           <div class="meta">${acct.device || 'Unknown device'}${acct.gameCode ? ' · ' + acct.gameCode : ''}</div>
-          <div class="stars">⭐ <strong>${total}</strong> vault stars</div>
-          <div class="sub">${breakdown.length ? breakdown.map(item=>`${item.sticker} (${item.stars})`).join(' • ') : 'No duplicate stars yet — crack open some packs!'}</div>
+          <div class="summary-top">
+            <div class="stars">⭐ <strong>${total}</strong> Stars</div>
+            <div class="status-badge ${isComplete ? 'complete' : ''}">${isComplete ? '✓ Complete' : `${owned}/${totalStickers} stickers`}</div>
+          </div>
+          <div class="summary-progress">
+            <div class="summary-progress-label">
+              <span>Album progress</span>
+              <span>${pct}%</span>
+            </div>
+            <div class="summary-progress-track"><div class="summary-progress-fill" style="width:${pct}%"></div></div>
+          </div>
+          <div class="sub">
+            <span class="sub-title">Top 10 duplicate stickers</span>
+            ${breakdown.length ? `<div class="dup-list">${breakdown.map(item=>`<div class="dup-item">Set ${item.setId} · ${item.setName} · ${item.sticker} · ${item.duplicates} duplicate${item.duplicates===1?'':'s'}</div>`).join('')}</div>` : '<div class="dup-empty">No duplicate stickers yet — crack open some packs!</div>'}
+          </div>
         </div>
       `;
     }).join('');
@@ -5129,36 +5180,11 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     const bgColor = hexToRgba(set.color,.15);
     const headerBg = hexToRgba(set.color,.4);
     block.style.cssText = `border-color:${borderColor};background:${bgColor}`;
-
-    // Build per-account header columns
-    const acctHeaderCols = accts.map(acct=>{
-      const acctHave = set.stickers.filter((_,i)=>State.getSticker(acct.id,set.id,i).have).length;
-      const acctPct = set.stickers.length ? Math.round(acctHave/set.stickers.length*100) : 0;
-      const acctAlbumStars = State.getAccountVaultStars(acct.id);
-      return `
-        <div class="set-header-acct-col" id="set-hdr-acct-${set.id}-${acct.id}">
-          <div class="set-hdr-acct-name">${acct.name}</div>
-          <div class="set-star-chip" id="set-acct-stars-${set.id}-${acct.id}">⭐ ${acctAlbumStars}</div>
-          <div class="set-progress-bar-wrap">
-            <div class="set-progress-text" id="set-pct-${set.id}-${acct.id}" style="color:var(--set-header-meta)">${acctPct}%</div>
-            <div class="set-progress-bar">
-              <div class="set-progress-fill" id="set-fill-${set.id}-${acct.id}" style="width:${acctPct}%"></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join('');
-
     block.innerHTML = `
       <div class="set-header" style="background:${headerBg}">
         <div class="set-header-left">
-          <div class="set-number" style="color:${darkenColor(set.color,60)}">
-            Set ${set.id} &nbsp;${SET_ICONS[set.id-1]||'✨'}
-          </div>
-          <div class="set-name" style="color:var(--set-header-text)">${set.name}</div>
-        </div>
-        <div class="set-header-right set-header-accts-row">
-          ${acctHeaderCols}
+          <div class="set-number" style="color:${darkenColor(set.color,60)}">Set ${set.id}</div>
+          <div class="set-name" style="color:var(--set-header-text)">${SET_ICONS[set.id-1]||'✨'} ${set.name}</div>
         </div>
       </div>
       <div class="set-accounts-row" id="set-row-${set.id}"></div>
@@ -5170,14 +5196,24 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
       col.className = 'set-account-col';
       col.id = `set-${set.id}-acct-${acct.id}`;
       const isComplete = State.isSetComplete(acct.id,set.id);
-      const acctAlbumStarsCol = State.getAccountVaultStars(acct.id);
+      const stats = Render._getSetStats(acct.id, set);
+      const pct = stats.total ? Math.round((stats.have / stats.total) * 100) : 0;
+      const progressClass = pct >= 100 ? 'complete' : pct >= 90 ? 'good' : pct >= 50 ? 'mid' : '';
       col.innerHTML = `
         <div class="set-acct-mini-header" style="color:${lightenColor(set.color,60)}">
           ${acct.name}
-          <span class="mini-star-pill" id="mini-stars-${set.id}-${acct.id}">⭐ ${acctAlbumStarsCol} Stars</span>
           ${isComplete?'<span class="gold-lock-badge">✓ Complete</span>':''}
         </div>
         <div class="set-acct-mini-info">${acct.device||''}${acct.gameCode?` · ${acct.gameCode}`:''}</div>
+        <div class="set-acct-progress">
+          <div class="set-acct-progress-meta">
+            <span>${stats.have}/${stats.total} collected</span>
+            <span>${pct}%</span>
+          </div>
+          <div class="set-acct-progress-track">
+            <div class="set-acct-progress-fill ${progressClass}" style="width:${pct}%"></div>
+          </div>
+        </div>
         <div class="sticker-grid" id="grid-${set.id}-${acct.id}"></div>
       `;
       const grid = col.querySelector(`#grid-${set.id}-${acct.id}`);
@@ -5265,22 +5301,8 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
   };
 
   Render.refreshSetHeader = function(setId){
-    const accts = State.visibleAccounts();
     const set = ALBUM_SETS.find(s=>s.id===setId);
     if(!set)return;
-    accts.forEach(acct=>{
-      const acctHave = set.stickers.filter((_,i)=>State.getSticker(acct.id,setId,i).have).length;
-      const acctPct = set.stickers.length ? Math.round(acctHave/set.stickers.length*100) : 0;
-      const acctAlbumStars = State.getAccountVaultStars(acct.id);
-      const bar = document.getElementById(`set-fill-${setId}-${acct.id}`);
-      const txt = document.getElementById(`set-pct-${setId}-${acct.id}`);
-      const chip = document.getElementById(`set-acct-stars-${setId}-${acct.id}`);
-      const mini = document.getElementById(`mini-stars-${setId}-${acct.id}`);
-      if(bar)bar.style.width = acctPct + '%';
-      if(txt)txt.textContent = acctPct + '%';
-      if(chip)chip.textContent = `⭐ ${acctAlbumStars}`;
-      if(mini)mini.textContent = `⭐ ${acctAlbumStars} Stars`;
-    });
   };
 
   Render.starVault = function(){
@@ -5293,7 +5315,7 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
     }
     content.innerHTML = accts.map(acct=>{
       const total = State.getAccountVaultStars(acct.id);
-      const breakdown = State.getAccountVaultBreakdown(acct.id,6);
+      const breakdown = State.getAccountVaultBreakdown(acct.id,10);
       const setBreakdown = ALBUM_SETS.map(set=>({
         name:set.name,
         stars:State.getSetVaultStars(acct.id,set.id)
@@ -5329,9 +5351,9 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
           </div>
           <div class="vault-breakdown">
             <div>
-              <div class="vault-section-title">Top duplicate star sources</div>
+              <div class="vault-section-title">Top 10 duplicate stickers</div>
               <div class="vault-chip-row">
-                ${breakdown.length ? breakdown.map(item=>`<span class="vault-chip">${item.sticker} · ${item.duplicates} dupes · ${item.stars}⭐${item.isGold?' · gold':''}</span>`).join('') : '<span class="vault-chip">No duplicate stickers yet</span>'}
+                ${breakdown.length ? breakdown.map(item=>`<span class="vault-chip">Set ${item.setId} · ${item.setName} · ${item.sticker} · ${item.duplicates} duplicate${item.duplicates===1?'':'s'}${item.isGold?' · gold':''}</span>`).join('') : '<span class="vault-chip">No duplicate stickers yet</span>'}
               </div>
             </div>
             <div>
