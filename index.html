@@ -6165,7 +6165,7 @@ body{background-attachment:fixed}
           </div>
         </div>
         <div class="summary-top">
-          <div class="stars">⭐ ${st.stars} Stars</div>
+          <div class="stars">⭐ ${st.vault} Stars</div>
           <div class="status-badge ${isComplete?'complete':''}">${isComplete?'🏆 Album Complete':'📚 In Progress'}</div>
         </div>
         <div class="summary-progress">
@@ -6643,6 +6643,274 @@ body.muted .firefly, body.muted #dragon-shadow{opacity:.55}
 
   window.MEAFinal={createNamedBackup,openBackupStudio,restoreBackup,saveCurrentPlan,comparePlans,previewPlan,openA11yStudio,saveA11y};
   applyA11y(); ensureJump(); setTimeout(()=>{ if(State.ui?.page==='album'){ installAlbumFilters(); applyAlbumFilters(); } if(State.ui?.page==='trade') upgradePlannerUI(); },200);
+})();
+</script>
+
+
+<style id="mea-trade-day-grouping-patch">
+.trade-day-group{margin:14px 0 10px;padding:10px 12px;border-radius:14px;border:1px solid var(--line-strong);background:linear-gradient(135deg,var(--surface-2),var(--surface-1))}
+.trade-day-group .day-title{font-family:'Cinzel Decorative',serif;color:var(--gold-light);font-size:1rem}
+.trade-day-group .day-meta{font-size:11px;color:var(--parchment-mid);margin-top:4px;line-height:1.45}
+.trade-day-group .day-limit-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.trade-day-pill{padding:4px 9px;border-radius:999px;border:1px solid var(--line-mid);background:var(--surface-3);font-size:10px;color:var(--parchment-mid)}
+.trade-day-pill strong{color:var(--gold-light)}
+</style>
+<script id="mea-trade-limit-patch">
+(function(){
+  function pad(n){ return String(n).padStart(2,'0'); }
+  function ymdLocal(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+  function getLocalResetLabel(){
+    const fmt = new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit',timeZone:'America/New_York',timeZoneName:'short'});
+    const eastern = fmt.format(new Date());
+    const parts = eastern.match(/(\d{1,2}:\d{2}\s?[AP]M)\s?(EDT|EST)/i);
+    const tzAbbr = parts ? parts[2].toUpperCase() : 'EDT';
+    const resetRef = new Date(tzAbbr === 'EST' ? '2026-01-15T04:00:00-05:00' : '2026-06-15T04:00:00-04:00');
+    return new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(resetRef);
+  }
+  function getResetDateLabel(dateStr){
+    const midday = new Date(dateStr+'T12:00:00');
+    return new Intl.DateTimeFormat(undefined,{weekday:'short',month:'short',day:'numeric'}).format(midday);
+  }
+  function getDayLimits(dateStr){
+    const gb = State.settings.goldBlitz || {};
+    const tf = State.settings.tradeFest || {};
+    const dayStart = new Date(dateStr+'T00:00:00');
+    const dayEnd = new Date(dateStr+'T23:59:59');
+    const gbActive = !!gb.active || (!!gb.startTime && !!gb.endTime && dayEnd >= new Date(gb.startTime) && dayStart <= new Date(gb.endTime));
+    const tfActive = !!tf.active || (!!tf.startTime && !!tf.endTime && dayEnd >= new Date(tf.startTime) && dayStart <= new Date(tf.endTime));
+    return {
+      regularLimit: tfActive ? 10 : 5,
+      goldLimit: gbActive ? 5 : 0,
+      gbActive, tfActive
+    };
+  }
+  function getPlanningStartDate(){
+    const now = new Date();
+    const easternParts = new Intl.DateTimeFormat('en-US',{
+      timeZone:'America/New_York',
+      year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false
+    }).formatToParts(now);
+    const part = Object.fromEntries(easternParts.filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+    const easternHour = parseInt(part.hour,10);
+    const easternDate = new Date(`${part.year}-${part.month}-${part.day}T12:00:00`);
+    if(easternHour < 4){
+      easternDate.setDate(easternDate.getDate()-1);
+    }
+    return easternDate;
+  }
+  function computeProjectionFromStatePatched(sim, accts){
+    return accts.map(a=>{
+      let have=0, albumStars=0, vault=0;
+      ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
+        const d = sim[a.id][window.stickerKeyFrom(set.id,i)];
+        if(d.have){ have++; albumStars += st.stars; }
+        vault += (d.duplicates||0) * (st.isGold ? st.stars*2 : st.stars);
+      }));
+      return { id:a.id, name:a.name, have, stars:albumStars, vault, pct: Math.round(have/(ALBUM_SETS.length*9)*100) };
+    });
+  }
+  window.computeProjectionFromState = computeProjectionFromStatePatched;
+
+  window.generateAdvancedPlan = function(opts){
+    const accts = State.visibleAccounts();
+    const sim = window.cloneStickerState();
+    const plan = [];
+    const start = getPlanningStartDate();
+    for(let day=0; day<opts.days; day++){
+      const date = new Date(start);
+      date.setDate(date.getDate()+day);
+      const dateStr = ymdLocal(date);
+      const limits = getDayLimits(dateStr);
+      const sentRegular = {}, sentGold = {};
+      accts.forEach(a=>{ sentRegular[a.id]=0; sentGold[a.id]=0; });
+      let candidates = [];
+      accts.forEach(from=>{
+        accts.forEach(to=>{
+          if(from.id===to.id) return;
+          ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
+            if(!window.candidatePasses(st,set.id,opts)) return;
+            const key = window.stickerKeyFrom(set.id,i);
+            const fromD = sim[from.id][key], toD = sim[to.id][key];
+            if(!fromD.have || (fromD.duplicates||0)<1 || toD.have) return;
+            if(State.settings.tradeLocks?.[key]) return;
+            if(opts.safety?.lockGold && st.isGold) return;
+            if(opts.safety?.preserveHighStars && st.stars>=4) return;
+            const fromSetHave = set.stickers.filter((_,ix)=>sim[from.id][window.stickerKeyFrom(set.id,ix)].have).length;
+            const toSetHave = set.stickers.filter((_,ix)=>sim[to.id][window.stickerKeyFrom(set.id,ix)].have).length;
+            const fromSetPct = Math.round(fromSetHave/set.stickers.length*100);
+            if(opts.safety?.minSetPct && fromSetPct<opts.safety.minSetPct) return;
+
+            if(st.isGold){
+              if(!limits.gbActive) return;
+              const gb = State.settings.goldBlitz || {};
+              if(gb.sticker1 || gb.sticker2){
+                const token = `${set.id}_${i}`;
+                if(token !== gb.sticker1 && token !== gb.sticker2) return;
+              }
+            }
+
+            let score = st.stars*10 + toSetHave*3 + (toSetHave===set.stickers.length-1?45:0);
+            const reasons = [];
+            if(opts.objective==='sets'){ score += toSetHave*7 + (toSetHave===set.stickers.length-1?60:0); reasons.push('set completion'); }
+            if(opts.objective==='vault'){ score += Math.max(0, 6-st.stars)*10 - st.stars*2; reasons.push('vault focus'); }
+            if(opts.objective==='lower-sets'){ score += (25-set.id); reasons.push('lower set priority'); }
+            if(opts.objective==='higher-sets'){ score += set.id; reasons.push('higher set priority'); }
+            if(opts.objective==='sticker-gain'){ score += 18; reasons.push('sticker gain'); }
+
+            if(opts.focusAccounts.length){
+              const isFocus = opts.focusAccounts.includes(to.id);
+              score += isFocus ? 40 : -9999;
+              if(isFocus) reasons.push('focus receive account');
+            }
+
+            if(opts.vaultMode){ score += (st.stars<=3?15:-12); reasons.push('vault-safe stars'); }
+            if(opts.focusMode==='balanced') score += 4;
+            if(opts.focusMode==='vault-heavy' && st.stars<=3){ score += 18; reasons.push('vault heavy'); }
+            if(opts.focusMode==='set-rush' && toSetHave>=5){ score += 20; reasons.push('set rush'); }
+            candidates.push({from:from.id,to:to.id,setId:set.id,stickerIdx:i,isGold:st.isGold,score,reasons,completes:toSetHave===set.stickers.length-1});
+          }));
+        });
+      });
+      if(opts.randomBoost) candidates = window.chooseRandomBestTarget(candidates);
+      candidates.sort((a,b)=>b.score-a.score || a.setId-b.setId || a.stickerIdx-b.stickerIdx);
+
+      const used = new Set(), dayTrades = [];
+      candidates.forEach(c=>{
+        const set = ALBUM_SETS.find(s=>s.id===c.setId), st = set.stickers[c.stickerIdx], key = window.stickerKeyFrom(c.setId,c.stickerIdx);
+        const sentObj = st.isGold ? sentGold : sentRegular;
+        const limit = st.isGold ? limits.goldLimit : limits.regularLimit;
+        const fromD = sim[c.from][key], toD = sim[c.to][key];
+        const uniq = `${c.from}:${c.to}:${key}`;
+        if(used.has(uniq)) return;
+        if(limit <= 0 || sentObj[c.from] >= limit) return;
+        if(!fromD.have || (fromD.duplicates||0)<1 || toD.have) return;
+        fromD.duplicates--;
+        toD.have = true;
+        sentObj[c.from]++;
+        used.add(uniq);
+        dayTrades.push({
+          from:c.from,to:c.to,setId:c.setId,setName:set.name,stickerIdx:c.stickerIdx,
+          stickerName:st.name,stars:st.stars,isGold:st.isGold,
+          reason:c.reasons.join(' • ') || 'balanced trade'
+        });
+      });
+
+      const projections = computeProjectionFromStatePatched(sim,accts);
+      if(dayTrades.length){
+        plan.push({
+          date:dateStr,
+          trades:dayTrades,
+          projections,
+          limits
+        });
+      }
+    }
+    return plan;
+  };
+
+  function renderGroupedTrades(){
+    const list = document.getElementById('manual-trades-list');
+    if(!list) return;
+    if(typeof normalizeTradeOrder === 'function') normalizeTradeOrder();
+    const pending = State.trades
+      .filter(t=>!t.done)
+      .sort((a,b)=> (a.date||'').localeCompare(b.date||'') || ((a.order??0)-(b.order??0)));
+    const done = State.trades.filter(t=>t.done).slice(-5);
+    list.innerHTML = `<div class="trade-toolbar"><div class="left"><button class="btn btn-ghost" onclick="App.undoTradeAction()">↩️ Undo</button><button class="btn btn-ghost" onclick="App.clearGeneratedTrades()">🧹 Clear Generated</button><button class="btn btn-danger" onclick="App.clearAllTrades()">🫧 Clear All</button></div><div class="right"><span class="trade-note">Trade days reset at <b>${getLocalResetLabel()}</b> in your local time (4:00 AM Eastern).</span></div></div>`;
+    if(!pending.length && !done.length){
+      list.innerHTML += `<div class="empty-state"><div class="icon">🤝</div><p>No trades planned yet.</p></div>`;
+      return;
+    }
+    list.innerHTML += `<div class="section-title" style="font-size:.85rem">Pending Trades (${pending.length})</div>`;
+
+    const groups = {};
+    pending.forEach(t => { (groups[t.date] ||= []).push(t); });
+    Object.keys(groups).sort().forEach(dateStr=>{
+      const limits = getDayLimits(dateStr);
+      const regularBySender = {};
+      const goldBySender = {};
+      const senderOrder = Object.fromEntries(
+        [...State.accounts].sort((a,b)=>(a.order??0)-(b.order??0)).map((a,i)=>[a.id,i])
+      );
+      const tradeSort = (a,b) =>
+        (senderOrder[a.from] ?? 9999) - (senderOrder[b.from] ?? 9999) ||
+        (a.setId ?? 9999) - (b.setId ?? 9999) ||
+        String(ALBUM_SETS.find(s=>s.id===a.setId)?.stickers?.[a.stickerIdx]?.name || '').localeCompare(
+          String(ALBUM_SETS.find(s=>s.id===b.setId)?.stickers?.[b.stickerIdx]?.name || '')
+        ) ||
+        String(State.accounts.find(ac=>ac.id===a.to)?.name || '').localeCompare(
+          String(State.accounts.find(ac=>ac.id===b.to)?.name || '')
+        ) ||
+        String(a.id||'').localeCompare(String(b.id||''));
+      groups[dateStr].sort(tradeSort);
+      groups[dateStr].forEach(t=>{
+        const bucket = t.isGold ? goldBySender : regularBySender;
+        bucket[t.from] = (bucket[t.from] || 0) + 1;
+      });
+      const group = document.createElement('div');
+      group.className = 'trade-day-group';
+      const summaryPills = [];
+      const senders = new Set([...Object.keys(regularBySender), ...Object.keys(goldBySender)]);
+      senders.forEach(senderId=>{
+        const acct = State.accounts.find(a=>a.id===senderId);
+        const reg = regularBySender[senderId] || 0;
+        const gold = goldBySender[senderId] || 0;
+        summaryPills.push(`<span class="trade-day-pill"><strong>${acct?.name||'?'}</strong>: ${reg}/${limits.regularLimit} regular${limits.goldLimit?` • ${gold}/${limits.goldLimit} gold`:''}</span>`);
+      });
+      group.innerHTML = `<div class="day-title">📅 ${getResetDateLabel(dateStr)}</div>
+      <div class="day-meta">Trade window for <b>${dateStr}</b>. Resets at <b>${getLocalResetLabel()}</b> local time.</div>
+      <div class="day-limit-row">
+        <span class="trade-day-pill">Regular cap: <strong>${limits.regularLimit}</strong></span>
+        <span class="trade-day-pill">Gold cap: <strong>${limits.goldLimit}</strong>${limits.gbActive?' (Gold Blitz active)':''}</span>
+        ${limits.tfActive?`<span class="trade-day-pill"><strong>Trade Fest active</strong></span>`:''}
+        ${summaryPills.join('')}
+      </div>`;
+      list.appendChild(group);
+      groups[dateStr].forEach(trade=> list.appendChild(tradeItem(trade,false,pending)));
+    });
+
+    if(done.length){
+      const doneHeader=document.createElement('div');
+      doneHeader.className='section-title';
+      doneHeader.style.fontSize='.85rem';
+      doneHeader.textContent=`Recent Completed (${done.length})`;
+      list.appendChild(doneHeader);
+      done.forEach(trade=>list.appendChild(tradeItem(trade,true,pending)));
+    }
+  }
+
+  App.renderManualTrades = renderGroupedTrades;
+
+  const oldStartSmartPlan = App.startSmartPlan?.bind(App);
+  App.startSmartPlan = function(){
+    const cauldron=document.getElementById('planner-cauldron');
+    cauldron?.classList.add('show');
+    setTimeout(()=>{
+      const opts = plannerOptions();
+      checkpointTrades('generate smart plan');
+      const plan = generateAdvancedPlan(opts);
+      const resultsEl=document.getElementById('smart-plan-results'); if(!resultsEl) return;
+      if(!plan.length){
+        resultsEl.innerHTML=`<div class="empty-state"><div class="icon">🤔</div><p>No beneficial trades matched those filters.</p></div>`;
+        cauldron?.classList.remove('show');
+        return;
+      }
+      let added=0;
+      const accts=State.visibleAccounts();
+      const acctsById=Object.fromEntries(accts.map(a=>[a.id,a]));
+      plan.forEach(day=>day.trades.forEach(t=>{
+        const exists=State.trades.find(x=>!x.done && x.from===t.from && x.to===t.to && x.setId===t.setId && x.stickerIdx===t.stickerIdx && x.date===day.date);
+        if(!exists){
+          State.trades.push({id:uid(), date:day.date, from:t.from, to:t.to, setId:t.setId, stickerIdx:t.stickerIdx, done:false, isGold:t.isGold, generated:true, order: State.trades.length});
+          added++;
+        }
+      }));
+      if(typeof normalizeTradeOrder === 'function') normalizeTradeOrder();
+      resultsEl.innerHTML=`<div class="timeline-panel"><div style="font-family:Cinzel Decorative,serif;color:var(--planner-good);font-size:1rem">✨ Smart Plan Ready</div><div class="trade-note">${plan.length} planned day(s) • ${added} new trade(s) • objective: <b>${opts.objective}</b></div></div>${plan.map(day=>`<div class="plan-day-card"><div class="plan-day-title">📅 ${getResetDateLabel(day.date)} <span style="font-size:11px;opacity:.7">(${day.date})</span></div><div class="trade-note">Resets at ${getLocalResetLabel()} local time • regular cap ${day.limits.regularLimit}${day.limits.goldLimit?` • gold cap ${day.limits.goldLimit}`:''}${day.limits.tfActive?' • Trade Fest active':''}${day.limits.gbActive?' • Gold Blitz active':''}</div>${day.trades.map(t=>`<div class="plan-trade-line">${t.isGold?'🥇 ':''}<b style="color:var(--gold-light)">${acctsById[t.from]?.name||'?'}</b> → <b style="color:var(--magic-light)">${acctsById[t.to]?.name||'?'}</b> · Set ${t.setId} ${t.setName} · ${t.stickerName} · ${t.stars}⭐</div>`).join('')}<div class="projection-grid">${day.projections.map(p=>`<div class="projection-card"><div class="acct">${p.name}</div><div class="meta">${p.have} stickers after today<br>${p.stars} album stars<br>${p.vault} vault stars<br>${p.pct}% complete</div></div>`).join('')}</div></div>`).join('')}<div class="trade-actions-row"><button class="btn btn-gold" onclick="document.querySelector('[data-trade-tab=calendar]')?.click()">📅 View Calendar</button><button class="btn btn-ghost" onclick="document.querySelector('[data-trade-tab=manual]')?.click()">📝 View Planned Trades</button></div>`;
+      cauldron?.classList.remove('show');
+      App.renderManualTrades(); App.renderCalendar(); if(typeof renderTradeAlerts==='function') renderTradeAlerts(); Effects.notify(`✨ Smart plan generated: ${added} trade(s).`,'success');
+    }, 280);
+  };
 })();
 </script>
 
