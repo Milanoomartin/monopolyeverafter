@@ -5964,9 +5964,13 @@ body{background-attachment:fixed}
       const dayTrades=[];
       const sentRegular={}; const sentGold={}; accts.forEach(a=>{sentRegular[a.id]=0; sentGold[a.id]=0;});
       let candidates=[];
+      const focusSet = new Set(opts.focusAccounts || []);
+      const hasFocusedTargets = focusSet.size > 0;
       accts.forEach(from=>{
         accts.forEach(to=>{
           if(from.id===to.id) return;
+          if(hasFocusedTargets && !focusSet.has(to.id)) return;
+          if(hasFocusedTargets && focusSet.has(from.id) && !focusSet.has(to.id)) return;
           ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
             if(!candidatePasses(st,set.id,opts)) return;
             const key=stickerKeyFrom(set.id,i);
@@ -5980,7 +5984,11 @@ body{background-attachment:fixed}
             if(opts.objective==='lower-sets') score += (25-set.id);
             if(opts.objective==='higher-sets') score += set.id;
             if(opts.objective==='sticker-gain') score += 18;
-            if(opts.focusAccounts.length){ score += opts.focusAccounts.includes(to.id) ? 40 : -18; }
+            if(hasFocusedTargets){
+              if(!focusSet.has(to.id)) return;
+              score += focusSet.has(to.id) ? 90 : -999;
+              if(!focusSet.has(from.id)) score += 10;
+            }
             if(opts.vaultMode){ score += (st.stars<=3?15:-12); }
             candidates.push({from:from.id,to:to.id,setId:set.id,stickerIdx:i,isGold:st.isGold,score,completes});
           }));
