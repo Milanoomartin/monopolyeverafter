@@ -1527,7 +1527,7 @@ const State={
   accounts:[],       // [{id,name,device,gameCode,gameLink,hidden,order}]
   stickers:{},       // {accountId:{sKey:{have,duplicates}}}
   settings:{
-    theme:'enchanted',
+    theme:'wicked',
     goldBlitz:{active:false,startTime:null,endTime:null,sticker1:'',sticker2:'',duration:24},
     tradeFest:{active:false,startTime:null,endTime:null,duration:24},
   },
@@ -1544,7 +1544,7 @@ const State={
       goldBlitz:{...this.settings.goldBlitz,...(savedSettings.goldBlitz||{})},
       tradeFest:{...this.settings.tradeFest,...(savedSettings.tradeFest||{})}
     };
-    if(!['enchanted','wicked'].includes(this.settings.theme))this.settings.theme='enchanted';
+    if(!['enchanted','wicked'].includes(this.settings.theme))this.settings.theme='wicked';
     this.trades=Storage.get('mea_trades',[]);
   },
   save(){
@@ -1774,12 +1774,23 @@ const Render={
       col.id=`set-${set.id}-acct-${acct.id}`;
       const sData=this._getSetStats(acct.id,set);
       const isComplete=State.isSetComplete(acct.id,set.id);
+      const acctPct=sData.total?Math.round(sData.have/sData.total*100):0;
+      const progressClass=acctPct>=100?'complete':acctPct>=90?'good':acctPct>=50?'mid':'';
       col.innerHTML=`
         <div class="set-acct-mini-header" style="color:${lightenColor(set.color,60)}">
           ${acct.name}
           ${isComplete?'<span class="gold-lock-badge">✓ Complete</span>':''}
         </div>
         <div class="set-acct-mini-info">${acct.device||''}${acct.gameCode?` · ${acct.gameCode}`:''}</div>
+        <div class="set-acct-progress">
+          <div class="set-acct-progress-meta">
+            <span id="set-count-${set.id}-${acct.id}">${sData.have}/${sData.total} collected</span>
+            <span id="set-pct-${set.id}-${acct.id}">${acctPct}%</span>
+          </div>
+          <div class="set-acct-progress-track">
+            <div class="set-acct-progress-fill ${progressClass}" id="set-fill-${set.id}-${acct.id}" style="width:${acctPct}%"></div>
+          </div>
+        </div>
         <div class="sticker-grid" id="grid-${set.id}-${acct.id}"></div>
       `;
       const grid=col.querySelector(`#grid-${set.id}-${acct.id}`);
@@ -1884,9 +1895,17 @@ const Render={
       const acctPct=set.stickers.length?Math.round(acctHave/set.stickers.length*100):0;
       const bar=document.getElementById(`set-fill-${setId}-${acct.id}`);
       const txt=document.getElementById(`set-pct-${setId}-${acct.id}`);
+      const count=document.getElementById(`set-count-${setId}-${acct.id}`);
       const chip=document.getElementById(`set-acct-stars-${setId}-${acct.id}`);
-      if(bar)bar.style.width=acctPct+'%';
+      if(bar){
+        bar.style.width=acctPct+'%';
+        bar.classList.remove('mid','good','complete');
+        if(acctPct>=100)bar.classList.add('complete');
+        else if(acctPct>=90)bar.classList.add('good');
+        else if(acctPct>=50)bar.classList.add('mid');
+      }
       if(txt)txt.textContent=acctPct+'%';
+      if(count)count.textContent=`${acctHave}/${set.stickers.length} collected`;
       if(chip)chip.textContent=`⭐ ${State.getAccountVaultStars(acct.id)}`;
     });
   },
@@ -2351,7 +2370,7 @@ const App={
   },
 
   initCountdown(){
-    const targetTime=new Date('2026-06-03T12:00:00-04:00');
+    const targetTime=new Date('2026-06-03T13:00:00-04:00');
     const userTimeZone=Intl.DateTimeFormat().resolvedOptions().timeZone || 'local time';
     const dateFormatter=new Intl.DateTimeFormat(undefined,{month:'long',day:'numeric',year:'numeric'});
     const dateTimeFormatter=new Intl.DateTimeFormat(undefined,{
@@ -5718,6 +5737,904 @@ body[data-theme="enchanted"] .elixir-select{color:#241c3f}
       card.style.setProperty('--tiltY', `${beta * -0.45}px`);
     });
   }, true);
+})();
+</script>
+
+
+<style id="mea-v8-polish">
+:root{
+  --accent-wicked: #d4af37;
+  --accent-enchanted: #7c63ff;
+  --planner-good: #90ee90;
+  --planner-warn: #ffd36a;
+}
+body.album-grid-view #album-content{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;align-items:start}
+body.album-grid-view #album-content .set-block{margin-bottom:0;height:100%}
+body.album-grid-view #album-content .set-accounts-row{display:block}
+body.album-grid-view #album-content .set-account-col{border-right:none;border-bottom:1px solid var(--set-divider)}
+body.album-grid-view #album-content .set-account-col:last-child{border-bottom:none}
+#jump-top-btn{
+  position:fixed;right:82px;bottom:18px;z-index:2000;border:1px solid var(--line-strong);
+  background:linear-gradient(135deg,var(--surface-3),var(--surface-1));color:var(--gold-light);border-radius:999px;
+  padding:10px 14px;font-family:'Cinzel',serif;font-size:11px;display:none;box-shadow:var(--shadow)
+}
+#jump-top-btn.show{display:inline-flex;align-items:center;gap:8px}
+#album-extra-controls{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;width:100%;padding-top:8px}
+.album-toggle-pill{border:1px solid var(--input-border);background:var(--surface-2);color:var(--parchment);border-radius:999px;padding:8px 12px;font-family:'Cinzel',serif;font-size:10px}
+.album-toggle-pill.active,.album-toggle-pill:hover{border-color:var(--gold);color:var(--gold-light);background:var(--nav-item-active)}
+.account-avatar-shell{display:flex;align-items:center;gap:10px}
+.account-avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;position:relative;flex:0 0 auto;overflow:hidden;background:var(--surface-3);border:2px solid rgba(255,255,255,.16);font-size:26px}
+.account-avatar img{width:100%;height:100%;object-fit:cover}
+.account-progress-ring{position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(var(--gold) calc(var(--pct,0) * 1%), rgba(255,255,255,.08) 0);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 0);mask:radial-gradient(farthest-side,transparent calc(100% - 6px),#000 0);animation:ring-spin 4s linear infinite paused}
+.account-avatar-shell.complete .account-progress-ring{animation-play-state:running}
+@keyframes ring-spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.album-account-summary .summary-head{display:flex;gap:12px;align-items:center;margin-bottom:8px}
+.album-account-summary .summary-head .name{margin-bottom:2px}
+.trade-controls-panel,.demand-panel,.timeline-panel,.theme-studio-card{border:1px solid var(--line-strong);background:linear-gradient(135deg,var(--surface-2),var(--surface-0));border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:var(--shadow)}
+.trade-control-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}
+.trade-control-grid label{display:block;font-family:'Cinzel',serif;font-size:10px;color:var(--gold);margin-bottom:5px}
+.trade-control-grid select,.trade-control-grid input{width:100%;padding:9px 10px;border-radius:10px;border:1px solid var(--input-border);background:var(--surface-2);color:var(--parchment)}
+.focus-account-picks{display:flex;flex-wrap:wrap;gap:8px;max-height:120px;overflow:auto;padding:4px 0}
+.focus-account-pick{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;border:1px solid var(--input-border);background:var(--surface-2);font-size:10px;font-family:'Cinzel',serif}
+.trade-actions-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.trade-note{font-size:10px;color:var(--parchment-mid);opacity:.8;line-height:1.5}
+.trade-alert-item,.demand-item,.projection-row{padding:10px 12px;border-radius:12px;border:1px solid var(--line-soft);background:rgba(255,255,255,.03);margin-top:8px}
+.trade-alert-item strong,.demand-item strong{color:var(--gold-light)}
+.plan-day-card{padding:14px;border-radius:14px;border:1px solid var(--line-strong);background:rgba(255,255,255,.03);margin-bottom:12px}
+.plan-day-title{font-family:'Cinzel Decorative',serif;color:var(--gold-light);font-size:.95rem;margin-bottom:8px}
+.plan-trade-line{font-size:11px;line-height:1.5;color:var(--parchment-mid);padding:4px 0}
+.projection-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-top:10px}
+.projection-card{padding:10px;border-radius:12px;background:rgba(0,0,0,.18);border:1px solid var(--line-soft)}
+.projection-card .acct{font-family:'Cinzel',serif;color:var(--gold-light);font-size:11px;margin-bottom:6px}
+.projection-card .meta{font-size:10px;color:var(--parchment-mid);line-height:1.6}
+.trade-toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin-bottom:10px}
+.trade-toolbar .left,.trade-toolbar .right{display:flex;gap:8px;flex-wrap:wrap}
+.trade-order-btn{padding:4px 7px;border-radius:8px;border:1px solid var(--line-mid);background:var(--surface-3);color:var(--gold-light);font-size:10px}
+.trade-order-btn:hover{background:var(--nav-item-active)}
+.trade-generated-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 8px;border-radius:999px;background:rgba(123,47,191,.18);border:1px solid rgba(181,123,238,.3);font-size:9px;color:var(--magic-light);margin-left:6px}
+.calendar-projection-note{margin-top:6px;font-size:8px;line-height:1.35;color:var(--parchment-mid);opacity:.7}
+.account-card .account-card-top{display:flex;align-items:center;gap:14px;flex:1;min-width:260px}
+.account-card-avatar-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.account-avatar-btn{padding:6px 10px;border-radius:999px;border:1px solid var(--input-border);background:var(--surface-2);color:var(--gold-light);font-size:10px;font-family:'Cinzel',serif}
+.account-avatar-btn:hover{background:var(--nav-item-active)}
+.theme-studio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.theme-studio-grid .swatch{display:flex;align-items:center;gap:8px}
+.theme-studio-grid input[type=color]{width:52px;height:36px;border:none;background:none}
+.high-demand-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:10px;font-family:'Cinzel',serif;background:rgba(255,211,106,.12);border:1px solid rgba(255,211,106,.28);color:#ffeab3}
+.spellbook-wrap{position:relative;padding:18px;border-radius:22px;background:linear-gradient(90deg,rgba(66,42,22,.34),rgba(116,84,43,.18) 49%,rgba(66,42,22,.34) 51%,rgba(116,84,43,.18));box-shadow:inset 0 0 0 1px rgba(255,240,210,.08),var(--shadow)}
+.spellbook-wrap::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:2px;background:linear-gradient(180deg,transparent,rgba(255,243,208,.28),transparent)}
+.cauldron-loader{display:none;align-items:center;gap:14px;margin-top:12px;padding:12px 14px;border-radius:14px;background:rgba(0,0,0,.18);border:1px solid var(--line-soft)}
+.cauldron-loader.show{display:flex}
+.cauldron{width:44px;height:34px;border-radius:0 0 18px 18px;background:linear-gradient(180deg,#2b1b36,#12081a);position:relative;border:2px solid rgba(212,175,55,.3)}
+.cauldron::before{content:'';position:absolute;left:6px;right:6px;top:-7px;height:10px;border-radius:999px;background:linear-gradient(90deg,var(--magic),var(--gold));opacity:.85}
+.bubble{position:absolute;bottom:8px;width:8px;height:8px;border-radius:50%;background:rgba(173,240,255,.8);animation:bubble-up 1.8s infinite ease-in}
+.bubble:nth-child(2){left:12px;animation-delay:.4s}.bubble:nth-child(3){left:24px;animation-delay:.9s}.bubble:nth-child(4){left:31px;animation-delay:1.2s}
+@keyframes bubble-up{0%{transform:translateY(0) scale(.5);opacity:.2}40%{opacity:1}100%{transform:translateY(-28px) scale(1.15);opacity:0}}
+.peel-on{animation:peel-on .45s ease-out}
+@keyframes peel-on{0%{transform:rotate(-8deg) translateY(8px) scale(.92);opacity:.5;filter:brightness(1.2)}100%{transform:none;opacity:1;filter:none}}
+.page{animation:page-swoosh .35s ease}
+@keyframes page-swoosh{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+body.golden-hour::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at top, rgba(255,196,107,.12), transparent 45%), linear-gradient(180deg, rgba(255,185,120,.07), transparent 40%)}
+body{background-attachment:fixed}
+@media(max-width:860px){
+  body.album-grid-view #album-content{grid-template-columns:1fr}
+  #jump-top-btn{right:16px}
+}
+</style>
+<script id="mea-v8-polish-script">
+(()=>{
+  const orig = {
+    init: App.init.bind(App),
+    trade: Render.trade.bind(Render),
+    manual: App.renderManualTrades.bind(App),
+    accounts: Render.accounts.bind(Render),
+    summaries: Render.updateAlbumAccountSummaries?.bind(Render),
+    refreshAfter: App.refreshAfterAlbumMutation.bind(App),
+    navigate: App.navigate.bind(App),
+    renderSet: Render._renderSet.bind(Render),
+    calendar: App.renderCalendar.bind(App),
+    dayChecklist: App.showDayChecklist.bind(App),
+    toggleSticker: App.toggleSticker.bind(App),
+    applyTheme: App.applyTheme.bind(App)
+  };
+
+  const AvatarChoices = ['🧙','👑','🦄','🐉','🧚','🐸','🍎','🌹','🪄','🐺','🦢','🪞'];
+  const SetIconChoices = ['✨','🍎','🧚','🐸','👑','🐉','🪄','🌹','🦢','🦋','🐺','🪞','🧙','🏰','🌙','🕯️','💎','🍄','🦄','🦊','👠','📚','🌿','⭐'];
+  const TradeUndo = {stack:[]};
+  const Sounds = {
+    ctx:null,
+    ensure(){ if(this.ctx || !window.AudioContext && !window.webkitAudioContext) return this.ctx; const C=window.AudioContext||window.webkitAudioContext; this.ctx=new C(); return this.ctx; },
+    ping(freq=880, len=.08, type='sine'){ const ctx=this.ensure(); if(!ctx) return; const o=ctx.createOscillator(); const g=ctx.createGain(); o.type=type; o.frequency.value=freq; g.gain.value=.0001; o.connect(g); g.connect(ctx.destination); const t=ctx.currentTime; g.gain.exponentialRampToValueAtTime(.05, t+.01); g.gain.exponentialRampToValueAtTime(.0001, t+len); o.start(t); o.stop(t+len+.02); },
+    chime(){ this.ping(880,.08,'triangle'); setTimeout(()=>this.ping(1320,.12,'triangle'),70); },
+    page(){ this.ping(330,.06,'sawtooth'); setTimeout(()=>this.ping(260,.08,'sawtooth'),45); }
+  };
+
+  function ensureSettings(){
+    State.settings = State.settings || {};
+    State.settings.theme = State.settings.theme || 'wicked';
+    State.settings.albumView = State.settings.albumView || 'list';
+    State.settings.confirmationOff = !!State.settings.confirmationOff;
+    State.settings.themeAccents = State.settings.themeAccents || {wicked:'#d4af37',enchanted:'#7c63ff'};
+    State.settings.accountAvatars = State.settings.accountAvatars || {};
+    State.settings.setIcons = State.settings.setIcons || {};
+    State.settings.goldenHourMode = State.settings.goldenHourMode ?? true;
+    State.settings.soundFx = State.settings.soundFx ?? true;
+  }
+
+  function getSetIcon(setId){ return State.settings.setIcons?.[setId] || (typeof SET_ICONS!=='undefined' ? (SET_ICONS[setId-1] || '✨') : '✨'); }
+  function stickerStarValue(st){ return st.stars * (st.isGold ? 2 : 1); }
+  function stickerKeyFrom(setId, idx){ return `s${setId}_${idx}`; }
+  function accountStats(accountId){
+    let total=0, have=0, stars=0, dupes=0, vault=0;
+    ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
+      total++;
+      const d=State.getSticker(accountId,set.id,i);
+      if(d.have){ have++; stars += st.stars; }
+      dupes += d.duplicates||0;
+      vault += (d.duplicates||0) * stickerStarValue(st);
+    }));
+    return {total,have,pct: total?Math.round(have/total*100):0,stars,dupes,vault};
+  }
+  function setStats(accountId,setId){
+    const set=ALBUM_SETS.find(s=>s.id===setId); let have=0,total=set?.stickers.length||0;
+    set?.stickers.forEach((_,i)=>{ if(State.getSticker(accountId,setId,i).have)have++; });
+    return {have,total,pct: total?Math.round(have/total*100):0};
+  }
+  function topDuplicates(accountId, limit=10){
+    const list=[];
+    ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{ const d=State.getSticker(accountId,set.id,i).duplicates||0; if(d>0) list.push({setId:set.id,setName:set.name,sticker:st.name,duplicates:d,stars:st.stars}); }));
+    return list.sort((a,b)=> b.duplicates-a.duplicates || b.stars-a.stars || a.setId-b.setId).slice(0,limit);
+  }
+  function computeNeedAlerts(){
+    const alerts=[];
+    const accts=State.visibleAccounts();
+    accts.forEach(from=>{
+      ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
+        const mine=State.getSticker(from.id,set.id,i);
+        if(!mine.have || (mine.duplicates||0)<1) return;
+        const targets=accts.filter(to=> to.id!==from.id && !State.getSticker(to.id,set.id,i).have);
+        if(targets.length){
+          alerts.push({from:from.name, fromId:from.id, setId:set.id, setName:set.name, sticker:st.name, stars:st.stars, targets:targets.map(t=>t.name), targetIds:targets.map(t=>t.id), count:targets.length});
+        }
+      }));
+    });
+    return alerts.sort((a,b)=> b.count-a.count || b.stars-a.stars || a.setId-b.setId);
+  }
+  function computeHighDemand(limit=5){
+    const accts=State.visibleAccounts();
+    const items=[];
+    ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
+      const missingBy=accts.filter(a=>!State.getSticker(a.id,set.id,i).have).map(a=>a.name);
+      if(missingBy.length){
+        let tier='Common'; if(missingBy.length>=Math.max(3, Math.ceil(accts.length*0.75))) tier='Ultra Rare'; else if(missingBy.length>=2) tier='Rare';
+        items.push({setId:set.id,setName:set.name,sticker:st.name,missingBy,tier,stars:st.stars});
+      }
+    }));
+    return items.sort((a,b)=> b.missingBy.length-a.missingBy.length || b.stars-a.stars).slice(0,limit);
+  }
+  function cloneStickerState(){
+    const sim={};
+    State.visibleAccounts().forEach(a=>{ sim[a.id]={}; ALBUM_SETS.forEach(set=>set.stickers.forEach((_,i)=>{ const d=State.getSticker(a.id,set.id,i); sim[a.id][stickerKeyFrom(set.id,i)]={have:d.have,duplicates:d.duplicates||0}; })); });
+    return sim;
+  }
+  function computeProjectionFromState(sim, accts){
+    return accts.map(a=>{ let have=0,stars=0,vault=0; ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{ const d=sim[a.id][stickerKeyFrom(set.id,i)]; if(d.have){have++; stars+=st.stars;} vault += (d.duplicates||0)*stickerStarValue(st); })); return {id:a.id,name:a.name,have,stars,vault,pct:Math.round(have/(ALBUM_SETS.length*9)*100)}; });
+  }
+  function getSelectedFocusAccounts(){ return [...document.querySelectorAll('.focus-account-pick input:checked')].map(i=>i.value); }
+  function plannerOptions(){
+    return {
+      days: Math.max(1, parseInt(document.getElementById('planner-days')?.value || '14',10)),
+      objective: document.getElementById('planner-objective')?.value || 'sets',
+      starTier: document.getElementById('planner-star-tier')?.value || 'all',
+      setRange: document.getElementById('planner-set-range')?.value || 'all',
+      focusAccounts: getSelectedFocusAccounts(),
+      randomBoost: !!document.getElementById('planner-random-focus')?.checked,
+      vaultMode: !!document.getElementById('planner-vault-focus')?.checked,
+      includeGold: !!document.getElementById('planner-include-gold')?.checked
+    };
+  }
+  function candidatePasses(st, setId, opts){
+    if(opts.starTier==='low' && st.stars>3) return false;
+    if(opts.starTier==='high' && st.stars<4) return false;
+    if(opts.starTier==='one' && st.stars!==1) return false;
+    if(opts.starTier==='two-three' && !(st.stars===2||st.stars===3)) return false;
+    if(opts.starTier==='four-five' && !(st.stars===4||st.stars===5)) return false;
+    if(opts.setRange==='low' && setId>8) return false;
+    if(opts.setRange==='mid' && (setId<9 || setId>16)) return false;
+    if(opts.setRange==='high' && setId<17) return false;
+    if(st.isGold && !opts.includeGold) return false;
+    return true;
+  }
+  function chooseRandomBestTarget(cands){
+    if(!cands.length) return [];
+    const buckets={};
+    cands.forEach(c=>{ buckets[c.to]=(buckets[c.to]||0)+c.score; });
+    const ranked=Object.entries(buckets).sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
+    const picked=ranked[Math.floor(Math.random()*ranked.length)] || ranked[0];
+    return cands.filter(c=>c.to===picked);
+  }
+  function generateAdvancedPlan(opts){
+    const accts=State.visibleAccounts();
+    const sim=cloneStickerState();
+    const plan=[];
+    const start = new Date();
+    for(let day=0; day<opts.days; day++){
+      const date = new Date(start); date.setDate(date.getDate()+day);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      const dayTrades=[];
+      const sentRegular={}; const sentGold={}; accts.forEach(a=>{sentRegular[a.id]=0; sentGold[a.id]=0;});
+      let candidates=[];
+      accts.forEach(from=>{
+        accts.forEach(to=>{
+          if(from.id===to.id) return;
+          ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
+            if(!candidatePasses(st,set.id,opts)) return;
+            const key=stickerKeyFrom(set.id,i);
+            const fromD=sim[from.id][key], toD=sim[to.id][key];
+            if(!fromD.have || (fromD.duplicates||0)<1 || toD.have) return;
+            const setHave = set.stickers.filter((_,ix)=>sim[to.id][stickerKeyFrom(set.id,ix)].have).length;
+            const completes = setHave===set.stickers.length-1 ? 1 : 0;
+            let score = st.stars*10 + setHave*3 + completes*45;
+            if(opts.objective==='sets') score += setHave*7 + completes*60;
+            if(opts.objective==='vault') score += Math.max(0, 6-st.stars)*10 - st.stars*2;
+            if(opts.objective==='lower-sets') score += (25-set.id);
+            if(opts.objective==='higher-sets') score += set.id;
+            if(opts.objective==='sticker-gain') score += 18;
+            if(opts.focusAccounts.length){ score += opts.focusAccounts.includes(to.id) ? 40 : -18; }
+            if(opts.vaultMode){ score += (st.stars<=3?15:-12); }
+            candidates.push({from:from.id,to:to.id,setId:set.id,stickerIdx:i,isGold:st.isGold,score,completes});
+          }));
+        });
+      });
+      if(opts.randomBoost) candidates = chooseRandomBestTarget(candidates);
+      candidates.sort((a,b)=>b.score-a.score || a.setId-b.setId || a.stickerIdx-b.stickerIdx);
+      const used=new Set();
+      candidates.forEach(c=>{
+        const st=ALBUM_SETS.find(s=>s.id===c.setId).stickers[c.stickerIdx];
+        const limit = st.isGold ? 5 : 5;
+        const sentObj = st.isGold ? sentGold : sentRegular;
+        const key = stickerKeyFrom(c.setId,c.stickerIdx);
+        const fromD=sim[c.from][key], toD=sim[c.to][key];
+        const uniqueKey = `${c.from}:${c.to}:${c.setId}:${c.stickerIdx}`;
+        if(used.has(uniqueKey)) return;
+        if(sentObj[c.from] >= limit) return;
+        if(!fromD.have || fromD.duplicates<1 || toD.have) return;
+        fromD.duplicates -= 1;
+        toD.have = true;
+        sentObj[c.from] += 1;
+        dayTrades.push({...c, stickerName: st.name, stars: st.stars, setName: ALBUM_SETS.find(s=>s.id===c.setId).name});
+        used.add(uniqueKey);
+      });
+      if(dayTrades.length){
+        const projections = computeProjectionFromState(sim, accts);
+        plan.push({date:dateStr, trades:dayTrades, projections});
+      }
+    }
+    return plan;
+  }
+
+  function applyAccentVars(){
+    ensureSettings();
+    const theme=document.body.dataset.theme==='enchanted' ? 'enchanted' : 'wicked';
+    const accent = State.settings.themeAccents?.[theme];
+    if(accent){ document.documentElement.style.setProperty('--gold', accent); document.documentElement.style.setProperty('--gold-light', accent); }
+  }
+  function maybeGoldenHour(){
+    if(!State.settings.goldenHourMode){ document.body.classList.remove('golden-hour'); return; }
+    const h = new Date().getHours();
+    document.body.classList.toggle('golden-hour', h>=18 && h<20);
+  }
+  function ensureJumpTop(){
+    if(document.getElementById('jump-top-btn')) return;
+    const btn=document.createElement('button');
+    btn.id='jump-top-btn'; btn.innerHTML='⬆️ <span>Jump to top</span>';
+    btn.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+    document.body.appendChild(btn);
+    window.addEventListener('scroll',()=> btn.classList.toggle('show', window.scrollY>500));
+  }
+  function ensureAlbumControls(){
+    const bar=document.getElementById('album-search-bar'); if(!bar || document.getElementById('album-extra-controls')) return;
+    const wrap=document.createElement('div'); wrap.id='album-extra-controls';
+    wrap.innerHTML=`
+      <button type="button" class="album-toggle-pill" data-view="list">📜 List View</button>
+      <button type="button" class="album-toggle-pill" data-view="grid">🧩 Grid View</button>
+      <button type="button" class="album-toggle-pill" id="theme-studio-open">🎨 Theme Studio</button>
+      <button type="button" class="album-toggle-pill" id="set-icon-open">✨ Set Icons</button>
+      <span class="high-demand-badge" id="album-demand-pill">Tracking demand…</span>
+    `;
+    bar.appendChild(wrap);
+    wrap.querySelectorAll('[data-view]').forEach(btn=>btn.addEventListener('click',()=>{ State.settings.albumView=btn.dataset.view; State.save(); syncAlbumView(); Render.album(); }));
+    wrap.querySelector('#theme-studio-open').addEventListener('click', openThemeStudio);
+    wrap.querySelector('#set-icon-open').addEventListener('click', openSetIconStudio);
+    syncAlbumView();
+    refreshDemandPill();
+  }
+  function syncAlbumView(){
+    document.body.classList.toggle('album-grid-view', State.settings.albumView==='grid');
+    document.querySelectorAll('#album-extra-controls [data-view]').forEach(btn=>btn.classList.toggle('active', btn.dataset.view===State.settings.albumView));
+  }
+  function refreshDemandPill(){
+    const pill=document.getElementById('album-demand-pill'); if(!pill) return;
+    const top=computeHighDemand(1)[0];
+    pill.textContent = top ? `🔥 Most needed: ${top.sticker} (${top.missingBy.length} accounts)` : '✨ No missing stickers';
+  }
+  function avatarMarkup(acct, pct){
+    const av = State.settings.accountAvatars?.[acct.id] || {type:'emoji',value:'🧙'};
+    const inner = av.type==='image' ? `<img src="${av.value}" alt="${acct.name} avatar">` : `<span>${av.value || '🧙'}</span>`;
+    return `<div class="account-avatar-shell ${pct>=100?'complete':''}"><div class="account-avatar"><div class="account-progress-ring" style="--pct:${pct}"></div>${inner}</div></div>`;
+  }
+  function openAvatarStudio(accountId){
+    const acct=State.accounts.find(a=>a.id===accountId); if(!acct) return;
+    const current=State.settings.accountAvatars?.[acct.id] || {type:'emoji',value:'🧙'};
+    App.showModal(`
+      <div class="modal-title">🪞 Avatar for ${acct.name}</div>
+      <div class="theme-studio-card">
+        <div style="font-size:12px;color:var(--parchment-mid);margin-bottom:10px">Choose a fairy-tale avatar or upload your own.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px">${AvatarChoices.map(e=>`<button class="account-avatar-btn" onclick="window.MEAPolish.pickAvatarEmoji('${acct.id}','${e}')">${e}</button>`).join('')}</div>
+        <div class="form-group">
+          <label>Upload custom image</label>
+          <input type="file" id="avatar-file-input" accept="image/*">
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-ghost" onclick="App.closeModal()">Done</button>
+        </div>
+      </div>
+    `);
+    setTimeout(()=>{
+      const input=document.getElementById('avatar-file-input');
+      input?.addEventListener('change',e=>{
+        const f=e.target.files?.[0]; if(!f) return;
+        const r=new FileReader(); r.onload=()=>{ State.settings.accountAvatars[acct.id]={type:'image',value:r.result}; State.save(); App.closeModal(); Render.accounts(); Render.updateAlbumAccountSummaries?.(); }; r.readAsDataURL(f);
+      });
+    },0);
+  }
+  function openThemeStudio(){
+    App.showModal(`
+      <div class="modal-title">🎨 Theme Studio</div>
+      <div class="theme-studio-card">
+        <div class="theme-studio-grid">
+          <div>
+            <label style="font-family:Cinzel,serif;font-size:11px;color:var(--gold)">Wicked Accent</label>
+            <div class="swatch"><input type="color" id="wicked-accent-picker" value="${State.settings.themeAccents?.wicked || '#d4af37'}"><span>Default dark-theme magic</span></div>
+          </div>
+          <div>
+            <label style="font-family:Cinzel,serif;font-size:11px;color:var(--gold)">Enchanted Accent</label>
+            <div class="swatch"><input type="color" id="enchanted-accent-picker" value="${State.settings.themeAccents?.enchanted || '#7c63ff'}"><span>Default light-theme shimmer</span></div>
+          </div>
+        </div>
+        <div class="trade-actions-row">
+          <button class="btn btn-gold" onclick="window.MEAPolish.saveThemeStudio()">Save Colors</button>
+          <button class="btn btn-ghost" onclick="App.closeModal()">Close</button>
+        </div>
+      </div>
+    `);
+  }
+  function saveThemeStudio(){
+    State.settings.themeAccents.wicked=document.getElementById('wicked-accent-picker')?.value || State.settings.themeAccents.wicked;
+    State.settings.themeAccents.enchanted=document.getElementById('enchanted-accent-picker')?.value || State.settings.themeAccents.enchanted;
+    State.save(); applyAccentVars(); App.closeModal();
+  }
+  function openSetIconStudio(){
+    App.showModal(`
+      <div class="modal-title">✨ Set Icon Studio</div>
+      <div class="theme-studio-card" style="max-height:60vh;overflow:auto">
+        <div style="font-size:11px;color:var(--parchment-mid);margin-bottom:10px">Pick a favorite icon for each set.</div>
+        ${ALBUM_SETS.map(set=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><div style="width:110px;font-family:Cinzel,serif;color:var(--gold)">Set ${set.id}</div><input data-set-icon="${set.id}" value="${getSetIcon(set.id)}" maxlength="2" style="width:60px;padding:8px;border-radius:8px;border:1px solid var(--input-border);background:var(--surface-2);color:var(--parchment)"><div style="font-size:11px;color:var(--parchment-mid)">${set.name}</div></div>`).join('')}
+        <div class="modal-actions"><button class="btn btn-gold" onclick="window.MEAPolish.saveSetIcons()">Save Icons</button><button class="btn btn-ghost" onclick="App.closeModal()">Close</button></div>
+      </div>
+    `);
+  }
+  function saveSetIcons(){ document.querySelectorAll('[data-set-icon]').forEach(inp=>{ State.settings.setIcons[inp.dataset.setIcon]=inp.value || '✨'; }); State.save(); App.closeModal(); if(State.ui.page==='album') Render.album(); }
+
+  function patchAccounts(){
+    const list=document.getElementById('accounts-list'); if(!list) return;
+    [...list.querySelectorAll('.account-card')].forEach((card, idx)=>{
+      const acct=[...State.accounts].sort((a,b)=>a.order-b.order)[idx]; if(!acct || card.dataset.enhanced==='1') return;
+      card.dataset.enhanced='1';
+      const info=card.querySelector('.account-card-info');
+      const stats=accountStats(acct.id);
+      const wrap=document.createElement('div'); wrap.className='account-card-top';
+      wrap.innerHTML=`${avatarMarkup(acct, stats.pct)}`;
+      info.parentNode.insertBefore(wrap, info);
+      wrap.appendChild(info);
+      const tools=document.createElement('div'); tools.className='account-avatar-tools';
+      tools.innerHTML=`<button class="account-avatar-btn" type="button">🪞 Avatar</button>`;
+      info.appendChild(tools);
+      tools.querySelector('button').addEventListener('click',()=>openAvatarStudio(acct.id));
+    });
+  }
+  function renderSummaries(){
+    const host=document.getElementById('album-account-summaries'); if(!host) return;
+    const accts=State.visibleAccounts();
+    host.innerHTML=accts.map(acct=>{
+      const st=accountStats(acct.id); const isComplete=State.isAlbumComplete(acct.id); const list=topDuplicates(acct.id,10);
+      return `<div class="album-account-summary">
+        <div class="summary-head">
+          ${avatarMarkup(acct, st.pct)}
+          <div style="min-width:0;flex:1">
+            <div class="name">${acct.name}</div>
+            <div class="meta">${acct.device || '—'}${acct.gameCode?` · ${acct.gameCode}`:''}</div>
+          </div>
+        </div>
+        <div class="summary-top">
+          <div class="stars">⭐ ${st.stars} Stars</div>
+          <div class="status-badge ${isComplete?'complete':''}">${isComplete?'🏆 Album Complete':'📚 In Progress'}</div>
+        </div>
+        <div class="summary-progress">
+          <div class="summary-progress-label"><span>Album progress</span><span>${st.have}/${st.total} · ${st.pct}%</span></div>
+          <div class="summary-progress-track"><div class="summary-progress-fill" style="width:${st.pct}%"></div></div>
+        </div>
+        <div class="sub">
+          <span class="sub-title">Top 10 duplicate stickers</span>
+          ${list.length?`<div class="dup-list">${list.map(item=>`<div class="dup-item">Set ${item.setId} · ${item.setName} · ${item.sticker} · ${item.duplicates} duplicate${item.duplicates===1?'':'s'}</div>`).join('')}</div>`:`<div class="dup-empty">No duplicate stickers yet — crack open some packs!</div>`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+  function patchTradePage(){
+    const page=document.getElementById('trade-content'); if(!page || document.getElementById('v8-planner-controls')) return;
+    const smartTab=document.getElementById('trade-tab-smart');
+    if(smartTab){
+      const panel=document.createElement('div'); panel.id='v8-planner-controls'; panel.className='trade-controls-panel';
+      panel.innerHTML=`
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="font-family:Cinzel Decorative,serif;color:var(--gold-light);font-size:1rem">🔮 Strategy Controls</div>
+            <div class="trade-note">Tune the planner for vault growth, set pushes, specific star bands, lower or higher set numbers, or multiple priority accounts.</div>
+          </div>
+          <div class="trade-actions-row">
+            <button class="btn btn-gold" onclick="App.runSmartPlanner()">✨ Generate Smart Plan</button>
+            <button class="btn btn-ghost" onclick="window.MEAPolish.renderTradeAlerts()">🔔 Refresh Alerts</button>
+          </div>
+        </div>
+        <div class="trade-control-grid">
+          <div><label>Planning Objective</label><select id="planner-objective"><option value="sets">Complete sets fastest</option><option value="vault">Build star vault gently</option><option value="sticker-gain">Max sticker gain</option><option value="lower-sets">Prefer lower set numbers</option><option value="higher-sets">Prefer higher set numbers</option></select></div>
+          <div><label>Trade Star Level Focus</label><select id="planner-star-tier"><option value="all">All stars</option><option value="low">Only 1–3⭐</option><option value="high">Only 4–5⭐</option><option value="one">Only 1⭐</option><option value="two-three">Only 2–3⭐</option><option value="four-five">Only 4–5⭐</option></select></div>
+          <div><label>Set Range Focus</label><select id="planner-set-range"><option value="all">All sets</option><option value="low">Lower sets (1–8)</option><option value="mid">Middle sets (9–16)</option><option value="high">Higher sets (17–24)</option></select></div>
+          <div><label>Plan Length (days)</label><input id="planner-days" type="number" min="1" max="180" value="14"></div>
+        </div>
+        <div class="trade-control-grid">
+          <div>
+            <label>Focus Accounts (choose more than one)</label>
+            <div class="focus-account-picks">${State.visibleAccounts().map(acct=>`<label class="focus-account-pick"><input type="checkbox" value="${acct.id}"> <span>${acct.name}</span></label>`).join('')}</div>
+          </div>
+          <div>
+            <label>Planner Options</label>
+            <div class="focus-account-picks">
+              <label class="focus-account-pick"><input type="checkbox" id="planner-random-focus"> <span>Random best-opportunity account</span></label>
+              <label class="focus-account-pick"><input type="checkbox" id="planner-vault-focus"> <span>Preserve vault momentum</span></label>
+              <label class="focus-account-pick"><input type="checkbox" id="planner-include-gold"> <span>Include golds when valid</span></label>
+            </div>
+          </div>
+        </div>
+        <div class="cauldron-loader" id="planner-cauldron"><div class="cauldron"><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div><div class="bubble"></div></div><div><div style="font-family:Cinzel,serif;color:var(--gold-light);margin-bottom:4px">Brewing the trade potion…</div><div class="trade-note">Mixing account priorities, star levels, set ranges, and daily forecasts.</div></div></div>
+      `;
+      smartTab.prepend(panel);
+    }
+    const manualTab=document.getElementById('trade-tab-manual');
+    if(manualTab && !manualTab.querySelector('.spellbook-wrap')){
+      const wrap=document.createElement('div'); wrap.className='spellbook-wrap';
+      while(manualTab.firstChild) wrap.appendChild(manualTab.firstChild);
+      manualTab.appendChild(wrap);
+    }
+    renderTradeAlerts();
+  }
+  function renderTradeAlerts(){
+    const smartTab=document.getElementById('trade-tab-smart'); if(!smartTab) return;
+    let alertsEl=document.getElementById('trade-alerts-panel');
+    if(!alertsEl){ alertsEl=document.createElement('div'); alertsEl.id='trade-alerts-panel'; alertsEl.className='demand-panel'; smartTab.appendChild(alertsEl); }
+    const alerts=computeNeedAlerts().slice(0,12);
+    const demand=computeHighDemand(5);
+    alertsEl.innerHTML=`
+      <div style="font-family:Cinzel Decorative,serif;color:var(--gold-light);font-size:.95rem">🔔 Duplicate-to-Need Alerts</div>
+      <div class="trade-note">Whenever one account has an extra and another needs it, the planner calls it out here.</div>
+      ${alerts.length?alerts.map(a=>`<div class="trade-alert-item"><strong>${a.from}</strong> can send <strong>${a.sticker}</strong> <span style="opacity:.7">(Set ${a.setId}: ${a.setName})</span> to ${a.targets.join(', ')}.</div>`).join(''):'<div class="trade-alert-item">No live duplicate-to-need matches right now.</div>'}
+      <div style="height:10px"></div>
+      <div style="font-family:Cinzel Decorative,serif;color:var(--gold-light);font-size:.95rem">📈 High-Demand Tracker</div>
+      <div class="trade-note">Top 5 stickers missing across your managed accounts, with rarity tiers based on how many accounts still need them.</div>
+      ${demand.map(d=>`<div class="demand-item"><strong>${d.sticker}</strong> · Set ${d.setId}: ${d.setName} · Missing on ${d.missingBy.length} account(s) · <span style="color:${d.tier==='Ultra Rare'?'#ffb8b8':d.tier==='Rare'?'#ffe7a6':'#cfe7ff'}">${d.tier}</span></div>`).join('')}
+    `;
+  }
+  function annotateCalendarProjections(){
+    const grid=document.getElementById('cal-grid'); if(!grid) return;
+    const accts=State.visibleAccounts(); const sim=cloneStickerState();
+    const pending=[...State.trades].filter(t=>!t.done).sort((a,b)=> (a.date||'').localeCompare(b.date||'') || ((a.order??0)-(b.order??0)));
+    const byDate={}; pending.forEach(t=>{ (byDate[t.date] ||= []).push(t); });
+    const projectionByDate={};
+    Object.keys(byDate).sort().forEach(date=>{
+      byDate[date].forEach(t=>{ const k=stickerKeyFrom(t.setId,t.stickerIdx); const from=sim[t.from]?.[k], to=sim[t.to]?.[k]; if(from && to && from.have && from.duplicates>0 && !to.have){ from.duplicates--; to.have=true; } });
+      projectionByDate[date]=computeProjectionFromState(sim, accts);
+    });
+    [...grid.children].forEach(cell=>{
+      const num=cell.querySelector('.cal-day-num'); if(!num) return; const month=App.calMonth+1, year=App.calYear, day=parseInt(num.textContent,10); const dateStr=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const proj=projectionByDate[dateStr]; if(!proj) return;
+      let note=cell.querySelector('.calendar-projection-note'); if(!note){ note=document.createElement('div'); note.className='calendar-projection-note'; cell.appendChild(note); }
+      note.innerHTML = proj.slice(0,3).map(p=>`${p.name}: ${p.have}`).join('<br>');
+    });
+  }
+  function renderDayProjections(dateStr){
+    const area=document.getElementById('daily-checklist-area'); if(!area) return;
+    const cards=area.querySelector('.projection-grid-wrapper'); if(cards) cards.remove();
+    const sim=cloneStickerState();
+    const pending=[...State.trades].filter(t=>!t.done).sort((a,b)=> (a.date||'').localeCompare(b.date||'') || ((a.order??0)-(b.order??0)));
+    pending.forEach(t=>{ if(t.date>dateStr) return; const k=stickerKeyFrom(t.setId,t.stickerIdx); const from=sim[t.from]?.[k], to=sim[t.to]?.[k]; if(from && to && from.have && from.duplicates>0 && !to.have){ from.duplicates--; to.have=true; } });
+    const proj=computeProjectionFromState(sim, State.visibleAccounts());
+    const wrap=document.createElement('div'); wrap.className='projection-grid-wrapper';
+    wrap.innerHTML=`<div class="timeline-panel"><div style="font-family:Cinzel Decorative,serif;color:var(--gold-light);font-size:.95rem;margin-bottom:8px">🗓 Account sticker totals after this day</div><div class="projection-grid">${proj.map(p=>`<div class="projection-card"><div class="acct">${p.name}</div><div class="meta">${p.have} stickers owned<br>${p.stars} album stars<br>${p.vault} vault stars<br>${p.pct}% album complete</div></div>`).join('')}</div></div>`;
+    area.appendChild(wrap);
+  }
+  function checkpointTrades(reason){ TradeUndo.stack.push({reason, trades: JSON.parse(JSON.stringify(State.trades))}); if(TradeUndo.stack.length>20) TradeUndo.stack.shift(); }
+  function normalizeTradeOrder(){ State.trades.sort((a,b)=> (a.date||'').localeCompare(b.date||'') || ((a.order??0)-(b.order??0))); State.trades.forEach((t,idx)=>{ t.order=idx; }); State.save(); }
+  function moveTradeOrder(id, dir){ checkpointTrades('reorder trades'); normalizeTradeOrder(); const idx=State.trades.findIndex(t=>t.id===id); const swap=idx+dir; if(idx<0 || swap<0 || swap>=State.trades.length) return; [State.trades[idx],State.trades[swap]]=[State.trades[swap],State.trades[idx]]; normalizeTradeOrder(); App.renderManualTrades(); App.renderCalendar(); }
+  function clearGeneratedTrades(){ checkpointTrades('clear generated trades'); State.trades=State.trades.filter(t=>!t.generated); normalizeTradeOrder(); App.renderManualTrades(); App.renderCalendar(); Effects.notify('🧹 Cleared generated trades.','info'); }
+  function clearAllTrades(){ checkpointTrades('clear all trades'); State.trades=[]; State.save(); App.renderManualTrades(); App.renderCalendar(); Effects.notify('🫧 All trade plans cleared.','info'); }
+  function undoTrades(){ const snap=TradeUndo.stack.pop(); if(!snap){ Effects.notify('Nothing to undo.','info'); return; } State.trades=snap.trades; State.save(); App.renderManualTrades(); App.renderCalendar(); Effects.notify('↩️ Trade plan undo complete.','success'); }
+
+  window.MEAPolish={ pickAvatarEmoji:(id,e)=>{ State.settings.accountAvatars[id]={type:'emoji',value:e}; State.save(); App.closeModal(); Render.accounts(); Render.updateAlbumAccountSummaries?.(); }, saveThemeStudio, saveSetIcons, renderTradeAlerts };
+  App.moveTradeOrder = moveTradeOrder; App.clearGeneratedTrades = clearGeneratedTrades; App.clearAllTrades = clearAllTrades; App.undoTradeAction = undoTrades;
+
+  App.runSmartPlanner = function(){
+    const accts=State.visibleAccounts(); if(accts.length<2){ Effects.notify('Need at least 2 accounts for smart trading!','info'); return; }
+    const opts=plannerOptions(); const cauldron=document.getElementById('planner-cauldron'); cauldron?.classList.add('show');
+    setTimeout(()=>{
+      checkpointTrades('generate smart plan');
+      const plan=generateAdvancedPlan(opts);
+      const resultsEl=document.getElementById('smart-plan-results'); if(!resultsEl) return;
+      if(!plan.length){ resultsEl.innerHTML=`<div class="empty-state"><div class="icon">🤔</div><p>No beneficial trades matched those filters.</p></div>`; cauldron?.classList.remove('show'); return; }
+      let added=0;
+      plan.forEach(day=>day.trades.forEach(t=>{ const exists=State.trades.find(x=>!x.done && x.from===t.from && x.to===t.to && x.setId===t.setId && x.stickerIdx===t.stickerIdx && x.date===day.date); if(!exists){ State.trades.push({id:uid(), date:day.date, from:t.from, to:t.to, setId:t.setId, stickerIdx:t.stickerIdx, done:false, isGold:t.isGold, generated:true, order: State.trades.length}); added++; } }));
+      normalizeTradeOrder();
+      const acctsById=Object.fromEntries(accts.map(a=>[a.id,a]));
+      resultsEl.innerHTML=`<div class="timeline-panel"><div style="font-family:Cinzel Decorative,serif;color:var(--planner-good);font-size:1rem">✨ Smart Plan Ready</div><div class="trade-note">${plan.length} planned day(s) • ${added} new trade(s) • objective: <b>${opts.objective}</b></div></div>${plan.map(day=>`<div class="plan-day-card"><div class="plan-day-title">📅 ${day.date}</div>${day.trades.map(t=>`<div class="plan-trade-line">${t.isGold?'🥇 ':''}<b style="color:var(--gold-light)">${acctsById[t.from]?.name||'?'}</b> → <b style="color:var(--magic-light)">${acctsById[t.to]?.name||'?'}</b> · Set ${t.setId} ${t.setName} · ${t.stickerName} · ${t.stars}⭐</div>`).join('')}<div class="projection-grid">${day.projections.map(p=>`<div class="projection-card"><div class="acct">${p.name}</div><div class="meta">${p.have} stickers after today<br>${p.stars} album stars<br>${p.vault} vault stars<br>${p.pct}% complete</div></div>`).join('')}</div></div>`).join('')}<div class="trade-actions-row"><button class="btn btn-gold" onclick="document.querySelector('[data-trade-tab=calendar]')?.click()">📅 View Calendar</button><button class="btn btn-ghost" onclick="document.querySelector('[data-trade-tab=manual]')?.click()">📝 View Planned Trades</button></div>`;
+      cauldron?.classList.remove('show');
+      App.renderManualTrades(); App.renderCalendar(); renderTradeAlerts(); Effects.notify(`✨ Smart plan generated: ${added} trade(s).`,'success');
+    }, 280);
+  };
+
+  App.renderManualTrades = function(){
+    const list=document.getElementById('manual-trades-list'); if(!list) return;
+    normalizeTradeOrder();
+    const pending=State.trades.filter(t=>!t.done).sort((a,b)=> (a.date||'').localeCompare(b.date||'') || ((a.order??0)-(b.order??0)));
+    const done=State.trades.filter(t=>t.done).slice(-5);
+    list.innerHTML=`<div class="trade-toolbar"><div class="left"><button class="btn btn-ghost" onclick="App.undoTradeAction()">↩️ Undo</button><button class="btn btn-ghost" onclick="App.clearGeneratedTrades()">🧹 Clear Generated</button><button class="btn btn-danger" onclick="App.clearAllTrades()">🫧 Clear All</button></div><div class="right"><span class="trade-note">Dragless reorder buttons now let you nudge each trade up or down.</span></div></div>`;
+    if(!pending.length && !done.length){ list.innerHTML += `<div class="empty-state"><div class="icon">🤝</div><p>No trades planned yet.</p></div>`; return; }
+    list.innerHTML += `<div class="section-title" style="font-size:.85rem">Pending Trades (${pending.length})</div>`;
+    pending.forEach(trade=>list.appendChild(tradeItem(trade,false,pending)));
+    if(done.length){ const doneHeader=document.createElement('div'); doneHeader.className='section-title'; doneHeader.style.fontSize='.85rem'; doneHeader.textContent=`Recent Completed (${done.length})`; list.appendChild(doneHeader); done.forEach(trade=>list.appendChild(tradeItem(trade,true,pending))); }
+  };
+  function tradeItem(trade,isDone,pending){
+    const fromAcct=State.accounts.find(a=>a.id===trade.from); const toAcct=State.accounts.find(a=>a.id===trade.to); const set=ALBUM_SETS.find(s=>s.id===trade.setId); const sticker=set?.stickers[trade.stickerIdx];
+    const el=document.createElement('div'); el.className='trade-checklist-item';
+    el.innerHTML=`<div class="trade-check ${trade.done?'done':''}" onclick="App.completeTrade('${trade.id}')"></div><div class="trade-item-text ${trade.done?'done-text':''}"><b style="color:var(--gold)">${fromAcct?.name||'?'}</b> → <b style="color:var(--magic-light)">${toAcct?.name||'?'}</b>${trade.generated?'<span class="trade-generated-badge">✨ generated</span>':''}<br>${sticker?.isGold?'🥇 ':''}<b>${sticker?.name||'?'}</b> <span style="opacity:.6">(Set ${trade.setId}: ${set?.name||'?'})</span><br><span style="font-size:10px;opacity:.65">📅 ${trade.date}</span></div><div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">${!trade.done?`<button class="trade-order-btn" onclick="App.moveTradeOrder('${trade.id}',-1)">▲</button><button class="trade-order-btn" onclick="App.moveTradeOrder('${trade.id}',1)">▼</button><button class="btn btn-danger" style="padding:4px 8px;font-size:9px" onclick="App.deleteTrade('${trade.id}')">✕</button>`:''}</div>`;
+    return el;
+  }
+
+  App.renderCalendar = function(){ orig.calendar(); annotateCalendarProjections(); };
+  App.showDayChecklist = function(dateStr){ orig.dayChecklist(dateStr); renderDayProjections(dateStr); };
+  App.initCountdown = function(){
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local time';
+    const target = new Date('2026-06-03T13:00:00-04:00');
+    const formatDate = new Intl.DateTimeFormat(undefined,{dateStyle:'long'});
+    const formatTime = new Intl.DateTimeFormat(undefined,{timeStyle:'short'});
+    const targetDateLabel = formatDate.format(target);
+    const targetTimeLabel = formatTime.format(target);
+    const targetDateTimeLabel = `${targetDateLabel} at ${targetTimeLabel}`;
+    const update = ()=>{
+      const now=new Date(); let diff=Math.max(0, target-now); const ended = target<=now;
+      const days=Math.floor(diff/86400000); diff%=86400000; const hours=Math.floor(diff/3600000); diff%=3600000; const mins=Math.floor(diff/60000); diff%=60000; const secs=Math.floor(diff/1000);
+      document.querySelectorAll('.countdown-value').forEach((el,idx)=>{ el.textContent=[days,hours,mins,secs][idx] ?? 0; });
+      document.querySelectorAll('.countdown-line').forEach(el=>{ el.textContent=ended ? `This album ended on ${targetDateTimeLabel} (${userTimeZone}).` : `The album is expected to end on ${targetDateTimeLabel} in your local time zone.`; });
+      document.querySelectorAll('.countdown-deadline').forEach(el=>{ el.textContent = ended ? `The spell ended on ${targetDateTimeLabel}` : `Until ${targetDateLabel} • ${targetTimeLabel} • ${userTimeZone}`; });
+    };
+    update(); if(this._countdownTimer)clearInterval(this._countdownTimer); this._countdownTimer=setInterval(update,1000);
+  };
+
+  App.applyTheme = function(theme, save=true){ const r=orig.applyTheme(theme, save); applyAccentVars(); maybeGoldenHour(); return r; };
+  Render.updateAlbumAccountSummaries = function(){ renderSummaries(); };
+  Render.accounts = function(){ orig.accounts(); patchAccounts(); };
+  Render.trade = function(){ orig.trade(); patchTradePage(); };
+  Render._renderSet = function(set, accts){
+    const node = orig.renderSet(set, accts);
+    const nameEl=node.querySelector('.set-name'); if(nameEl) nameEl.innerHTML=`${getSetIcon(set.id)} ${set.name}`;
+    return node;
+  };
+  App.refreshAfterAlbumMutation = function(){ orig.refreshAfter(); renderTradeAlerts(); refreshDemandPill(); if(State.ui.page==='album') syncAlbumView(); };
+  App.toggleSticker = function(accountId,setId,stickerIdx,cardEl){
+    const before=State.getSticker(accountId,setId,stickerIdx).have;
+    const r=orig.toggleSticker(accountId,setId,stickerIdx,cardEl);
+    const after=State.getSticker(accountId,setId,stickerIdx).have;
+    if(!before && after){ const card=document.querySelector(`[data-account-id="${accountId}"][data-set-id="${setId}"][data-sticker-idx="${stickerIdx}"]`) || cardEl; card?.classList.add('peel-on'); setTimeout(()=>card?.classList.remove('peel-on'),500); if(State.settings.soundFx) Sounds.chime(); }
+    if(before && !after && State.settings.soundFx) Sounds.page();
+    Render.updateAlbumAccountSummaries?.();
+    return r;
+  };
+  App.navigate = function(page){ if(State.settings.soundFx) Sounds.page(); const r=orig.navigate(page); if(page==='trade') patchTradePage(); if(page==='album'){ ensureAlbumControls(); syncAlbumView(); } return r; };
+
+  function installParallax(){ window.addEventListener('mousemove',e=>{ const x=(e.clientX/window.innerWidth - .5)*10; const y=(e.clientY/window.innerHeight - .5)*10; document.querySelectorAll('.page-header').forEach(el=>{ el.style.transform=`translate(${x*0.25}px, ${y*0.25}px)`; }); }); }
+
+  App.init = function(){ ensureSettings(); orig.init(); ensureJumpTop(); ensureAlbumControls(); syncAlbumView(); applyAccentVars(); maybeGoldenHour(); installParallax(); renderTradeAlerts(); patchAccounts(); refreshDemandPill(); setInterval(maybeGoldenHour, 60000); };
+})();
+</script>
+
+
+<style>
+#final-polish-panel .planner-extra-grid, #final-polish-panel .backup-grid, #final-polish-panel .album-filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:10px}
+#final-polish-panel label,.album-filter-wrap label{display:block;font-family:Cinzel,serif;font-size:10px;color:var(--gold);margin-bottom:5px}
+#final-polish-panel input,#final-polish-panel select,.album-filter-wrap input,.album-filter-wrap select{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--input-border);background:var(--surface-2);color:var(--parchment)}
+.mini-check{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line-soft);font-size:11px}
+.mini-check input{width:auto;accent-color:var(--gold)}
+.plan-summary-grid,.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:12px}
+.plan-kpi,.compare-card,.backup-card{padding:12px;border-radius:12px;border:1px solid var(--line-strong);background:var(--surface-2)}
+.plan-kpi .big{font-family:'Cinzel Decorative',serif;color:var(--gold-light);font-size:1.1rem}
+.reason-pill{display:inline-flex;align-items:center;gap:6px;padding:3px 8px;border-radius:999px;border:1px solid var(--line-mid);background:var(--surface-3);font-size:9px;margin:4px 6px 0 0;color:var(--parchment-mid)}
+.trade-lock{font-size:10px;padding:2px 7px;border-radius:999px;border:1px solid var(--line-mid);background:var(--surface-2);color:var(--parchment-mid);margin-left:6px}
+.trade-lock.locked{color:var(--gold-light);border-color:var(--gold)}
+.album-filter-wrap{margin:0 0 16px;padding:12px;border-radius:14px;border:1px solid var(--line-strong);background:var(--surface-1)}
+.album-filter-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.filter-chip-row{display:flex;gap:8px;flex-wrap:wrap}
+.filter-chip{padding:6px 10px;border-radius:999px;border:1px solid var(--line-mid);background:var(--surface-2);font-size:10px;color:var(--parchment-mid)}
+#album-global-search{min-width:220px}
+body.large-text{font-size:18px}
+body.reduce-motion *,body.reduce-motion *::before,body.reduce-motion *::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+body.muted .firefly, body.muted #dragon-shadow{opacity:.55}
+.jump-top-final{position:fixed;right:86px;bottom:24px;z-index:1200;border-radius:999px;padding:10px 14px;border:1px solid var(--line-strong);background:linear-gradient(135deg,var(--surface-3),var(--surface-2));color:var(--gold-light);box-shadow:var(--shadow);display:none}
+.jump-top-final.show{display:block}
+.trade-item-text .why-note{display:block;font-size:10px;opacity:.76;margin-top:4px;line-height:1.45}
+.trade-toolbar{flex-wrap:wrap}
+.trade-toolbar .left,.trade-toolbar .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mobile-sticky-bar{display:none}
+@media (max-width:720px){
+  .mobile-sticky-bar{display:flex;position:sticky;bottom:10px;z-index:10;gap:8px;justify-content:center;margin-top:12px;flex-wrap:wrap}
+  .trade-toolbar{position:sticky;top:8px;z-index:4;background:var(--bg);padding:8px 0}
+  .jump-top-final{right:18px;bottom:18px}
+}
+</style>
+<script>
+(function(){
+  const backupKey='mea_backups_v1', planKey='mea_saved_trade_plans_v1';
+  function nowIso(){ return new Date().toISOString(); }
+  function deepClone(x){ return JSON.parse(JSON.stringify(x)); }
+  function ensureFinalSettings(){
+    State.settings.tradeSafety ||= {};
+    State.settings.uiEnhancements ||= {largeText:false, reduceMotion:false, muteFx:false};
+    State.settings.tradeLocks ||= {};
+    State.settings.lastBackupAt ||= 0;
+    State.settings.albumFilters ||= {query:'',status:'all',stars:'all',gold:'all',scope:'any'};
+  }
+  ensureFinalSettings();
+
+  const origSave = State.save.bind(State);
+  State.save = function(){
+    ensureFinalSettings();
+    origSave();
+    const now=Date.now();
+    const snapshot={ts:nowIso(),label:'Auto backup',accounts:deepClone(State.accounts),stickers:deepClone(State.stickers),settings:deepClone(State.settings),trades:deepClone(State.trades)};
+    const prev=Storage.get(backupKey,[]);
+    const hash=JSON.stringify([snapshot.accounts,snapshot.stickers,snapshot.trades]);
+    const prevHash=prev[0]?.hash;
+    if(hash!==prevHash && (now-(State.settings.lastBackupAt||0)>45000)){
+      prev.unshift({...snapshot,hash});
+      while(prev.length>25) prev.pop();
+      Storage.set(backupKey,prev);
+      State.settings.lastBackupAt=now;
+      origSave();
+    }
+  };
+
+  function createNamedBackup(label){
+    const prev=Storage.get(backupKey,[]);
+    prev.unshift({ts:nowIso(),label:label||'Manual backup',accounts:deepClone(State.accounts),stickers:deepClone(State.stickers),settings:deepClone(State.settings),trades:deepClone(State.trades),hash:Math.random().toString(36).slice(2)});
+    while(prev.length>25) prev.pop();
+    Storage.set(backupKey,prev);
+    Effects.notify('🪄 Backup saved.','success');
+  }
+  function restoreBackup(idx){
+    const prev=Storage.get(backupKey,[]); const snap=prev[idx]; if(!snap) return;
+    State.accounts=deepClone(snap.accounts||[]); State.stickers=deepClone(snap.stickers||{}); State.settings={...State.settings,...deepClone(snap.settings||{})}; State.trades=deepClone(snap.trades||[]); State.save();
+    App.navigate(State.ui.page||'album'); Render.album?.(); Render.accounts?.(); App.renderManualTrades?.(); App.renderCalendar?.();
+    Effects.notify('↩️ Backup restored.','success'); App.closeModal();
+  }
+  function openBackupStudio(){
+    const backups=Storage.get(backupKey,[]);
+    App.showModal(`<div class="modal-title">🗂 Restore Points</div>
+      <div class="backup-grid">${backups.length?backups.map((b,i)=>`<div class="backup-card"><div style="font-family:Cinzel Decorative,serif;color:var(--gold-light);font-size:.95rem">${b.label||'Backup'}</div><div style="font-size:11px;color:var(--parchment-mid);margin:8px 0 12px">${new Date(b.ts).toLocaleString()}</div><div class="modal-actions" style="justify-content:flex-start"><button class="btn btn-gold" onclick="window.MEAFinal.restoreBackup(${i})">Restore</button></div></div>`).join(''):'<div class="backup-card">No restore points yet.</div>'}</div>
+      <div class="modal-actions"><button class="btn btn-gold" onclick="window.MEAFinal.createNamedBackup(prompt('Backup label')||'Manual backup')">Save Backup</button><button class="btn btn-ghost" onclick="App.closeModal()">Close</button></div>`);
+  }
+
+  function readSafety(){
+    return {
+      keepLast: !!document.getElementById('safety-keep-last')?.checked,
+      protectFavorites: !!document.getElementById('safety-protect-favorites')?.checked,
+      preserveHighStars: !!document.getElementById('safety-preserve-high')?.checked,
+      minSetPct: Math.max(0, parseInt(document.getElementById('safety-min-set-pct')?.value||'0',10)||0),
+      lockGold: !!document.getElementById('safety-lock-gold')?.checked
+    };
+  }
+
+  const oldPlannerOptions = window.plannerOptions;
+  window.plannerOptions = function(){ const o=oldPlannerOptions(); o.safety=readSafety(); o.focusMode=document.getElementById('planner-focus-mode')?.value||'balanced'; return o; };
+
+  const baseGenerate = window.generateAdvancedPlan;
+  window.generateAdvancedPlan = function(opts){
+    ensureFinalSettings();
+    const accts=State.visibleAccounts();
+    const sim=window.cloneStickerState();
+    const plan=[];
+    const start = new Date();
+    for(let day=0; day<opts.days; day++){
+      const date = new Date(start); date.setDate(date.getDate()+day);
+      const dateStr = `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+      const sentRegular={}, sentGold={}; accts.forEach(a=>{sentRegular[a.id]=0; sentGold[a.id]=0;});
+      let candidates=[];
+      accts.forEach(from=>{
+        accts.forEach(to=>{
+          if(from.id===to.id) return;
+          ALBUM_SETS.forEach(set=>set.stickers.forEach((st,i)=>{
+            if(!window.candidatePasses(st,set.id,opts)) return;
+            const key=window.stickerKeyFrom(set.id,i);
+            const fromD=sim[from.id][key], toD=sim[to.id][key];
+            if(!fromD.have || (fromD.duplicates||0)<1 || toD.have) return;
+            if(State.settings.tradeLocks?.[key]) return;
+            if(opts.safety?.lockGold && st.isGold) return;
+            if(opts.safety?.preserveHighStars && st.stars>=4) return;
+            if(opts.safety?.keepLast && (fromD.duplicates||0)<1) return;
+            const fromSetHave = set.stickers.filter((_,ix)=>sim[from.id][window.stickerKeyFrom(set.id,ix)].have).length;
+            const toSetHave = set.stickers.filter((_,ix)=>sim[to.id][window.stickerKeyFrom(set.id,ix)].have).length;
+            const fromSetPct = Math.round(fromSetHave/set.stickers.length*100);
+            if(opts.safety?.minSetPct && fromSetPct<opts.safety.minSetPct) return;
+            let score = st.stars*10 + toSetHave*3 + (toSetHave===set.stickers.length-1?45:0);
+            const reasons=[];
+            if(opts.objective==='sets'){ score += toSetHave*7 + (toSetHave===set.stickers.length-1?60:0); reasons.push('set completion'); }
+            if(opts.objective==='vault'){ score += Math.max(0, 6-st.stars)*10 - st.stars*2; reasons.push('vault focus'); }
+            if(opts.objective==='lower-sets'){ score += (25-set.id); reasons.push('lower set priority'); }
+            if(opts.objective==='higher-sets'){ score += set.id; reasons.push('higher set priority'); }
+            if(opts.objective==='sticker-gain'){ score += 18; reasons.push('sticker gain'); }
+            if(opts.focusAccounts.length){ score += opts.focusAccounts.includes(to.id) ? 40 : -18; if(opts.focusAccounts.includes(to.id)) reasons.push('focus account'); }
+            if(opts.vaultMode){ score += (st.stars<=3?15:-12); reasons.push('vault-safe stars'); }
+            if(opts.focusMode==='balanced') score += 4;
+            if(opts.focusMode==='vault-heavy' && st.stars<=3){ score += 18; reasons.push('vault heavy'); }
+            if(opts.focusMode==='set-rush' && toSetHave>=5){ score += 20; reasons.push('set rush'); }
+            candidates.push({from:from.id,to:to.id,setId:set.id,stickerIdx:i,isGold:st.isGold,score,reasons,completes:toSetHave===set.stickers.length-1});
+          }));
+        });
+      });
+      if(opts.randomBoost) candidates = window.chooseRandomBestTarget(candidates);
+      candidates.sort((a,b)=>b.score-a.score || a.setId-b.setId || a.stickerIdx-b.stickerIdx);
+      const used=new Set(), dayTrades=[];
+      candidates.forEach(c=>{
+        const set=ALBUM_SETS.find(s=>s.id===c.setId), st=set.stickers[c.stickerIdx], key=window.stickerKeyFrom(c.setId,c.stickerIdx);
+        const sentObj = st.isGold ? sentGold : sentRegular; const limit=5;
+        const fromD=sim[c.from][key], toD=sim[c.to][key]; const uniq=`${c.from}:${c.to}:${key}`;
+        if(used.has(uniq)) return;
+        if(sentObj[c.from]>=limit) return;
+        if(!fromD.have || (fromD.duplicates||0)<1 || toD.have) return;
+        fromD.duplicates--; toD.have=true; sentObj[c.from]++; used.add(uniq);
+        dayTrades.push({from:c.from,to:c.to,setId:c.setId,setName:set.name,stickerIdx:c.stickerIdx,stickerName:st.name,stars:st.stars,isGold:st.isGold,reason:c.reasons.join(' • ') || 'balanced trade'});
+      });
+      const projections=window.computeProjectionFromState(sim,accts);
+      if(dayTrades.length) plan.push({date:dateStr,trades:dayTrades,projections});
+    }
+    return plan;
+  };
+
+  function plannerSummaryFromTrades(trades){
+    const byAcct={}; State.visibleAccounts().forEach(a=>byAcct[a.id]={before:window.accountStats(a.id), gain:0, sent:0, received:0, name:a.name});
+    trades.forEach(t=>{ byAcct[t.from] && byAcct[t.from].sent++; byAcct[t.to] && byAcct[t.to].received++; if(byAcct[t.to]) byAcct[t.to].gain++; });
+    return Object.values(byAcct);
+  }
+
+  function saveCurrentPlan(){
+    const plans=Storage.get(planKey,[]);
+    const label=prompt('Name this trade plan','Plan '+new Date().toLocaleString()); if(!label) return;
+    plans.unshift({id:Math.random().toString(36).slice(2),label,ts:nowIso(),trades:deepClone(State.trades)}); while(plans.length>12) plans.pop(); Storage.set(planKey,plans); Effects.notify('📚 Trade plan saved.','success');
+  }
+  function comparePlans(){
+    const plans=Storage.get(planKey,[]); if(plans.length<1){ Effects.notify('Save a plan first.','info'); return; }
+    App.showModal(`<div class="modal-title">⚖️ Compare Trade Plans</div><div class="backup-grid">${plans.map((p,i)=>`<div class="compare-card"><div style="font-family:Cinzel Decorative,serif;color:var(--gold-light)">${p.label}</div><div style="font-size:11px;color:var(--parchment-mid);margin:6px 0">${new Date(p.ts).toLocaleString()}<br>${p.trades.length} trades</div><button class="btn btn-gold" onclick="window.MEAFinal.previewPlan(${i})">Preview</button></div>`).join('')}</div><div class="modal-actions"><button class="btn btn-ghost" onclick="App.closeModal()">Close</button></div>`);
+  }
+  function previewPlan(idx){
+    const plans=Storage.get(planKey,[]), p=plans[idx]; if(!p) return;
+    const totals={}; p.trades.forEach(t=>{ totals[t.to]=(totals[t.to]||0)+1; totals[t.from]=(totals[t.from]||0); });
+    App.showModal(`<div class="modal-title">📖 ${p.label}</div><div class="compare-grid">${State.visibleAccounts().map(a=>`<div class="compare-card"><div style="font-family:Cinzel Decorative,serif;color:var(--gold-light)">${a.name}</div><div style="font-size:11px;color:var(--parchment-mid)">${p.trades.filter(t=>t.to===a.id).length} incoming<br>${p.trades.filter(t=>t.from===a.id).length} outgoing</div></div>`).join('')}</div><div class="modal-actions"><button class="btn btn-gold" onclick="App.closeModal()">Done</button></div>`);
+  }
+
+  function upgradePlannerUI(){
+    const panel=document.getElementById('v8-planner-controls'); if(!panel || panel.dataset.finalReady) return; panel.dataset.finalReady='1';
+    const extra=document.createElement('div'); extra.id='final-polish-panel';
+    extra.innerHTML=`
+      <div class="planner-extra-grid">
+        <div><label>Planner Style</label><select id="planner-focus-mode"><option value="balanced">Balanced</option><option value="vault-heavy">Vault heavy</option><option value="set-rush">Set rush</option></select></div>
+        <div class="mini-check"><input id="safety-keep-last" type="checkbox" checked><span>Do not trade away last duplicate</span></div>
+        <div class="mini-check"><input id="safety-preserve-high" type="checkbox"><span>Keep all 4⭐/5⭐ extras</span></div>
+        <div class="mini-check"><input id="safety-lock-gold" type="checkbox"><span>Never auto-plan gold stickers</span></div>
+        <div><label>Protect sender if set below %</label><input id="safety-min-set-pct" type="number" min="0" max="100" value="0"></div>
+        <div class="mini-check"><input id="safety-protect-favorites" type="checkbox"><span>Protect favorite accounts</span></div>
+      </div>
+      <div class="trade-actions-row" style="margin-top:12px;justify-content:flex-start;flex-wrap:wrap">
+        <button class="btn btn-ghost" onclick="window.MEAFinal.saveCurrentPlan()">💾 Save Plan</button>
+        <button class="btn btn-ghost" onclick="window.MEAFinal.comparePlans()">⚖️ Compare Plans</button>
+        <button class="btn btn-ghost" onclick="window.MEAFinal.openBackupStudio()">🗂 Restore Points</button>
+      </div>`;
+    panel.appendChild(extra);
+  }
+
+  const oldRun = App.runSmartPlanner.bind(App);
+  App.runSmartPlanner = function(){
+    const accts=State.visibleAccounts(); if(accts.length<2){ Effects.notify('Need at least 2 accounts for smart trading!','info'); return; }
+    const opts=window.plannerOptions(); const cauldron=document.getElementById('planner-cauldron'); cauldron?.classList.add('show');
+    setTimeout(()=>{
+      if(window.checkpointTrades) checkpointTrades('generate smart plan');
+      const plan=window.generateAdvancedPlan(opts);
+      const resultsEl=document.getElementById('smart-plan-results'); if(!resultsEl) return;
+      if(!plan.length){ resultsEl.innerHTML=`<div class="empty-state"><div class="icon">🤔</div><p>No beneficial trades matched those safety rules and filters.</p></div>`; cauldron?.classList.remove('show'); return; }
+      let added=0; plan.forEach(day=>day.trades.forEach(t=>{ const exists=State.trades.find(x=>!x.done&&x.from===t.from&&x.to===t.to&&x.setId===t.setId&&x.stickerIdx===t.stickerIdx&&x.date===day.date); if(!exists){ State.trades.push({id:uid(),date:day.date,from:t.from,to:t.to,setId:t.setId,stickerIdx:t.stickerIdx,done:false,isGold:t.isGold,generated:true,order:State.trades.length,reason:t.reason}); added++; }}));
+      if(window.normalizeTradeOrder) normalizeTradeOrder(); else State.save();
+      const summary=plannerSummaryFromTrades(plan.flatMap(d=>d.trades));
+      const objectiveMap={sets:'set completion',vault:'star vault',sticker-gain:'sticker gain','lower-sets':'lower sets','higher-sets':'higher sets'};
+      resultsEl.innerHTML=`<div class="timeline-panel"><div style="font-family:Cinzel Decorative,serif;color:var(--planner-good);font-size:1rem">✨ Smart Plan Ready</div><div class="trade-note">${plan.length} planned day(s) • ${added} new trade(s) • strategy: <b>${objectiveMap[opts.objective]||opts.objective}</b></div><div class="plan-summary-grid">${summary.map(s=>`<div class="plan-kpi"><div>${s.name}</div><div class="big">+${s.gain}</div><div style="font-size:10px;color:var(--parchment-mid)">${s.received} incoming • ${s.sent} outgoing</div></div>`).join('')}</div></div>${plan.map(day=>`<div class="plan-day-card"><div class="plan-day-title">📅 ${day.date}</div>${day.trades.map(t=>`<div class="plan-trade-line">${t.isGold?'🥇 ':''}<b style="color:var(--gold-light)">${State.accounts.find(a=>a.id===t.from)?.name||'?'}</b> → <b style="color:var(--magic-light)">${State.accounts.find(a=>a.id===t.to)?.name||'?'}</b> · Set ${t.setId} ${t.setName} · ${t.stickerName} · ${t.stars}⭐<span class="reason-pill">Why: ${t.reason}</span></div>`).join('')}<div class="projection-grid">${day.projections.map(p=>`<div class="projection-card"><div class="acct">${p.name}</div><div class="meta">${p.have} stickers after today<br>${p.stars} album stars<br>${p.vault} vault stars<br>${p.pct}% complete</div></div>`).join('')}</div></div>`).join('')}<div class="trade-actions-row"><button class="btn btn-gold" onclick="document.querySelector('[data-trade-tab=calendar]')?.click()">📅 View Calendar</button><button class="btn btn-ghost" onclick="document.querySelector('[data-trade-tab=manual]')?.click()">📝 View Planned Trades</button></div>`;
+      cauldron?.classList.remove('show'); App.renderManualTrades?.(); App.renderCalendar?.(); window.MEAPolish?.renderTradeAlerts?.(); Effects.notify(`✨ Smart plan generated: ${added} trade(s).`,'success');
+    },280);
+  };
+
+  const oldRenderTrades = App.renderManualTrades.bind(App);
+  App.renderManualTrades = function(){ oldRenderTrades(); const list=document.getElementById('manual-trades-list'); if(!list) return; const toolbar=list.querySelector('.trade-toolbar'); if(toolbar && !document.getElementById('trade-saver-bar')){ const bar=document.createElement('div'); bar.id='trade-saver-bar'; bar.className='mobile-sticky-bar'; bar.innerHTML=`<button class="btn btn-ghost" onclick="window.MEAFinal.saveCurrentPlan()">💾 Save Plan</button><button class="btn btn-ghost" onclick="window.MEAFinal.comparePlans()">⚖️ Compare</button><button class="btn btn-ghost" onclick="window.MEAFinal.openBackupStudio()">🗂 Backups</button>`; list.prepend(bar);} list.querySelectorAll('.trade-checklist-item').forEach(el=>{ const del=el.querySelector('.btn-danger'); const id=del?.getAttribute('onclick')?.match(/'([^']+)'/)?.[1]; const trade=State.trades.find(t=>t.id===id) || State.trades.find(t=>el.textContent.includes((ALBUM_SETS.find(s=>s.id===t?.setId)?.stickers[t?.stickerIdx]?.name)||'')); if(!trade||el.querySelector('.trade-lock')) return; const lock=document.createElement('button'); lock.className='trade-lock'+(trade.locked?' locked':''); lock.textContent=trade.locked?'🔒 locked':'🔓 lock'; lock.onclick=()=>{ trade.locked=!trade.locked; State.settings.tradeLocks[window.stickerKeyFrom(trade.setId,trade.stickerIdx)] = !!trade.locked; State.save(); App.renderManualTrades(); }; del?.before(lock); if(trade.reason){ const box=el.querySelector('.trade-item-text'); if(box && !box.querySelector('.why-note')){ const note=document.createElement('span'); note.className='why-note'; note.textContent='Why this trade: '+trade.reason; box.appendChild(note); } } }); };
+
+  function ensureDatasets(){
+    const origCard=Render._renderStickerCard?.bind(Render);
+    if(!origCard || Render._renderStickerCard.__finalPatched) return;
+    Render._renderStickerCard=function(accountId,set,stickerIdx,sticker,setColor){ const card=origCard(accountId,set,stickerIdx,sticker,setColor); card.dataset.accountId=accountId; card.dataset.setId=set.id; card.dataset.stickerIdx=stickerIdx; card.dataset.stars=sticker.stars; card.dataset.gold=sticker.isGold?'1':'0'; return card; };
+    Render._renderStickerCard.__finalPatched=true;
+  }
+  ensureDatasets();
+
+  function applyAlbumFilters(){
+    const f=State.settings.albumFilters||{};
+    const q=(f.query||'').toLowerCase().trim();
+    document.querySelectorAll('.set-block').forEach(setEl=>{ let anyVisible=false; setEl.querySelectorAll('.sticker-card').forEach(card=>{ const setId=parseInt(card.dataset.setId||setEl.id.replace('set-',''),10); const idx=parseInt(card.dataset.stickerIdx||'0',10); const acctCol=card.closest('.set-account-col'); const acctId=acctCol?.dataset?.accountId || acctCol?.id?.split('-').pop(); const st=ALBUM_SETS.find(s=>s.id===setId)?.stickers[idx]; const data=acctId?State.getSticker(acctId,setId,idx):null; let show=true; if(q){ show = st?.name.toLowerCase().includes(q) || ALBUM_SETS.find(s=>s.id===setId)?.name.toLowerCase().includes(q); }
+      if(show && f.status==='missing') show = !data?.have;
+      if(show && f.status==='have') show = !!data?.have;
+      if(show && f.status==='dupes') show = (data?.duplicates||0)>0;
+      if(show && f.gold==='gold-only') show = !!st?.isGold;
+      if(show && f.gold==='regular-only') show = !st?.isGold;
+      if(show && f.stars!=='all') show = String(st?.stars)===String(f.stars);
+      card.style.display=show?'':'none'; if(show) anyVisible=true; }); setEl.style.display=anyVisible?'':'none'; });
+  }
+  function installAlbumFilters(){
+    const bar=document.getElementById('album-search-bar'); if(!bar || document.getElementById('album-filter-wrap-final')){ applyAlbumFilters(); return; }
+    const wrap=document.createElement('div'); wrap.id='album-filter-wrap-final'; wrap.className='album-filter-wrap';
+    const f=State.settings.albumFilters||{};
+    wrap.innerHTML=`<div class="album-filter-top"><div><div style="font-family:Cinzel Decorative,serif;color:var(--gold-light);font-size:1rem">🔎 Album filters</div><div class="trade-note">Search globally and narrow by missing, duplicates, stars, or gold stickers.</div></div><div class="filter-chip-row"><span class="filter-chip">Live refresh</span><span class="filter-chip">Global sticker search</span><span class="filter-chip">Gold / dupes / star tiers</span></div></div><div class="album-filter-grid"><div><label>Search everything</label><input id="album-global-search" placeholder="Sticker or set name" value="${f.query||''}"></div><div><label>Status</label><select id="album-filter-status"><option value="all">All</option><option value="missing">Missing only</option><option value="have">Owned only</option><option value="dupes">Duplicates only</option></select></div><div><label>Stars</label><select id="album-filter-stars"><option value="all">All stars</option><option value="1">1⭐</option><option value="2">2⭐</option><option value="3">3⭐</option><option value="4">4⭐</option><option value="5">5⭐</option></select></div><div><label>Sticker type</label><select id="album-filter-gold"><option value="all">All</option><option value="gold-only">Gold only</option><option value="regular-only">Regular only</option></select></div></div><div class="trade-actions-row" style="margin-top:10px;justify-content:flex-start"><button class="btn btn-ghost" id="album-filter-reset">Reset Filters</button><button class="btn btn-ghost" onclick="window.MEAFinal.openBackupStudio()">🗂 Backups</button><button class="btn btn-ghost" onclick="window.MEAFinal.openA11yStudio()">🪄 Accessibility</button></div>`;
+    bar.insertAdjacentElement('afterend',wrap);
+    wrap.querySelector('#album-filter-status').value=f.status||'all'; wrap.querySelector('#album-filter-stars').value=f.stars||'all'; wrap.querySelector('#album-filter-gold').value=f.gold||'all';
+    ['album-global-search','album-filter-status','album-filter-stars','album-filter-gold'].forEach(id=>wrap.querySelector('#'+id).addEventListener('input',()=>{ State.settings.albumFilters={query:wrap.querySelector('#album-global-search').value,status:wrap.querySelector('#album-filter-status').value,stars:wrap.querySelector('#album-filter-stars').value,gold:wrap.querySelector('#album-filter-gold').value}; State.save(); applyAlbumFilters(); }));
+    wrap.querySelector('#album-filter-reset').onclick=()=>{ State.settings.albumFilters={query:'',status:'all',stars:'all',gold:'all'}; State.save(); wrap.remove(); installAlbumFilters(); applyAlbumFilters(); };
+    applyAlbumFilters();
+  }
+
+  function openA11yStudio(){
+    ensureFinalSettings(); const ui=State.settings.uiEnhancements;
+    App.showModal(`<div class="modal-title">✨ Accessibility & Comfort</div><div class="planner-extra-grid"><label class="mini-check"><input id="a11y-large" type="checkbox" ${ui.largeText?'checked':''}><span>Large text mode</span></label><label class="mini-check"><input id="a11y-motion" type="checkbox" ${ui.reduceMotion?'checked':''}><span>Reduce motion</span></label><label class="mini-check"><input id="a11y-mute" type="checkbox" ${ui.muteFx?'checked':''}><span>Mute sound effects</span></label></div><div class="modal-actions"><button class="btn btn-gold" onclick="window.MEAFinal.saveA11y()">Save</button><button class="btn btn-ghost" onclick="App.closeModal()">Close</button></div>`);
+  }
+  function applyA11y(){ const ui=State.settings.uiEnhancements||{}; document.body.classList.toggle('large-text',!!ui.largeText); document.body.classList.toggle('reduce-motion',!!ui.reduceMotion); document.body.classList.toggle('muted',!!ui.muteFx); State.settings.soundFx=!ui.muteFx; }
+  function saveA11y(){ State.settings.uiEnhancements={largeText:!!document.getElementById('a11y-large')?.checked,reduceMotion:!!document.getElementById('a11y-motion')?.checked,muteFx:!!document.getElementById('a11y-mute')?.checked}; State.save(); applyA11y(); App.closeModal(); }
+
+  function ensureJump(){ let btn=document.getElementById('jump-top-final'); if(!btn){ btn=document.createElement('button'); btn.id='jump-top-final'; btn.className='jump-top-final'; btn.textContent='⬆ Top'; btn.onclick=()=>window.scrollTo({top:0,behavior:document.body.classList.contains('reduce-motion')?'auto':'smooth'}); document.body.appendChild(btn); window.addEventListener('scroll',()=>btn.classList.toggle('show',window.scrollY>400),{passive:true}); } }
+
+  const oldAccounts = Render.accounts.bind(Render);
+  Render.accounts = function(){ oldAccounts(); const list=document.getElementById('accounts-list'); if(list && !document.getElementById('accounts-backup-strip')){ const strip=document.createElement('div'); strip.id='accounts-backup-strip'; strip.className='trade-actions-row'; strip.style.margin='0 0 16px'; strip.innerHTML=`<button class="btn btn-ghost" onclick="window.MEAFinal.createNamedBackup(prompt('Backup label')||'Manual backup')">💾 Save Backup</button><button class="btn btn-ghost" onclick="window.MEAFinal.openBackupStudio()">🗂 Restore Points</button><button class="btn btn-ghost" onclick="window.MEAFinal.openA11yStudio()">🪄 Accessibility</button>`; list.before(strip);} };
+  const oldTrade = Render.trade.bind(Render);
+  Render.trade = function(){ oldTrade(); setTimeout(upgradePlannerUI,0); };
+  const oldAlbum = Render.album.bind(Render);
+  Render.album = function(){ oldAlbum(); installAlbumFilters(); applyAlbumFilters(); ensureJump(); };
+  const oldNavigate = App.navigate.bind(App);
+  App.navigate = function(page){ const r=oldNavigate(page); setTimeout(()=>{ if(page==='album'){ installAlbumFilters(); applyAlbumFilters(); } if(page==='trade') upgradePlannerUI(); if(page==='accounts') Render.accounts(); },0); return r; };
+  const oldRefresh = App.refreshAfterAlbumMutation?.bind(App);
+  if(oldRefresh) App.refreshAfterAlbumMutation = function(){ const r=oldRefresh(); applyAlbumFilters(); return r; };
+  const oldToggle = App.toggleSticker.bind(App);
+  App.toggleSticker = function(){ const r=oldToggle.apply(this,arguments); setTimeout(()=>{ applyAlbumFilters(); },0); return r; };
+
+  window.MEAFinal={createNamedBackup,openBackupStudio,restoreBackup,saveCurrentPlan,comparePlans,previewPlan,openA11yStudio,saveA11y};
+  applyA11y(); ensureJump(); setTimeout(()=>{ if(State.ui?.page==='album'){ installAlbumFilters(); applyAlbumFilters(); } if(State.ui?.page==='trade') upgradePlannerUI(); },200);
 })();
 </script>
 
